@@ -1,0 +1,23 @@
+code {
+	background-color: lightgray;
+	tab-size: 4
+}
+
+a.code-link {
+	font-family: monospace;
+}
+
+summary.code-collapse {
+	font-family: monospace;
+}
+
+div.code-collapse {
+	padding-top: 1em;
+}
+
+.flag {
+	font-family: monospace;
+	border: 5px outset;
+	display: inline-block;
+	padding: 0.5em;
+}

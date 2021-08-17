@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Military Grade (RACTF 2021) Writeup</title>
+<script src="/common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Military Grade</h1>
+<span class="language-selector-ja">
+<p>
+IPv4アドレスとポート番号、そしてサーバのソースコード<code>main.go</code>が与えられた。<br>
+指定のアドレスとポート番号を<common-tool data-lang="ja">Firefox</common-tool>のアドレスバーに入れてアクセスすると、
+十六進数の列が表示された。
+</p><p>
+<code>main.go</code>を読むと、時刻に基づく値と適当な数をビットANDした値で疑似乱数生成器を初期化し、
+それを用いて鍵とIVを生成し、flagをAESで暗号化したものを出力していることが読み取れた。<br>
+そこで、この<code>main.go</code>のコードを利用し、
+あり得る全ての鍵とIVの組み合わせを出力するプログラム<code>gen_keys.go</code>を作成した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A pair of an IPv4 address and a  port number, and a source code of the server <code>main.go</code> were given.<br>
+Accessing to the site by putting the address and the port number to the address bar of <common-tool data-lang="en">Firefox</common-tool>,
+it showed a sequence of hexdecimal characters.
+</p><p>
+Reading <code>main.go</code>, I realized that it is firstly initialzing the psuedo-random number generator
+with bitwise-AND of some value based on the time and some fixed value, then generating a key and IV with the PRNG,
+and finally printing the flag encrypted using AES with the key and IV.<br>
+Seeing this, I created a program <code>gen_keys.go</code> that prints all possible pairs of key and IV
+based on the progran <code>main.go</code>.
+</p>
+</span>
+
+<p><a href="gen_keys.go" class="code-link" data-collapse="true">gen_keys.go</a></p>
+
+<p class="language-selector-ja">
+そして、この<code>gen_keys.go</code>の出力をもとにサーバから出力された値の復号を全通りの鍵とIVで行い、
+結果を出力するプログラム<code>bruteforce.pl</code>を作成した。
+</p>
+<p class="language-selector-en">
+Then, I created a program <code>bruteforce.pl</code> that decrypts what is printed from the server
+with all possible keys and IVs based on the output of <code>gen_keys.go</code> and prints their results.
+</p>
+
+<p><a href="bruteforce.pl" class="code-link" data-collapse="true">bruteforce.pl</a></p>
+
+<p class="language-selector-ja">
+<code>bruteforce.pl</code>の出力から<code>ractf</code>を検索することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by searching for <code>ractf</code> from what <code>bruteforce.pl</code> printed.
+</p>
+
+<div class="flag">ractf{int3rEst1ng_M4sk_paTt3rn}</div>
+
+<hr>
+<p>
+<a href="../../" class="language-aware-link">RACTF 2021</a>
+</p>
+</body>
+</html>
