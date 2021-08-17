@@ -1,5 +1,13 @@
 "use strict";
 
+// このファイルがあるディレクトリを得る
+const currentDirectory = (function() {
+	const scriptElements = document.getElementsByTagName("script");
+	const scriptElement = scriptElements[scriptElements.length - 1];
+	const scriptUrl = scriptElement.getAttribute("src");
+	return scriptUrl.replace(/\/[^\/]*$/, "/");
+})();
+
 // 使うライブラリを読み込む
 
 function addStylesheet(url) {
@@ -16,7 +24,7 @@ function addScript(url) {
 }
 
 // 独自定義
-addStylesheet("/common/common.css");
+addStylesheet(currentDirectory + "common.css");
 
 // highlight.js
 addStylesheet("//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css");
