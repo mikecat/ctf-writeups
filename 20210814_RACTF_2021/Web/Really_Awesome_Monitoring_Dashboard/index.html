@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Really Awesome Monitoring Dashboard (RACTF 2021) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Really Awesome Monitoring Dashboard</h1>
+<span class="language-selector-ja">
+<p>
+IPv4アドレスとポート番号が与えられた。<br>
+指定のアドレスとポート番号を<common-tool data-lang="ja">Firefox</common-tool>のアドレスバーに入れてアクセスすると、
+グラフやメーターが並んだ画面が表示された。
+</p><p>
+System Status をクリックし、出てきたメニューのうち Inspect をクリックし、
+さらに JSON をクリックすると、SQL文を含むデータが表示された。
+</p><p>
+開発者ツールを開いて「ネットワーク」を見ると、ファイルが<code>random-walk</code>で始まる大量の通信があった。<br>
+そこで、まず画面右上の「5s」をクリックして「Off」に切り替え、余計なクエリが飛ばないようにした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A pair of an IPv4 address and a port number was given.<br>
+Accessing to the site by putting the address and the port number to the address bar of <common-tool data-lang="en">Firefox</common-tool>,
+it showed some graphs and meters.
+</p><p>
+I clicked "System Status", and clicked "Inspect" in the menu shown, and clicked "JSON".
+It showed some data that contains some SQL statements.
+</p><p>
+Opening the Developer Tool and seeing the "Network" tab,
+there were many communications for files start with <code>random-walk</code>.<br>
+Seeing this, I clicked "5s" on the right upper side of the screen and switched it to "Off"
+to prevent unwanted queries from being sent.
+</p>
+</span>
+<p>
+<span class="language-selector-ja">
+この状態で通信のリストを見ると、ファイル<code>query</code>の通信があり、要求に
+</span><span class="language-selector-en">
+Seeing the list of communications after this, there were some communications
+for a file <code>query</code>. The Request of the communication had these parts:
+</span>
+<ul>
+<li><code>datasource: "sqlite"</code></li>
+<li><code>queryText: SELECT host,status FROM logs;</code></li>
+<li><code>rawQueryText: SELECT host,status FROM logs;</code></li>
+</ul>
+<span class="language-selector-ja">
+という部分があった。
+</span>
+</p>
+<span class="language-selector-ja">
+<p><code>datasource</code>の値からSQLiteを使っていそうだったので、
+「編集して再送信」で<code>queryText</code>の値を<code>SELECT * FROM sqlite_master;</code>に書き換え、送信した。<br>
+すると、応答より<code>logs</code>テーブルと<code>flags</code>テーブルがあることが読み取れた。
+</p><p>
+<code>queryText</code>の値を<code>SELECT * FROM flags;</code>に書き換えて送信すると、flagを含む応答が得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+The value of <code>datasource</code> suggested that SQLite is used,
+so I edited the query to change the value of <code>queryText</code> to <code>SELECT * FROM sqlite_master;</code> and resent that.<br>
+As a result, the Response showed that there are tables <code>logs</code> and <code>flags</code>.
+</p><p>
+Changing the value of <code>queryText</code> to <code>SELECT * FROM flags;</code> and resending the query resulted in a Response that contains the flag.
+</p>
+</span>
+
+<div class="flag">ractf{BringBackNagios}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">RACTF 2021</a>
+</p>
+</body>
+</html>

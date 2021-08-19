@@ -56,6 +56,20 @@ const commonToolList = {
 	"Firefox": {
 		"ja": "https://www.mozilla.org/ja/firefox/new/",
 		"en": "https://www.mozilla.org/en-US/firefox/new/"
+	},
+	"TkSQLite": {
+		"": "http://reddog.s35.xrea.com/wiki/TkSQLite.html"
+	},
+	"7-Zip": {
+		"ja": "https://sevenzip.osdn.jp/",
+		"en": "https://www.7-zip.org/"
+	},
+	"VLC media player": {
+		"ja": "https://www.videolan.org/vlc/index.ja.html",
+		"en": "https://www.videolan.org/vlc/index.en_GB.html"
+	},
+	"CyberChef": {
+		"": "https://gchq.github.io/CyberChef/"
 	}
 };
 
@@ -137,12 +151,12 @@ function highlightCode() {
 		const pre = document.createElement("pre");
 		const code = document.createElement("code");
 		let text = "";
-		for (let j = 0; j < elem.childNodes.length; i++) {
+		for (let j = 0; j < elem.childNodes.length; j++) {
 			text += elem.childNodes[j].textContent;
 		}
 		code.appendChild(document.createTextNode(text.replace(/^(\r\n|\r|\n)/, "")));
 		if (elem.hasAttribute("data-extension")) {
-			const lang = getLanguage(elem.hgetAttribute("data-extension"));
+			const lang = getLanguage(elem.getAttribute("data-extension"));
 			if (lang) code.classList.add("language-" + lang);
 		}
 		pre.appendChild(code);
