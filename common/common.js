@@ -70,6 +70,15 @@ const commonToolList = {
 	},
 	"CyberChef": {
 		"": "https://gchq.github.io/CyberChef/"
+	},
+	"John the Ripper": {
+		"": "https://www.openwall.com/john/"
+	},
+	"Johnny": {
+		"": "https://openwall.info/wiki/john/johnny"
+	},
+	"Cheat Engine": {
+		"": "https://www.cheatengine.org/"
 	}
 };
 

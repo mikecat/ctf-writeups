@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>RSFPWS - Teleport (RACTF 2021) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>RSFPWS - Teleport</h1>
+<p class="language-selector-ja">
+<a href="../RSFPWS_-_Intercepted/" class="language-aware-link">RSFPWS - Intercepted</a>
+と同じゲームのプログラムと、そのゲームで用いるサーバのIPアドレスとポート番号が与えられた。<br>
+ゲームは一人称視点で移動ができるもので、その中に以下のような中に入るとflagが得られるという箱があった。<br>
+この箱には当たり判定があり、普通には入れないようだった。
+</p>
+<p class="language-selector-en">
+A game program (same as one for <a href="../RSFPWS_-_Intercepted/" class="language-aware-link">RSFPWS - Intercepted</a>)
+and a pair of an IP address and a port number for the game was given.<br>
+In the game, we can move around in first-persom view.
+There was a box which is said that entering inside the box will lead to getting the flag.<br>
+The box had solid walls and I couldn't enter inside that in a straightforward way.
+</p>
+<p><a href="box_initial.png"><img src="box_initial_thumb.jpg" alt="the box"></a></p>
+<p class="language-selector-ja">
+与えられたゲームのデータをよく見ると、<code>RARPG_Data/level0</code>というファイルがあり、これがマップを表していそうだった。<br>
+このファイルをバイナリエディタで開くと、前半部分に<code>Cube</code>や<code>Hint Text (2)</code>などの物の名前と考えられるデータがあった。<br>
+このあたりには名前の他にもデータがあり、実験の結果適当なデータを書き換えることでマップ上の物を消せることを発見した。<br>
+そのなかでも特に、0x2b58 番目のバイト (0-origin) を 0x57 から 0x58 に書き換えることで、
+箱の側面の壁を消して入れる状態にできることを発見した。
+</p>
+<p class="language-selector-en">
+Looking at the game data closely, I found a file <code>RARPG_Data/level0</code>, which seemed to be the map data.<br>
+Viewing the file with a binary editor, I found strings that seemed to be names of objects like <code>Cube</code> and <code>Hint Text (2)</code> in the former part.<br>
+There are several other data around the strings.
+After some experiments, I found that some objects in the game disappears when I modify appropriate data.<br>
+Specifically, I found that changing the 0x2b58-th byte (the first byte is 0th) from 0x57 to 0x58
+removes the side wall of the box and enables me to enter the box.
+</p>
+
+<details><summary>
+<span class="language-selector-ja">該当部分付近のデータ</span>
+<span class="language-selector-en">The data around the point</span>
+</summary><div>
+<code-block data-extension="txt">
+00002b00  fa 00 00 00 00 00 00 00 0b 00 00 00 04 00 00 00  |................|
+00002b10  43 75 62 65 00 00 01 00 02 00 00 00 00 00 00 00  |Cube............|
+00002b20  56 00 00 00 00 00 00 00 00 00 00 00 fb 00 00 00  |V...............|
+00002b30  00 00 00 00 00 00 00 00 09 00 00 00 55 49 4d 61  |............UIMa|
+00002b40  6e 61 67 65 72 00 00 00 00 00 01 00 00 00 00 00  |nager...........|
+00002b50  04 00 00 00 00 00 00 00 57 00 00 00 00 00 00 00  |........W.......|
+00002b60  00 00 00 00 91 00 00 00 00 00 00 00 00 00 00 00  |................|
+00002b70  77 00 00 00 00 00 00 00 00 00 00 00 ab 00 00 00  |w...............|
+00002b80  00 00 00 00 0b 00 00 00 08 00 00 00 43 75 62 65  |............Cube|
+00002b90  20 28 33 29 00 00 01 00 04 00 00 00 00 00 00 00  | (3)............|
+00002ba0  58 00 00 00 00 00 00 00 00 00 00 00 92 00 00 00  |X...............|
+00002bb0  00 00 00 00 00 00 00 00 78 00 00 00 00 00 00 00  |........x.......|
+00002bc0  00 00 00 00 ac 00 00 00 00 00 00 00 0b 00 00 00  |................|
+00002bd0  08 00 00 00 43 75 62 65 20 28 34 29 00 00 01 00  |....Cube (4)....|
+00002be0  04 00 00 00 00 00 00 00 d5 00 00 00 00 00 00 00  |................|
+00002bf0  00 00 00 00 c2 00 00 00 00 00 00 00 00 00 00 00  |................|
+</code-block>
+</div></details>
+
+<p><a href="box_opened.png"><img src="box_opened_thumb.jpg" alt="the box opened"></a></p>
+
+<p class="language-selector-ja">
+この状態で箱に入り、後ろの方に行くと、flagが表示された。
+</p>
+<p class="language-selector-en">
+After that, I entered the box and moved back, finding the flag displayed.
+</p>
+
+<p><a href="box_inside.png"><img src="box_inside_thumb.jpg" alt="inside the box"></a></p>
+
+<p class="language-selector-ja">
+この状態で<common-tool data-lang="ja">Cheat Engine</common-tool>でゲームにアタッチして Memory Viewer を開き、
+Unicode の Text <code>ractf{</code>を検索すると、メモリ上にflagの文字列データが見つかった。<br>
+該当のデータをコピーし、<common-tool data-lang="ja">CyberChef</common-tool>で処理することで、flagの文字列データが得られた。
+</p>
+<p class="language-selector-en">
+After that, I attached <common-tool data-lang="en">Cheat Engine</common-tool> to the game and opened the Memory Viewer.
+I searched for Unicode Text <code>ractf{</code>, finding the string data of the flag on the memory.<br>
+I copied the data and processed via <common-tool data-lang="ja">CyberChef</common-tool> to obtain the string data of the flag.
+</p>
+
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Simple%20string','string':'00'%7D,'',true,false,true,false)From_Hex('Auto')&input=NzIgMDAgNjEgMDAgNjMgMDAgNzQgMDAgNjYgMDAgN0IgMDAgNTQgMDAgMzMgMDAgNkMgMDAgMzMgMDAgNzAgMDAgNkYgMDAgNzIgMDAgNzQgMDAgMzEgMDAgNkUgMDAgNjcgMDAgNUYgMDAgNjkgMDAgNTMgMDAgNUYgMDAgNjYgMDAgNzUgMDAgNEUgMDAgMjEgMDAgN0QgMDA">
+<span class="language-selector-ja">flagの文字列を得るためのCyberChefのRecipe</span>
+<span class="language-selector-en">The Recipe for CyberChef to obtain the flag as a string</span>
+</a></p>
+
+<div class="flag">ractf{T3l3port1ng_iS_fuN!}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">RACTF 2021</a>
+</p>
+</body>
+</html>
