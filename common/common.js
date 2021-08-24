@@ -79,6 +79,13 @@ const commonToolList = {
 	},
 	"Cheat Engine": {
 		"": "https://www.cheatengine.org/"
+	},
+	"Ghidra": {
+		"": "https://ghidra-sre.org/"
+	},
+	"Tera Term": {
+		"ja": "https://ttssh2.osdn.jp/",
+		"en": "https://ttssh2.osdn.jp/index.html.en"
 	}
 };
 
@@ -100,8 +107,11 @@ function highlightCode() {
 		const elem = codeLinks[i];
 		const target = elem.href;
 		(function(e, t) {
+			const binMode = e.hasAttribute("data-binary") && e.getAttribute("data-binary");
 			const ext = (function() {
-				if (e.hasAttribute("data-extension")) {
+				if (binMode) {
+					return "txt";
+				} else if (e.hasAttribute("data-extension")) {
 					return e.getAttribute("data-extension");
 				} else {
 					const matchRes = t.match(/\.([^\/]+)$/);
@@ -116,7 +126,27 @@ function highlightCode() {
 					if (req.status === 200) {
 						const preElement = document.createElement("pre");
 						const codeElement = document.createElement("code");
-						codeElement.appendChild(document.createTextNode(req.responseText));
+						if (binMode && req.response) {
+							const arr = new Uint8Array(req.response);
+							let renderedText = "";
+							for (let i = 0; i < arr.byteLength; i += 16) {
+								let chars = "  |";
+								let count = 0;
+								renderedText += ("00000000" + i.toString(16)).substr(-8);
+								renderedText += " ";
+								for (let j = 0; j < 16 && i + j < arr.byteLength; j++) {
+									const c = arr[i + j];
+									renderedText += " " + ("00" + c.toString(16)).substr(-2);
+									chars += 0x20 <= c && c < 0x7f ? String.fromCharCode(c) : ".";
+									count++;
+								}
+								for (; count < 16; count++) renderedText += "   ";
+								renderedText += chars + "|\n";
+							}
+							codeElement.appendChild(document.createTextNode(renderedText));
+						} else {
+							codeElement.appendChild(document.createTextNode(req.responseText));
+						}
 						if (lang) codeElement.classList.add("language-" + lang);
 						preElement.appendChild(codeElement);
 						if (e.hasAttribute("data-collapse") && e.getAttribute("data-collapse")) {
@@ -136,6 +166,9 @@ function highlightCode() {
 						} else {
 							e.parentNode.insertBefore(preElement, e.nextSibling);
 						}
+						if (binMode) {
+							e.parentNode.insertBefore(document.createTextNode(" (binary)"), e.nextSibling);
+						}
 						hljs.highlightElement(codeElement);
 					} else {
 						const p = document.createElement("p");
@@ -144,7 +177,7 @@ function highlightCode() {
 					}
 				}
 			};
-			req.responseType = "text";
+			req.responseType = binMode ? "arraybuffer" : "text";
 			req.open("GET", t);
 			req.send();
 		})(elem, target);

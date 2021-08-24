@@ -1,0 +1,42 @@
+(gdb) attach 13472
+Attaching to process 13472
+[New Thread 13472.0x4710]
+[New Thread 13472.0x466c]
+[New Thread 13472.0x2488]
+[New Thread 13472.0x2348]
+[New Thread 13472.0x4770]
+Reading symbols from D:\MyData\Documents\ctf\20210814_RACTF_2021\Pwn_Reversing\Packed\ue4c.0-modified.exe...(no debugging symbols found)...done.
+(gdb) p/x $eip
+$1 = 0x77404d11
+(gdb) thread 1
+[Switching to thread 1 (Thread 13472.0x4710)]
+#0  0x002d1239 in ?? ()
+(gdb) x/20i $eip
+=> 0x2d1239:    jmp    0x2d1239
+   0x2d123b:    lea    0x1(%edx),%esi
+   0x2d123e:    xchg   %ax,%ax
+   0x2d1240:    mov    (%edx),%al
+   0x2d1242:    inc    %edx
+   0x2d1243:    test   %al,%al
+   0x2d1245:    jne    0x2d1240
+   0x2d1247:    sub    %esi,%edx
+   0x2d1249:    je     0x2d1265
+   0x2d124b:    nopl   0x0(%eax,%eax,1)
+   0x2d1250:    mov    0x8c(%esp,%ecx,1),%al
+   0x2d1257:    cmp    0xc0(%esp,%ecx,1),%al
+   0x2d125e:    jne    0x2d128c
+   0x2d1260:    inc    %ecx
+   0x2d1261:    cmp    %edx,%ecx
+   0x2d1263:    jb     0x2d1250
+   0x2d1265:    mov    0x2d3064,%ecx
+   0x2d126b:    mov    $0x2d31b8,%edx
+   0x2d1270:    call   0x2d1380
+   0x2d1275:    xor    %eax,%eax
+(gdb) x/s $esp + 0x8c
+0x8ffa7c:       "RA-1100-JHRMT"
+(gdb) x/s $esp + 0xc0
+0x8ffab0:       "a"
+(gdb) k
+Kill the program being debugged? (y or n) y
+error return ../../gdb-7.6.1/gdb/windows-nat.c:1275 was 5
+(gdb) q
