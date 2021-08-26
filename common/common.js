@@ -86,6 +86,9 @@ const commonToolList = {
 	"Tera Term": {
 		"ja": "https://ttssh2.osdn.jp/",
 		"en": "https://ttssh2.osdn.jp/index.html.en"
+	},
+	"CS50 IDE": {
+		"": "https://ide.cs50.io/"
 	}
 };
 

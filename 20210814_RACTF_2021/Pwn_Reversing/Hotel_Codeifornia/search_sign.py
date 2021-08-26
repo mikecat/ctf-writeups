@@ -1,0 +1,15 @@
+n = 0x008e56f8bf0b74bf87ec995a91e0896e82840d009b84f57724c2bab71ebef6deb2ac75e554055d391eff50ec3a86ae4ba88467af6c3ddca6d15a08a88f01e2c964b8e6f166786b9ce3dd608f65a4ad4c298067d31487bca47a7a49dd1ad8634c7b872ec92790ff5aa9b357bb64523aa6f26895e34d4f23bb4a789a195cf6df1432c111f8639f9237a13125abf723bc90c99736a5889e2eaa1b3c5cc52170dd430a688682cbff41a43b18231e5154ae52d53526e9d302fc84b045c52a1a552018f33f6c646831aa34767de6ea53339dc24b09cb441c12434a24cb86eedd9e46c7188b43709de2361026830a1b249bb4c67a04084d7a0db50a5916762c41b9da1903
+e = 0x010001
+
+q = 2
+while True:
+	test = pow(q, e, n)
+	hex_str = hex(test)[2:]
+	if len(hex_str) % 2 == 1: hex_str = "0" + hex_str
+	if hex_str[2:4] == "00":
+		print(q)
+		print(hex_str)
+		break
+	if q % 0x1000 == 0:
+		print("searching... " + str(q))
+	q += 1
