@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Solved Challenge Converter</title>
+<script src="converter.js"></script>
+</head>
+<body>
+<h1>Solved Challenge Converter</h1>
+<h2>JSON Input</h2>
+<p>Solves (required):<br><textarea rows="10" cols="100" id="input_solves"></textarea></p>
+<p>Challenges (optional, used by some parsers):<br><textarea rows="10" cols="100" id="input_challenges"></textarea></p>
+<p>parser: <select id="select_parser">
+<option value="-1" selected="selected">auto detect</option>
+<option value="0">RACTF (challenges input required for category and solve count)</option>
+<option value="1">rCTF</option>
+<option value="2">CTFd (challenges input required for solve count)</option>
+</select></p>
+<p><input type="button" id="convert_button" value="convert"></p>
+
+<h2>HTML Output</h2>
+<p><textarea rows="10" cols="100" id="output_html"></textarea></p>
+
+<h2>JSON Output</h2>
+<p><textarea rows="10" cols="100" id="output_json"></textarea></p>
+
+</body>
+</html>
