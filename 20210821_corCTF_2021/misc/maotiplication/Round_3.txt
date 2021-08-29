@@ -1,0 +1,61 @@
+# initialize
+x:*?
+?0:0?
+?1:1?
+?:=0
+# copy the right operand for adding
+v=:=v
+^=:=^
+v-:-v
+v+:+v
+^-:-^
+^+:+^
+0C-:C--v
+1C-:C+-^
+0C+:C-+v
+1C+:C++^
++:1
+-:0
+*C:*
+# add the copied number to the result
+1c:c0
+0c:1
+c:1
+n0:0n
+n1:1n
+p0:0p
+p1:1p
+0n:N
+0p:P
+1n:P
+1p:cN
+v0:0n
+v1:1n
+^0:0p
+^1:1p
+vN:NN
+vP:NP
+^N:PN
+^P:PP
+N:0
+P:1
+# if the last digit sent is zero, shift only
+z=:0=
+# if the last digit sent is one, start copying
+o=:C-=
+# send last digit of left operand to right
+z0:0z
+z1:1z
+o0:0o
+o1:1o
+0*:*z
+1*:*o
+# cleanup
+0=:=
+1=:=
+*=:=
+# zero suppress
+=00:=0
+=01:=1
+=:
+EOF
