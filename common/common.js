@@ -89,6 +89,12 @@ const commonToolList = {
 	},
 	"CS50 IDE": {
 		"": "https://ide.cs50.io/"
+	},
+	"TDM-GCC": {
+		"": "https://jmeubank.github.io/tdm-gcc/"
+	},
+	"libc-database": {
+		"": "https://libc.rip/"
 	}
 };
 
