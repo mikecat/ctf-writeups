@@ -43,6 +43,7 @@ const languageList = {
 	"svg": "html",
 	"java": "java",
 	"js": "javascript",
+	"json": "javascript",
 	"php": "php",
 	"pl": "perl",
 	"txt": "plaintext",
@@ -95,6 +96,9 @@ const commonToolList = {
 	},
 	"libc-database": {
 		"": "https://libc.rip/"
+	},
+	"RequestBin.com" : {
+		"": "https://requestbin.com/"
 	}
 };
 

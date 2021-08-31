@@ -1,0 +1,41 @@
+{
+	"data": {
+		"__type": {
+			"name": "Query",
+			"fields": [
+				{
+					"name": "users",
+					"args": [],
+					"type": {
+						"name": null,
+						"kind": "NON_NULL",
+						"ofType": {
+							"name": null,
+							"kind": "LIST"
+						}
+					}
+				},
+				{
+					"name": "flag",
+					"args": [
+						{
+							"name": "token",
+							"type": {
+								"name": null,
+								"kind": "NON_NULL"
+							}
+						}
+					],
+					"type": {
+						"name": null,
+						"kind": "NON_NULL",
+						"ofType": {
+							"name": "String",
+							"kind": "SCALAR"
+						}
+					}
+				}
+			]
+		}
+	}
+}
