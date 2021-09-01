@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>fibinary (corCTF 2021) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>fibinary</h1>
+<span class="language-selector-ja">
+<p>
+Pythonのプログラム<code>enc.py</code>と、その出力<code>flag.enc</code>が与えられた。<br>
+<code>flag.enc</code>の中身は、空白区切りの0と1の列だった。
+</p><p>
+<code>enc.py</code>を読むと、出力中の0と1はそれぞれフィボナッチ数列の要素に対応し、
+入力の値からその要素を引いたら1、引かなかったら0を出力していることが読み取れた。
+</p><p>
+以下のプログラムにより1に対応する要素を足していくことで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A Python program <code>enc.py</code> and its output <code>flag.enc</code> were given.<br>
+There were sequences of 0 and 1 separated by a white-space in <code>flag.enc</code>.
+</p><p>
+Reading <code>enc.py</code>, I found that the 0 and 1 in the output are related with elements of the fibonacci numbers,
+and that 1 means that the element is subtracted from the input value and 0 means that the element is not subtracted.
+</p><p>
+I obtained the flag by adding elements correspond to 1 via this program:
+</p>
+</span>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<div class="flag">corctf{b4s3d_4nd_f1bp!113d}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">corCTF 2021</a>
+</p>
+</body>
+</html>

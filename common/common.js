@@ -99,6 +99,9 @@ const commonToolList = {
 	},
 	"RequestBin.com" : {
 		"": "https://requestbin.com/"
+	},
+	"Integer factorization calculator": {
+		"": "https://www.alpertron.com.ar/ECM.HTM"
 	}
 };
 
