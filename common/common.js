@@ -102,6 +102,9 @@ const commonToolList = {
 	},
 	"Integer factorization calculator": {
 		"": "https://www.alpertron.com.ar/ECM.HTM"
+	},
+	"Sage Cell Server": {
+		"": "https://sagecell.sagemath.org/"
 	}
 };
 

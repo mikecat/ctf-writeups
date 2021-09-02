@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>babyrsa (corCTF 2021) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>babyrsa</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、サーバのプログラム<code>server.py</code>が与えられた。<br>
+<code>server.py</code>は、以下の処理をするものだった。
+</p>
+<ol>
+<li>
+<code>flag</code>の暗号化結果を出力する。暗号化は以下の手順で行う。
+<ol>
+<li>16バイトの乱数列<code>key</code>を生成する。</li>
+<li>16バイトの乱数列<code>iv</code>を生成する。</li>
+<li><code>key</code>と、<code>iv</code>を用いて初期化したカウンタを用い、平文を<code>pad</code>関数で処理したものを<code>AES.MODE_CTR</code>で暗号化する。</li>
+<li>暗号文の前に<code>iv</code>を連結する。</li>
+</ol></li>
+<li>
+以下を繰り返す。
+<ol>
+<li>暗号文の入力を受け付ける。</li>
+<li>読み込んだ暗号文を復号し、結果を<code>unpad</code>関数で処理する。</li>
+<li>例外が発生したら<code>0</code>を出力する。発生しなければ<code>1</code>を出力する。</li>
+</ol></li>
+</ol>
+<p>
+今回の暗号化は<code>AES.MODE_CTR</code>を用いているので、<code>iv</code>によって決まる鍵をXORすることによって暗号化するはずである。<br>
+したがって、<code>iv</code>を除く暗号文のあるバイトの値を変えても、他のバイトには影響を与えないはずである。<br>
+また、<code>pad</code>関数や<code>unpad</code>関数の性質はよくわからないが、データの後ろに加えるバイト数を値とするバイト列を加えるパディングを扱うと予想した。
+</p><p>
+この性質を利用すると、暗号文の最後のバイトだけを変えて全探索することで、平文が0x01になる暗号文を求めることができる。<br>
+するとこの位置の鍵もわかるので、次はこれを用いて暗号文の最後を0x02に復号される値に固定しつつ、暗号文の最後から2番目のバイトを変え、平文が0x02になる暗号文を求めることができる。<br>
+これを繰り返すことで、1ブロック分の鍵を求めることができる。<br>
+さらに最後のブロックを外して同様の処理を行うことで、他のブロックの鍵も求めることができる。
+</p><p>
+以下のプログラムを用いることで暗号文と鍵を求め、<common-tool data-lang="ja">CyberChef</common-tool>のXORを用いることでflagを得ることができた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and a program of the server <code>server.py</code> were given.<br>
+What <code>server.py</code> does is:
+</p>
+<ol>
+<li>Output the encrypted <code>flag</code>. The encryption is:
+<ol>
+<li>Generate a 16-byte random sequence <code>key</code>.</li>
+<li>Generate a 16-byte random sequence <code>iv</code>.</li>
+<li>Encrypt the plaintext after processing it via the function <code>pad</code>, using the <code>key</code> and a counter initialized using the <code>iv</code>.</li>
+<li>Concatenate the <code>iv</code> before the ciphertext.</li>
+</ol></li>
+<li>Repeat this:
+<ol>
+<li>Read a ciphertext.</li>
+<li>Decrypt the ciphertext read and process the result via the function <code>unpad</code>.</li>
+<li>Output <code>0</code> if any exception is thrown. Output <code>1</code> if no exception are thrown.</li>
+</ol></li>
+</ol>
+<p>
+The encryption in this challenge uses <code>AES.MODE_CTR</code>, so the encryption should be an exclusive-or with a key that depends on <code>iv</code>.<br>
+This means that changing a byte in the ciphertext which is not in the <code>iv</code> won't affect the other bytes.<br>
+Also, what the functions <code>pad</code> and <code>unpad</code> does is unknown, but I guessed that they deal with a padding where bytes whose values are the number of bytes to add are added after the data.
+</p><p>
+Using this property, we can obtain a ciphertext corresponding to a plaintext whose last byte is 0x01 by brute-forcing with changing the last byte of the ciphertext.<br>
+This will reveal the key for the byte, so we can use this to fix the last byte of the ciphertext to make its plaitext to be 0x02
+and search for a the second last byte of ciphertext to make the plaintext to be 0x02.<br>
+Repeating this, we can reveal the key for the whole block.<br>
+Moreover, we can reveal the key for the other blocks by removing the last block and repeating this process.
+</p><p>
+I used this program to obtain the ciphertext and the key.
+Then I used "XOR" on <common-tool data-lang="en">CyberChef</common-tool> to obtain the flag.
+</p>
+</span>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<div class="flag">corctf{CTR_p4dd1ng?n0_n33d!}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">corCTF 2021</a>
+</p>
+</body>
+</html>
