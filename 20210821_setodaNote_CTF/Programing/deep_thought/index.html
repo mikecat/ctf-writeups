@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>deep_thought (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>deep_thought</h1>
+<span class="language-selector-ja">
+<p>
+IPv4アドレスとポート番号、そしてブラウザ上でLinuxのターミナルが使えるサービスのURLが与えられた。
+</p><p>
+このターミナル上で<code>nc</code>コマンドを用いて指定のIPv4アドレスとポート番号にアクセスすると、
+出力される足し算の結果を送信することを求められるようだった。<br>
+さらに調査をすすめると、足し算だけでなく引き算も要求されることがあるようだった。<br>
+そこで、この処理を行うため以下のプログラムを用意した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An IPv4 address and a port number, and an URL of a service where we can use a Linux terminal on a Web browser was given.
+</p><p>
+Accessing the IPv4 address and the port number via <code>nc</code> command on the terminal,
+I found that the server looks requesting to send the result of the addition sent from the server.<br>
+After some more investigation, I found that not only additions but also subtractions are requested.<br>
+Seeing this, I used this program to achieve this:
+</p>
+</span>
+<p><a href="comm_ds.pl" class="code-link" data-collapse="true">comm_ds.pl</a></p>
+
+<span class="language-selector-ja">
+<p>
+このプログラムを以下の手順でターミナルに送り、ターミナル上で実行した。
+</p>
+<ol>
+<li>プログラムに、<common-tool data-lang="ja">CyberChef</common-tool>で Gzip と To Base64 をかける。</li>
+<li>処理結果をコピーし、ターミナルで <code>echo (処理結果) | base64 -d | gunzip > comm_ds.pl</code> というコマンドを実行する。
+処理結果は右クリックから「貼り付け」で貼り付ける。</li>
+</ol>
+</span>
+<span class="language-selector-en">
+I sent this program to the terminal in this way, and executed it on the terminal:
+<ol>
+<li>Apply "Gzip" and "To Base64" to the program on <common-tool data-lang="en">CyberChef</common-tool>.</li>
+<li>Copy the result and execute a command <code>echo (the result) | base64 -d | gunzip > comm_ds.pl</code> on the terminal.
+I pasted the result using the "Paste" menu after right-clicking.</li>
+</ol>
+</span>
+<p class="language-selector-ja">
+その結果、出力の最後にflagが現れた。
+</p>
+<p class="language-selector-en">
+As a result, the flag appeared at the end of the output.
+</p>
+
+<div class="flag">flag{__42__}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>
