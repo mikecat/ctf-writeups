@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ELF (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>ELF</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>elf</code> が与えられた。
+</p><p>
+このファイルをバイナリエディタで開いてみると、最初の部分が<code>58 58 58 58</code> (<code>XXXX</code>) となっていたので、
+ELFファイルのマジックナンバー <code>7F 45 4C 46</code> に書き換えた。
+</p><p>
+書き換えたファイルを<common-tool data-lang="ja">TDM-GCC</common-tool>の<code>objdump</code>で逆アセンブルすると、
+以下の怪しいデータが見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>elf</code> was given.
+</p><p>
+Opening the file with a binary editor, I found that the first part of the file is <code>58 58 58 58</code> (<code>XXXX</code>).
+Seeing this, I modified this part to the magic number for ELF files <code>7F 45 4C 46</code>.
+</p><p>
+After doing this modification, I disassembled the file via <code>objdump</code> in <common-tool data-lang="en">TDM-GCC</common-tool>,
+finding this interesting data:
+</p>
+</span>
+<code-block data-extension="txt">
+    113d:	48 b8 4e 44 49 4f 53 	movabs $0x465d5a534f49444e,%rax
+    1144:	5a 5d 46 
+    1147:	48 ba 77 45 49 43 41 	movabs $0x55494a4143494577,%rdx
+    114e:	4a 49 55 
+</code-block>
+<p class="language-selector-ja">
+さらに、<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルしてみると、
+<code>entry</code>関数から<code>__libc_start_main</code>関数が<code>FUN_00101135</code>関数などを引数として呼び出されていた。<br>
+<code>FUN_00101135</code>関数は以下のものであり、何かに0x28をXORしている様子がみられた。
+</p>
+<p class="language-selector-en">
+Also, I decompiled the file via <common-tool data-lang="en">Ghidra</common-tool>,
+finding that the function <code>entry</code> is calling the function <code>__libc_start_main</code> with the function <code>FUN_00101135</code> as one of the arguments.<br>
+This is the function <code>FUN_00101135</code>. I found it applying exclusive-or with 0x28 to something.
+</p>
+<p><a href="FUN_00101135.c" class="code-link" data-collapse="true">FUN_00101135.c</a></p>
+
+<p class="language-selector-ja">
+<common-tool data-lang="ja">CyberChef</common-tool>で得られたデータを文字列に変換し、0x28とのXORをとることで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by converting the data to strings and applying XOR with 0x28 via <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Reverse('Line')From_Hex('Auto')Reverse('Character')XOR(%7B'option':'Hex','string':'28'%7D,'Standard',false)&input=NDY1ZDVhNTM0ZjQ5NDQ0ZQo1NTQ5NGE0MTQzNDk0NTc3"
+>Reverse, From Hex, Reverse, XOR - CyberChef</a></p>
+
+<div class="flag">flag{run_makiba}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

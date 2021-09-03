@@ -36,6 +36,7 @@ const languageList = {
 	"h": "c",
 	"cpp": "cpp",
 	"hpp": "cpp",
+	"cs": "csharp",
 	"css": "css",
 	"go": "go",
 	"html": "html",
@@ -123,6 +124,9 @@ const commonToolList = {
 	},
 	"NASM": {
 		"": "https://www.nasm.us/"
+	},
+	"dnSpy": {
+		"": "https://github.com/dnSpy/dnSpy"
 	}
 };
 
