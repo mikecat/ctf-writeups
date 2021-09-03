@@ -117,6 +117,9 @@ const commonToolList = {
 	},
 	"hashcat": {
 		"": "https://hashcat.net/hashcat/"
+	},
+	"Wireshark": {
+		"": "https://www.wireshark.org/"
 	}
 };
 

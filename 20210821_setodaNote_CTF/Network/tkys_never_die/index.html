@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>tkys_never_die (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>tkys_never_die</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>tkys_never_die.pcap</code> が与えられた。
+</p><p>
+<code>tkys_never_die.pcap</code> を<common-tool data-lang="ja">Wireshark</common-tool>で開くと、
+<code>GET /flag.html HTTP/1.1</code> という行があった。<br>
+そこで、この行を右クリックし、「追跡 → HTTPストリーム」を選択した。<br>
+その結果、このストリームにはPNGファイルが含まれているようだった。<br>
+以下の手順により、このPNGファイルを取り出した。
+</p><ol>
+<li>「としてデータを表示」を「Raw(無加工)形式」にする。</li>
+<li>「…として保存」を押し、データを保存する。</li>
+<li>保存したデータを<common-tool data-lang="ja">CyberChef</common-tool>に入力し、Extract Files を実行する。</li>
+</ol><p>
+取り出したPNGファイルにflagが書かれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>tkys_never_die.pcap</code> was given.
+</p><p>
+Opening <code>tkys_never_die.pcap</code> via <common-tool data-lang="en">Wireshark</common-tool>,
+I found a line <code>GET /flag.html HTTP/1.1</code>.<br>
+I right-clicked this line and selected "Follow → HTTP Stream".<br>
+As a result, I found that the stream contains a PNG file.<br>
+I extracted the PNG file in this way:
+</p><ol>
+<li>Set "Show data as" to "Raw".</li>
+<li>Press "Save as…" to save the data.</li>
+<li>Put the saved data to <common-tool data-lang="en">CyberChef</common-tool> and apply "Extract Files".</li>
+</ol><p>
+The flag was in the PNG file extracted.
+</p>
+</span>
+
+<div class="flag">flag{a_treasure_trove}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>
