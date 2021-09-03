@@ -120,6 +120,9 @@ const commonToolList = {
 	},
 	"Wireshark": {
 		"": "https://www.wireshark.org/"
+	},
+	"NASM": {
+		"": "https://www.nasm.us/"
 	}
 };
 
