@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Mx.Flag (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Mx.Flag</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLが与えられた。
+</p><p>
+アクセスしてページのソースを表示すると、以下の部分があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page was given.
+</p><p>
+Accessing the URL and viewing the source of the page, I found this part:
+</p>
+</span>
+<code-block data-extension="html">
+    &lt;link rel="icon" type="image/png" href="images/favicon.png"&gt;
+    &lt;link rel="stylesheet" href="assets/css/style.css"&gt;
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+<code>assets/css/style.css</code> には、特に気になる場所は見当たらなかった。
+</p><p>
+<code>images/favicon.png</code> に<common-tool data-lang="ja">Firefox</common-tool>でアクセスすると、壊れていると表示された。<br>
+<code>curl</code>でダウンロードしてチェックすると、flagが書かれたテキストファイルだった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I found nothing interesting in <code>assets/css/style.css</code>.
+</p><p>
+Accessing <code>images/favicon.png</code> via <common-tool data-lang="en">Firefox</common-tool>, it said that the file is broken.<br>
+I downloaded the file via <code>curl</code> and checked, finding that the file is a text file in which the flag is written.
+</p>
+</span>
+
+<div class="flag">flag{Mr_Flag_hiding_in_the_favicon}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>
