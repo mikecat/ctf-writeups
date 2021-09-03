@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Hash (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Hash</h1>
+<span class="language-selector-ja">
+<p>
+ファイル群<code>pass001.txt</code>～<code>pass090.txt</code>が与えられ、
+指定のハッシュ値を持つファイルを見つけ出すことを要求された。
+</p><p>
+指定のハッシュ値は64桁の16進数だったので、SHA-256であると予想し、以下のプログラムでそれぞれのファイルのハッシュ値を求めた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Files <code>pass001.txt</code> to <code>pass090.txt</code> were given and I was asked to find files with specified hash values.
+</p><p>
+All of the specified hash values were 64-digit hexadecimal.
+I guessed that the hash values are SHA-256 and obtained the hash values of each files via this program:
+</p>
+</span>
+<p><a href="run-shasum.pl" class="code-link">run-shasum.pl</a></p>
+
+<span class="language-selector-ja">
+<p>
+さらに、<code>grep</code>コマンドを用いて、このプログラムの出力から指定のハッシュ値を持つファイルを求めた。
+</p><p>
+求まったファイルの内容を改行を除いて結合することで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Then, I used the <code>grep</code> command to find files with the specified hash values.
+</p><p>
+I obtained the flag by concatenating the contents of the files found excluding newline characters.
+</p>
+</span>
+
+<div class="flag">flag{hardest_logic_puzzle}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

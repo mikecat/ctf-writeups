@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>i_knew_it (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>i_knew_it</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>i_knew_it.png</code> が与えられ、暗号方式の名称を答えることが求められた。
+</p><p>
+<code>i_knew_it.png</code> は、アセンブリコードをbasic blockで分割し、ジャンプ先を矢印で表した図であり、
+2個の関数が描かれていた。
+</p><p>
+そこで、まずこれらの関数をC言語風に書き下した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>i_knew_it.png</code> was given and I was asked to answer the name of the cipher system.
+</p><p>
+<code>i_knew_it.png</code> has assembly codes separated in basic blocks and arrows are used to express the destinations of jumps.
+There were two functions in the image.
+</p><p>
+Seeing this, I transcripted these functions like C.
+</p>
+</span>
+<p><a href="transcript-sub_1155.c" class="code-link" data-collapse="true">transcript-sub_1155.c</a></p>
+<p><a href="transcript-sub_11BE.c" class="code-link" data-collapse="true">transcript-sub_11BE.c</a></p>
+
+<p class="language-selector-ja">
+さらに、これらの意味を考え、わかりやすく整理した。
+</p>
+<p class="language-selector-en">
+Then, I clearly organized the result with thinking the meanings.
+</p>
+<p><a href="transcript-sub_1155-2.c" class="code-link" data-collapse="true">transcript-sub_1155-2.c</a></p>
+<p><a href="transcript-sub_11BE-2.c" class="code-link" data-collapse="true">transcript-sub_11BE-2.c</a></p>
+
+<span class="language-selector-ja">
+<p>
+<code>sub_11BE</code>関数は何らかのデータを生成して入力の配列にXORしているようだったので、<a href="https://ja.wikipedia.org/wiki/%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%A0%E6%9A%97%E5%8F%B7">ストリーム暗号</a>であると推測できた。
+</p><p>
+アタリをつけて調べたところ、ARCFOURのアルゴリズムが書き下しの結果に近いようだった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I saw the function <code>sub_11BE</code> generating some data ane taking exclusive-or with an input array.
+So I guessed that this is a <a href="https://en.wikipedia.org/wiki/Stream_cipher">stream cipher</a>.
+</p><p>
+I researched with some guessing, and found that the algorithm of ARCFOUR is like thie result of transcription.
+</p>
+</span>
+<p><a href="https://vanaestea.hatenablog.com/entry/2018/09/14/165245">安全でないストリーム暗号ARCFOUR - vanaestea’s blog</a></p>
+
+<p class="language-selector-ja">
+しかし、<code>flag{ARCFOUR}</code> はIncorrectとなった。<br>
+<code>flag{RC4}</code> を試すと、Correctになった。
+</p>
+<p class="language-selector-en">
+However, submitting <code>flag{ARCFOUR}</code> resulted in Incorrect.<br>
+Then I tried <code>flag{RC4}</code>, being judged as Correct.
+</p>
+
+<div class="flag">flag{RC4}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

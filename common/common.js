@@ -105,6 +105,18 @@ const commonToolList = {
 	},
 	"Sage Cell Server": {
 		"": "https://sagecell.sagemath.org/"
+	},
+	"オンラインBrainf*ckデバッガ": {
+		"": "http://moon.kmc.gr.jp/~prime/bf/env/"
+	},
+	"GIMP": {
+		"": "https://www.gimp.org/"
+	},
+	"Ideone.com": {
+		"": "https://ideone.com/"
+	},
+	"hashcat": {
+		"": "https://hashcat.net/hashcat/"
 	}
 };
 

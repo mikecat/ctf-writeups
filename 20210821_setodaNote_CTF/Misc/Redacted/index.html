@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Redacted (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Redacted</h1>
+<span class="language-selector-ja">
+<p>
+ファイル<code>top_secret.pdf</code>が与えられた。<br>
+開いてみると、文章の一部が黒塗りになっているようだった。
+</p><p>
+ファイル中の2箇所の<code>/Image7 7 0 R</code>を<code>/Image7 8 0 R</code>に書き換えてみると、
+文章の背景が黒塗りされていない文章に置き換わった。<br>
+拡大することで文章を読むことができ、そこにflagが書かれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>top_secret.pdf</code> was given.<br>
+Opening the file, I saw some sentences with some parts painted black.
+</p><p>
+I tried replacing two occurances of <code>/Image7 7 0 R</code> in the file to <code>/Image7 8 0 R</code>.
+This resulted in the background replaced the sentences without being painted.<br>
+I succeeded to read the sentences by zooming and the flag was in the sentences.
+</p>
+</span>
+
+<div class="flag">flag{weather_balloon}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

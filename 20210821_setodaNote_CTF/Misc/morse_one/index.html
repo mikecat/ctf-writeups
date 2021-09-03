@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>morse_one (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>morse_one</h1>
+<span class="language-selector-ja">
+<p>
+ファイル<code>morse_one.txt</code>が与えられた。<br>
+ファイルの中身は、<code>D</code>・<code>B</code>・<code>S</code>が並んでいた。
+</p><p>
+<common-tool data-lang="ja">CyberChef</common-tool>で<code>BSD</code>を<code>- .</code>にSubstituteし、
+From Morse Code を適用することで、メッセージが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>morse_one.txt</code> was given.<br>
+The contents of <code>morse_one.txt</code> was a sequence of <code>D</code>, <code>B</code>, and <code>S</code>.
+</p><p>
+I obtained a message by substituting <code>BSD</code> to <code>- .</code> and applying "From Morse Code" on <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Substitute('BSD','-%20.')From_Morse_Code('Space','Line%20feed')&input=REREQlNERFNCREREU0RCRFNCQkJTREJCRFNEQkREU0RTQkREQg"
+>Substitute, From Morse Code - CyberChef</a></p>
+
+<p class="language-selector-ja">
+指示に従ってメッセージに<code>flag{}</code>を加えることで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by adding <code>flag{}</code> to the message as instructed.
+</p>
+
+<div class="flag">flag{VIBROPLEX}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

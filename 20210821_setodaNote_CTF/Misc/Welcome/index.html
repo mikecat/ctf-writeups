@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Welcome (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Welcome</h1>
+<span class="language-selector-ja">
+<p>
+ブラウザ上でLinuxターミナルが使えるサービスのURLが与えられた。<br>
+アクセスすると、まずCTFのユーザ名とパスワードを入力することが求められた。
+使っているパスワード管理ソフトからの入力は受け付けられなかったため、手作業で入力した。
+</p><p>
+すると、コマンドが入力できる状態になった。<br>
+<code>ls</code>コマンドを実行すると、ファイル<code>welcome.txt</code>があることがわかった。<br>
+<code>base64 welcome.txt</code>コマンドを実行し、出力をCtrl+Cでコピーし、<common-tool data-lang="ja">CyberChef</common-tool>の From Base64 を適用することで、
+<code>welcome.txt</code>を取り出すことができた。<br>
+<code>welcome.txt</code>の中にflagが書かれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a service where we can use a Linux terminal on a Web browser was given.<br>
+Accessing to the URL, I was asked to enter the user name and password for the CTF.
+Input from password-mamaging software I used was not accepted, so I entered them by hand.
+</p><p>
+After that, the service started accepting commands.<br>
+Executing <code>ls</code> command revealed that there is a file <code>welcome.txt</code>.<br>
+I taked the file <code>welcome.txt</code> out by executing a command <code>base64 welcome.txt</code>,
+copying its output via Ctrl+C, and applying "From Base64" in <common-tool data-lang="ja">CyberChef</common-tool>.<br>
+The flag was in the file <code>welcome.txt</code>.
+</p>
+</span>
+
+<div class="flag">flag{Enjoy_y0ur_time_here!}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>
