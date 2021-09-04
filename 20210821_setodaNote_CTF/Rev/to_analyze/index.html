@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>to_analyze (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>to_analyze</h1>
+<span class="language-selector-ja">
+<p>
+実行可能ファイル<code>to_analyze.exe</code>が与えられた。<br>
+<common-tool data-lang="ja">Ghidra</common-tool>での逆コンパイルを試みたが、有効な結果は得られなかった。
+</p><p>
+<code>to_analyze.exe</code>をバイナリエディタで開き、見えた文字列から、.NET Framework が使われているかもしれないと思った。<br>
+そこで、「.net decompiler」でググると、以下のページが見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An executable file <code>to_analyze.exe</code> was given.<br>
+I tried to decompile it via <common-tool data-lang="en">Ghidra</common-tool>, but I didn't get meaningful results.
+</p><p>
+I opened <code>to_analyze.exe</code> via a binary editor and thought that .NET Framework may be used for this file based on the strings in the file.<br>
+I googled ".net decompiler" and found this page:
+</p>
+</span>
+<p><a href="https://azukipochette.hatenablog.com/entry/2020/03/16/002819"
+>2020 年版 .NET デコンパイラまとめ - azukipochette's weblog</a></p>
+
+<p class="language-selector-ja">
+このページの情報を参考に、<common-tool data-lang="ja">dnSpy</common-tool>を導入した。<br>
+dnSpyで<code>to_analyze.exe</code>を逆コンパイルすると、
+<code>dreamcheck &gt; dreamcheck.exe &gt; - &gt; a</code> に以下の意味ありげなコードが見つかった。
+</p>
+<p class="language-selector-en">
+I installed <common-tool data-lang="en">dnSpy</common-tool>, based on information in this page.<br>
+I decompiled <code>to_analyze.exe</code> via dnSpy,
+finding this interesting code at <code>dreamcheck &gt; dreamcheck.exe &gt; - &gt; a</code>.
+</p>
+<p><a href="a.cs" class="code-link" data-collapse="true">a.cs</a></p>
+
+<p class="language-selector-ja">
+このコードから、文字列を生成している部分を以下のプログラムに移植し、実行した。
+</p>
+<p class="language-selector-en">
+I ported the parts that looked like generating strings and executed.
+</p>
+<p><a href="solver.pl" class="code-link" data-collapse="true">solver.pl</a></p>
+
+<p class="language-selector-ja">
+その結果、関数 <code>private static void a(string A_0, byte[] A_1)</code> が生成している文字列にflagが含まれていた。
+</p>
+<p class="language-selector-en">
+As a result, I found that the flag in the string generated in the function <code>private static void a(string A_0, byte[] A_1)</code>.
+</p>
+
+<div class="flag">flag{Do_y0u_Kn0w_Ursnif?}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

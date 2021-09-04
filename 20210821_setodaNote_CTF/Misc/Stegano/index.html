@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Stegano (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Stegano</h1>
+<span class="language-selector-ja">
+<p>
+画像ファイル<code>stegano.png</code>が与えられた。
+</p><p>
+画像を<common-tool data-lang="ja">CyberChef</common-tool>の View Bit Plane で加工し、Render Image で表示させて調査を行った。<br>
+その結果、Colour を Red に、Bit を 4 に設定すると、左上に<code>flag{Re4l17y_</code>という文字列が現れた。<br>
+また、Colour を Blue に、Bit を 4 に設定すると、右下に<code>_7h3_m1nd_rA9}</code>という文字列が現れた。
+</p><p>
+さらに、画像の中央部にも何か書かれているようだったので、<common-tool data-lang="ja">GIMP</common-tool>でトーンカーブをいじりながら読み取った結果、
+<code>1s_cReA73d_by</code>と書かれているのが読みとれた。
+</p><p>
+これらの文字列を組み合わせることで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An image file <code>stegano.png</code> was given.
+</p><p>
+I investigated the image by processing it via "View Bit Plane" and seeing via "Render Image" on <common-tool data-lang="en">CyberChef</common-tool>.<br>
+As a result, I found a string <code>flag{Re4l17y_</code> in the upper left when I set "Colour" to "Red" and "Bit" to "4".<br>
+Also, I found a string <code>_7h3_m1nd_rA9}</code> in the lower right when I set "Colour" to "Blue" and "Bit" to "4".
+</p><p>
+Moreover, I saw something seems written in the center of the image.
+I edited the tone curve on <common-tool data-lang="en">GIMP</common-tool> to read the string.
+As a result, I found that the string is <code>1s_cReA73d_by</code>.
+</p><p>
+I obtained the flag by concatenating the strings.
+</p>
+</span>
+
+<div class="flag">flag{Re4l17y_1s_cReA73d_by_7h3_m1nd_rA9}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

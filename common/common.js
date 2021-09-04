@@ -36,6 +36,7 @@ const languageList = {
 	"h": "c",
 	"cpp": "cpp",
 	"hpp": "cpp",
+	"cs": "csharp",
 	"css": "css",
 	"go": "go",
 	"html": "html",
@@ -105,6 +106,27 @@ const commonToolList = {
 	},
 	"Sage Cell Server": {
 		"": "https://sagecell.sagemath.org/"
+	},
+	"オンラインBrainf*ckデバッガ": {
+		"": "http://moon.kmc.gr.jp/~prime/bf/env/"
+	},
+	"GIMP": {
+		"": "https://www.gimp.org/"
+	},
+	"Ideone.com": {
+		"": "https://ideone.com/"
+	},
+	"hashcat": {
+		"": "https://hashcat.net/hashcat/"
+	},
+	"Wireshark": {
+		"": "https://www.wireshark.org/"
+	},
+	"NASM": {
+		"": "https://www.nasm.us/"
+	},
+	"dnSpy": {
+		"": "https://github.com/dnSpy/dnSpy"
 	}
 };
 

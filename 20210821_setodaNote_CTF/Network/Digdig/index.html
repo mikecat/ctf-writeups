@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Digdig (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Digdig</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>digdig.pcap</code> が与えられた。
+</p><p>
+<code>digdig.pcap</code> に <code>strings</code> コマンドを用いると、16進文字列が多くみられた。<br>
+その中でASCII印字可能文字の部分を抜き出すと、以下のようになった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>digdig.pcap</code> was given.
+</p><p>
+Applying the <code>strings</code> command to <code>digdig.pcap</code>, I found a lot of hexadecimal strings.<br>
+I extracted ASCII printable characters from them. This is the result:
+</p>
+</span>
+<p><a href="data1.txt" class="code-link" data-collapse="true">data1.txt</a></p>
+
+<p class="language-selector-ja">
+これらに<common-tool data-lang="ja">CyberChef</common-tool> で Fork と From Hex を適用すると、以下のようになった。
+</p>
+<p class="language-selector-en">
+I applied "Fork" and "From Hex" on <common-tool data-lang="en">CyberChef</common-tool> to them. This is the result:
+</p>
+<p><a href="data2.txt" class="code-link" data-collapse="true">data2.txt</a></p>
+
+<p class="language-selector-ja">
+さらに、これらを適当に並べ替えると、以下のようになった。
+</p>
+<p class="language-selector-en">
+Arranging the data resulted in this:
+</p>
+<code-block data-extension="txt">
+flag is flag{This_is_DAMMY_FLAG}
+flag is flag{Nice_try_Sorry_for_that}
+flag is flag{DNS_S3cur17y_T1071!}
+flag is flag{7h3_k3y_15_53cur17y}222222
+</code-block>
+
+<p class="language-selector-ja">
+このうち、<code>DNS</code>が入ったそれっぽいものがflagだった。
+</p>
+<p class="language-selector-en">
+Among the candidates, the one that contains <code>DNS</code> was the flag.
+</p>
+
+<div class="flag">flag{DNS_S3cur17y_T1071!}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

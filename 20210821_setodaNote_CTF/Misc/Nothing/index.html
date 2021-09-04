@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Nothing (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Nothing</h1>
+<span class="language-selector-ja">
+<p>
+ファイル<code>nothing.txt</code>が与えられた。
+</p><p>
+<code>nothing.txt</code>をテキストエディタで開くと、<a href="https://ja.wikipedia.org/wiki/Whitespace">Whitespace</a>のソースコードのようだった。
+</p><p>
+<common-tool data-lang="ja">Ideone.com</common-tool>で実行してみると、stdoutに以下の出力が得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>nothing.txt</code> was given.
+</p><p>
+Opening <code>nothing.txt</code> via a text editor, it looked like a source code of <a href="https://en.wikipedia.org/wiki/Whitespace_(programming_language)">Whitespace</a>.
+</p><p>
+Executing that on <common-tool data-lang="en">Ideone.com</common-tool>, it produced this output for stdout:
+</p>
+</span>
+<code-block data-extension="txt">
+FLAG is flag{And_Then_There_Were_None}
+</code-block>
+<p class="language-selector-ja">
+また、stderrには以下の出力が得られた。
+</p>
+<p class="language-selector-en">
+Also, it produced this output for stderr:
+</p>
+<code-block data-extension="txt">
+wspace: Prelude.(!!): index too large
+</code-block>
+
+<p class="language-selector-ja">
+stdoutの出力にflagが含まれていた。
+</p>
+<p class="language-selector-en">
+The flag was in the output for stdout.
+</p>
+
+<div class="flag">flag{And_Then_There_Were_None}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>
