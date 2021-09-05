@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Jumpy (ALLES! CTF 2021) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Jumpy</h1>
+<span class="language-selector-ja">
+<p>
+ELFファイル<code>jumpy</code>とC言語のソースコード<code>jumpy.c</code>が与えられ、
+Request Session ボタンが用意されていた。
+</p><p>
+<code>jumpy.c</code> を読むと、以下のことが読み取れた。
+</p>
+<ul>
+<li>x86の簡易アセンブラによって機械語を構築し、実行させることができる。</li>
+<li>以下の命令(のみ)が使用可能である。
+<ul>
+<li><code>moveax (32ビット符号付き10進整数)</code> (<code>b8 xx xx xx xx</code>) : 指定の値をEAXレジスタに格納する。</li>
+<li><code>jmp (8ビット符号付き10進整数)</code> (<code>eb xx</code>) : プログラムカウンタをこの命令の直後のアドレスに指定の整数を足した値にする。</li>
+<li><code>ret</code> (<code>c3</code>) : スタックからプログラムカウンタをポップする。</li>
+</ul></li>
+<li>無効な命令を入力すると、機械語の構築が終了して実行に移る。</li>
+<li><code>jmp</code> に関しては機械語の構築後にチェックが入り、飛び先の命令がここで挙げたもの以外である場合は実行を拒否する。</li>
+<li>構築した機械語を実行する前に、<code>alarm(5);</code> を呼び出す。</li>
+</ul>
+<p>
+<code>moveax</code>命令で設定する値の最下位のバイト(リトルエンディアンで一番最初のバイト)を0xb8に設定し、
+<code>jmp</code>命令でこの最下位のバイトに飛ばすようにすると、<br>
+この<code>moveax</code>命令の次の命令の最初のバイトまでを<code>moveax</code>命令で設定する値と解釈させ、
+その次に配置された値を命令として実行させることができる。<br>
+すなわち、次のように命令を配置することで、<code>yy yy yy yy</code>の部分に書いた命令を実行させることができる。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A ELF file <code>jumpy</code> and a C source code <code>jumpy.c</code> were given and there was a "Request Session" button.
+</p><p>
+Reading <code>jumpy.c</code>, I found these:
+</p>
+<ul>
+<li>It can construct some machine code and execute that via a simple assembler for x86.</li>
+<li>These instructions are available. Only there are available.
+<ul>
+<li><code>moveax (a 32-bit signed decimal integer)</code> (<code>b8 xx xx xx xx</code>) : store the specified value to the register EAX.</li>
+<li><code>jmp (a 8-bit signed decimal integer)</code> (<code>eb xx</code>) : set the program counter to the address right after this instruction plus the specified value.</li>
+<li><code>ret</code> (<code>c3</code>) : pop the program counter from the stack.</li>
+</ul></li>
+<li>It finishes constructing machine code and moves to the execution phase when an invalid instruction is entered.</li>
+<li>It checks the <code>jmp</code> instructions after constructing machine code and refuses to execute that if the instruction at the jump destination is not any of the instructions listed here.</li>
+<li>It calls <code>alarm(5);</code> before executing the constructed machine code.</li>
+</ul>
+<p>
+Now think about setting the least byte (the first byte in little-endian) of the value to set in the <code>moveax</code> instruction to 0xb8
+and jumping to the least byte via the <code>jmp</code> instruction.<br>
+This will have it interpret the first byte of the next instruction of this <code>moveax</code> instruction
+and execute the value after that as instructions.<br>
+In other words, you can have it execute instructions in the <code>yy yy yy yy</code> part by placing instructions like this:
+</p>
+</span>
+<code-block data-extension="txt">
+jmp     moveax           moveax
+eb 01 | b8 b8 xx xx xx | b8 yy yy yy yy
+</code-block>
+
+<p class="language-selector-ja">
+また、<code>readelf -h jumpy</code> の結果は以下のようになり、
+実行環境はよくあるx86-64のLinuxであると予想できた。
+</p>
+<p class="language-selector-en">
+Also, this is the output of <code>readelf -h jumpy</code>.
+It seemed that the execution environment is the widely-used x86-64 Linux.
+</p>
+<p><a href="readelf-h.txt" class="code-link" data-collapse="true">readelf-h.txt</a></p>
+
+<span class="language-selector-ja">
+<p>
+<common-tool data-lang="ja">Firefox</common-tool>上で Request Session ボタンを押すと、
+Calculating Proof of Work などが表示されるだけのようで、上手く動作しないようだった。<br>
+<common-tool data-lang="ja">Google Chrome</common-tool>上で Request Session ボタンを押し、しばらくすると、
+<code>ncat --ssl (ドメイン) (整数)</code> という文字列が表示された。
+</p><p>
+表示された整数をポート番号と解釈し、
+<common-tool data-lang="ja">Tera Term</common-tool>で表示されたドメインとポート番号に接続したところ、
+接続はできるものの何も出力されず、10秒ほどで接続が切れてしまった。<br>
+また、手元のOpenSSL (OpenSSL 1.0.2n  7 Dec 2017) を用い、<code>openssl s_client -connect (ドメイン):(ポート番号)</code> で接続したところ、
+証明書やセッションの情報は表示されたものの、すぐに接続が切れてしまった。<br>
+以下のサイトから OpenSSL 1.1.1l  24 Aug 2021 をダウンロードし、同様に<code>s_client</code>で接続すると、通信に成功した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+When I hit the "Request Session" button in <common-tool data-lang="en">Firefox</common-tool>,
+it seemed only showing "Calculating Proof of Work" and some other texts. It didn't look working well.<br>
+Pressing the button on <common-tool data-lang="en">Google Chrome</common-tool>
+resulted in a string <code>ncat --ssl (a domain name) (an integer)</code> appearing after a while.
+</p><p>
+I assumed that the integer is the port number.<br>
+I tried connecting to the domain and the port number via <common-tool data-lang="en">Tera Term</common-tool>,
+finding that a connection is established but nothing was shown after that and it became disconnected after about 10 seconds.<br>
+Also, I tried connection to the server like <code>openssl s_client -connect (domain name):(port number)</code>
+with OpenSSL that had already installed (OpenSSL 1.0.2n  7 Dec 2017).<br>
+As a result, information about the certificate, the session, etc. was printed, but it became disconnected right after that.<br>
+I succeeded to communicate with the server by downloading OpenSSL 1.1.1l  24 Aug 2021 from this page and using <code>s_client</code> in the same way:
+</p>
+</span>
+<p><a href="http://wiki.overbyte.eu/wiki/index.php/ICS_Download#Download_OpenSSL_Binaries_.28required_for_SSL-enabled_components.29"
+>ICS Download - Overbyte</a></p>
+
+<span class="language-selector-ja">
+<p>
+通信ができるようになったので、<code>execve</code>システムコールを用いて<code>/bin/sh</code>を実行するコードを送信してみたが、
+シェルのコマンドを送信しても反応がみられず、シェルは使えないようだった。<br>
+そこで、指定のコマンドを実行させるコードを構築できるようにした。
+</p><p>
+まず、これが実行させるプログラムのもととなるコードである。<br>
+<common-tool data-lang="ja">CS50 IDE</common-tool>で試した結果、<code>/bin/ls</code> は<code>execve</code>の第2引数が0だと上手く動かないようだったので、
+コマンドライン引数の配列も構築するようにした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Now I found how to communicate with the server.<br>
+I tried sending a code to launch <code>/bin/sh</code> via the <code>execve</code> system call.
+However, no response appeared after sending commands for shell and the shell didn't look available.<br>
+After that, I prepared to build a code to execute the specified command.
+</p><p>
+This is a program for building the code to execute based on.<br>
+Testing on <common-tool data-lang="en">CS50 IDE</common-tool>, I found that <code>/bin/ls</code> doesn't work well when the 2nd argument of <code>execve</code> is set to zero.
+Therefore, I had this program construct the array for the command-line arguments.
+</p>
+</span>
+<p><a href="payload_work.asm" class="code-link" data-collapse="true">payload_work.asm</a></p>
+
+<p class="language-selector-ja">
+これをもとにして、指定したコマンドを実行するコードを構築する以下のプログラムを作成した。
+</p>
+<p class="language-selector-en">
+Based on this, I created this program to construct a code to execute the specified command:
+</p>
+<p><a href="payload_gen.pl" class="code-link" data-collapse="true">payload_gen.pl</a></p>
+
+<p class="language-selector-ja">
+以下が、このプログラムで構築した <code>/bin/ls</code> を実行するコードである。
+</p>
+<p class="language-selector-en">
+This is a code to execute <code>/bin/ls</code> created via this program:
+</p>
+<p><a href="payload_ls.txt" class="code-link" data-collapse="true">payload_ls.txt</a></p>
+
+<span class="language-selector-ja">
+<p>
+このコードをサーバに送信すると、ルートディレクトリによくあるディレクトリ名に混ざって <code>flag</code> という項目が出力された。
+</p><p>
+そこで、コードを構築するプログラムを改良し、引数を1個指定できるようにした。<br>
+以下がその改良後の構築プログラムと、そのもととなるコードである。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Sending this code to the server, I found an entry <code>flag</code> printed among the common directory names in the root directory.
+</p><p>
+Seeing this, I updated the program to construct a code to enable it specifying an argument.<br>
+These are the updated program and a program to work based on:
+</p>
+</span>
+<p><a href="payload_work_onearg.asm" class="code-link" data-collapse="true">payload_work_onearg.asm</a></p>
+<p><a href="payload_gen_onearg.pl" class="code-link" data-collapse="true">payload_gen_onearg.pl</a></p>
+
+<p class="language-selector-ja">
+これを用いて以下の <code>/bin/cat flag</code> を実行するコードを構築し、サーバに送信すると、flagが出力された。
+</p>
+<p class="language-selector-en">
+I built this code to execute <code>/bin/cat flag</code> via this program and sent it to the server, finding the flag printed.
+</p>
+<p><a href="payload_cat_flag.txt" class="code-link" data-collapse="true">payload_cat_flag.txt</a></p>
+
+<div class="flag">ALLES!{people have probably done this before but my google foo is weak. segmented shellcode maybe?}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">ALLES! CTF 2021</a>
+</p>
+</body>
+</html>

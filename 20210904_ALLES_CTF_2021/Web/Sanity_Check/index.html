@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sanity Check (ALLES! CTF 2021) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Sanity Check</h1>
+<span class="language-selector-ja">
+<p>
+Request Session ボタンが用意されていた。
+</p><p>
+<common-tool data-lang="ja">Firefox</common-tool>上でこのボタンを押すと、
+Calculating Proof of Work などと表示される以外の動きがみられず、上手く動作しないようだった。<br>
+<common-tool data-lang="ja">Google Chrome</common-tool>上でこのボタンを押し、しばらくすると、WebページのURLが表示された。
+</p><p>
+このURLにアクセスし、ページの表示内容やソースを調べたが、特に興味深い部分は見つからなかった。<br>
+開発者ツールでチェックすると、ステータスコードが 418 I'm a teapot となっていたが、ヘッダにも興味深い部分は見つからなかった。
+</p><p>
+表示されたURLと同じホストの <code>/robots.txt</code> にアクセスすると、flagが表示された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+There was a "Request Session" button.
+</p><p>
+I tried pressing the button on <common-tool data-lang="en">Firefox</common-tool>.
+The result is only "Calculating Proof of Work" and some other texts being shown and it didn't seem working well.<br>
+Pressing the button on <common-tool data-lang="en">Google Chrome</common-tool> resulted in a URL of a web page appearing after a while.
+</p><p>
+I accessed the URL and investigated what is on the page and the source of the page, finding nothing interesting.<br>
+Investigating via the Developer Tool, I found thet the status code is "418 I'm a teapot", but I found nothing interesting in the header.
+</p><p>
+I tried accessing <code>/robots.txt</code> of the same host of the URL, finding the flag appearing.
+</p>
+</span>
+
+<div class="flag">ALLES!{1_nice_san1ty_ch3k}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">ALLES! CTF 2021</a>
+</p>
+</body>
+</html>

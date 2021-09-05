@@ -127,6 +127,10 @@ const commonToolList = {
 	},
 	"dnSpy": {
 		"": "https://github.com/dnSpy/dnSpy"
+	},
+	"Google Chrome": {
+		"ja": "https://www.google.com/intl/ja/chrome/",
+		"en": "https://www.google.com/intl/en_us/chrome/"
 	}
 };
 
