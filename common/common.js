@@ -131,6 +131,9 @@ const commonToolList = {
 	"Google Chrome": {
 		"ja": "https://www.google.com/intl/ja/chrome/",
 		"en": "https://www.google.com/intl/en_us/chrome/"
+	},
+	"factordb.com": {
+		"": "http://factordb.com/"
 	}
 };
 

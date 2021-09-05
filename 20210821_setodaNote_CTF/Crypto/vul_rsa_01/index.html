@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>vul_rsa_01 (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>vul_rsa_01</h1>
+<p class="language-selector-ja">
+以下の文字列が与えられた。
+</p>
+<p class="language-selector-en">
+This string was given:
+</p>
+<code-block data-extension="txt">
+c: 39119617768257067256541748412833564043113729163757164299687579984124653789492591457335
+
+n: 13373801376856352919495636794117610920860037770702465464324474778341963699665011787021257
+
+e: 65537
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+<code>n</code> の値を <common-tool data-lang="ja">factordb.com</common-tool> に入れると、因数分解ができた。
+</p><p>
+この因数分解の結果を用い、以下のプログラムで<a href="https://ja.wikipedia.org/wiki/RSA%E6%9A%97%E5%8F%B7">RSA暗号</a>の復号を行った。<br>
+結果に<common-tool data-lang="ja">CyberChef</commont-tool>で From Hex を適用することで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I tried putting the value of <code>n</code> to <common-tool data-lang="en">factordb.com</common-tool>. As a result, the value was factorized.
+</p><p>
+With the result of the factorization, I used this program to decode <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">the RSA cipher</a>.<br>
+I obtained the flag by applying "From Hex" on <common-tool data-lang="en">CyberChef</common-tool> to the result.
+</p>
+</span>
+<p><a href="dec.py" class="code-link">dec.py</a></p>
+
+<div class="flag">flag{weak_rsa_can_be_decrypted!}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>
