@@ -134,6 +134,13 @@ const commonToolList = {
 	},
 	"factordb.com": {
 		"": "http://factordb.com/"
+	},
+	"OEIS": {
+		"ja": "https://oeis.org/?language=japanese",
+		"en": "https://oeis.org/?language=english"
+	},
+	"Wolfram Alpha": {
+		"": "https://www.wolframalpha.com/"
 	}
 };
 
