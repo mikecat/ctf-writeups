@@ -141,6 +141,25 @@ const commonToolList = {
 	},
 	"Wolfram Alpha": {
 		"": "https://www.wolframalpha.com/"
+	},
+	"TweakPNG": {
+		"": "http://entropymine.com/jason/tweakpng/"
+	},
+	"APNG Disassembler": {
+		"ja": "https://ja.osdn.net/projects/sfnet_apngdis/",
+		"en": "https://osdn.net/projects/sfnet_apngdis/"
+	},
+	"Ophcrack": {
+		"": "https://ophcrack.sourceforge.io/"
+	},
+	"Registry Explorer/RECmd": {
+		"": "http://ericzimmerman.github.io/#!index.md"
+	},
+	"mimikatz": {
+		"": "https://github.com/gentilkiwi/mimikatz"
+	},
+	"CrackStation": {
+		"": "https://crackstation.net/"
 	}
 };
 

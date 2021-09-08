@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>unallocated_space (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>unallocated_space</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>unallocated_space</code> が与えられた。
+</p><p>
+このファイルに <code>strings</code> コマンドを適用すると、以下の文字列などが見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>unallocated_space</code> was given.
+</p><p>
+I applied the <code>strings</code> to the file. This is one of what I found:
+</p>
+</span>
+<code-block data-extension="txt">
+x264 - core 161 r3020 d198931 - H.264/MPEG-4 AVC codec - Copyleft 2003-2020 - http://www.videolan.org/x264.html - options: cabac=1 ref=5 deblock=1:0:0 analyse=0x3:0x113 me=hex subme=8 psy=1 psy_rd=1.00:0.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=2 8x8dct=1 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=-2 threads=6 lookahead_threads=1 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=3 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=20 scenecut=40 intra_refresh=0 rc_lookahead=50 rc=crf mbtree=1 crf=23.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 vbv_maxrate=8000 vbv_bufsize=8000 crf_max=0.0 nal_hrd=none filler=0 ip_ratio=1.40 aq=1:1.00
+</code-block>
+<p class="language-selector-ja">
+さらに、<common-tool data-lang="ja">CyberChef</common-tool> でこのファイルに Extract Files を適用すると、以下の表示が出たまましばらく動かなくなった。
+</p>
+<p class="language-selector-en">
+After that, I applied "Extract Files" in <common-tool data-lang="en">CyberChef</common-tool> to this file. It stopped for a while with showing this message:
+</p>
+<code-block data-extension="txt">
+Found potential signature for MPEG-4 video at pos 4894720
+</code-block>
+<p class="language-selector-ja">
+そこで、以下のコマンドを用い、4894720バイト目 (0-origin) 以降のデータを抽出した。
+</p>
+<p class="language-selector-en">
+Seeing this, I extracted data from the 4894720-th byte (the first byte is 0th).
+</p>
+<code-block data-extension="txt">
+dd if=unallocated_space bs=512 skip=9560 of=file-4ab000.mp4
+</code-block>
+<p class="language-selector-ja">
+結果、<common-tool data-jang="ja">VLC media player</common-tool>で動画として再生できるファイルが得られ、再生すると00:20でflagが表示された。
+</p>
+<p class="language-selector-en">
+The result was playable as a movie in <common-tool data-jang="en">VLC media player</common-tool>.
+Playing the movie, I found the flag shown at 00:20.
+</p>
+
+<div class="flag">flag{file_carving_gogo}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Timeline (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Timeline</h1>
+<p class="language-selector-ja">
+ディレクトリ <code>C/Users/stella/AppData/Local/ConnectedDevicesPlatform/L.stella</code> 内に以下のファイルが与えられた。
+</p>
+<p class="language-selector-en">
+Following files were given inside a directory <code>C/Users/stella/AppData/Local/ConnectedDevicesPlatform/L.stella</code>:
+</p>
+<ul>
+<li><code>ActivitiesCache.db</code></li>
+<li><code>ActivitiesCache.db-shm</code></li>
+<li><code>ActivitiesCache.db-wal</code></li>
+</ul>
+<span class="language-selector-ja">
+<p>
+<code>ActivitiesCache.db</code> を<common-tool data-lang="ja">TkSQLite</common-tool>で開いて観察すると、
+テーブル<code>Activity</code> の内容に意味がありそうだったので、「書き出し → テキストファイル...」で書き出した。
+</p><p>
+書き出したファイルを<common-tool data-lang="ja">CyberChef</common-tool>で読み込み
+(内容をコピペすると途中で切れてしまったので、ファイルをドロップで入力とした)、Extract file paths を適用すると、
+<code>E:\AppData\f.txt</code>、<code>E:\AppData\l.txt</code> などが見つかり、ファイル名が<code>f l a g</code> となっていた。<br>
+この結果から <code>grep</code> を用いて <code>E:\AppData</code> を含む行を抽出し、
+余計な部分を消して適当に文字を補うことで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Opening <code>ActivitiesCache.db</code> via <common-tool data-lang="en">TkSQLite</common-tool> and investigating,
+the table <code>Activity</code> looked meaningful, so I exported the table via "export → text file".
+</p><p>
+I put the exported file to <common-tool data-lang="en">CyberChef</common-tool> as the Input
+(copy-and-pasting the contents resulted in loading only part of the input, so I dropped the file for input)
+and applied "Extract file paths".<br>
+As a result, things like <code>E:\AppData\f.txt</code> and <code>E:\AppData\l.txt</code> were found and the file names were like <code>f l a g</code>.<br>
+I extracted lines that contains <code>E:\AppData</code> via <code>grep</code>, removed extra parts, and added some characters to obtain the flag.
+</p>
+</span>
+
+<div class="flag">flag{Th3_Fu7Ure_1s_N0w}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

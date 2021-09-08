@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CSIRT_asks_you_02 (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>CSIRT_asks_you_02</h1>
+<p class="language-selector-ja">
+以下のファイルが与えられ、脆弱なパスワードとそのアカウント名を要求された。
+</p>
+<p class="language-selector-en">
+Following files were given. A weak password and the account name for the password was asked.
+</p>
+<ul>
+<li><code>SAM</code></li>
+<li><code>SAM.LOG1</code></li>
+<li><code>SAM.LOG2</code></li>
+<li><code>SECURITY</code></li>
+<li><code>SECURITY.LOG1</code></li>
+<li><code>SECURITY.LOG2</code></li>
+<li><code>SYSTEM</code></li>
+<li><code>SYSTEM.LOG1</code></li>
+<li><code>SYSTEM.LOG2</code></li>
+</ul>
+<p class="language-selector-ja">
+<a href="https://sourceforge.net/projects/ophcrack/files/samdump2/3.0.0/">samdump2</a>で<code>SYSTEM</code>と<code>SAM</code>を変換すると、
+<code>*disabled*</code>の付いた行やアカウント名が特殊な文字の行の中に、以下の行があった。
+</p>
+<p class="language-selector-en">
+I had <a href="https://sourceforge.net/projects/ophcrack/files/samdump2/3.0.0/">samdump2</a> to convert <code>SYSTEM</code> and <code>SAM</code>.
+The result contained this like among lines with <code>*disabled*</code> and lines that uses a special character as the account name.
+</p>
+<code-block data-extension="txt">
+stella:1001:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+</code-block>
+<span class="language-selector-ja">
+<p>
+<common-tool data-lang="ja">Ophcrack</common-tool>で解析を行った結果、
+<code>31d6cfe0d16ae931b73c59d7e0c089c0</code>は空文字列に対応するNTLMハッシュのようであった。<br>
+しかし、<code>flag{stella_}</code> はIncorrectとなった。
+</p><p>
+「SYSTEM.LOG1 SAM.LOG1」でググると、以下のページがヒットした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I cracked this via <common-tool data-lang="en">Ophcrack</common-tool> and found that <code>31d6cfe0d16ae931b73c59d7e0c089c0</code> is a NTLM hash that corresponds to an empty string.<br>
+However, <code>flag{stella_}</code> was judged as Incorrect.
+</p><p>
+I googled "SYSTEM.LOG1 SAM.LOG1" and found this page:
+</p>
+</span>
+<p><a href="https://port139.hatenablog.com/entry/2018/03/03/110202">Bam KeyとTransaction Log - @port139 Blog</a></p>
+
+<p class="language-selector-ja">
+ここで紹介されていた<common-tool data-lang="ja">Registry Explorer/RECmd</common-tool>を用いて与えられたファイル群を開き、調査すると、
+アカウントの情報が <code>SAM\Domains\Account\Users</code> に格納されていそうであることがわかった。<br>
+そこで、「SAM\Domains\Account\Users hash」でググり、以下のページを見つけた。
+</p>
+<p class="language-selector-en">
+Opening and observing given files with <common-tool data-lang="en">Registry Explorer/RECmd</common-tool> that was introduced in this page,
+I found the account information looks stored in <code>SAM\Domains\Account\Users</code>.<br>
+Then, I googled "SAM\Domains\Account\Users hash" and found these pages:
+</p>
+<ul>
+<li><a href="https://social.technet.microsoft.com/Forums/en-US/6e3c4486-f3a1-4d4e-9f5c-bdacdb245cfd/how-are-ntlm-hashes-stored-under-the-v-key-in-the-sam?forum=win10itprogeneral">How are NTLM hashes stored under the V key in the SAM?</a></li>
+<li><a href="https://acad.ro/sectii2002/proceedings/doc2013-3s/05-OPREA.pdf">Microsoft Word - art05OPREA.doc - 05-OPREA.pdf</a></li>
+</ul>
+
+<p class="language-selector-ja">
+これらのページでは、レジストリのデータからパスワードのハッシュ値を求める方法が紹介されていた。
+しかし、与えられたデータと比較すると、SYSKEYを求めるためのデータの長さが合わず、処理の方法がわからなかった。<br>
+そこで、「nthash syskey」でググり、以下のページを見つけた。
+</p>
+<p class="language-selector-en">
+How to obtain the hash values of the passwords from data stored in the Registry was in the pages.<br>
+However, looking at the given data, the length of data to obtain SYSKEY from differed and I didn't know how to deal with them.<br>
+Then, I googled "nthash syskey" and found this page:
+</p>
+<p><a href="https://www.insecurity.be/blog/2018/01/21/retrieving-ntlm-hashes-and-what-changed-technical-writeup/">Retrieving NTLM Hashes and what changed in Windows 10 – Industrial Security Research Group</a></p>
+
+<p class="language-selector-ja">
+このページを参考に<code>F</code>の値をチェックすると、パスワードはAESで暗号化されていそうだった。<br>
+しかし、与えられたデータ中のSYSKEYを求めるためのデータの長さは、このページの記述とも合わなかった。<br>
+そこで、「system sam aes encrypted john」でググり、以下のページを見つけた。
+</p>
+<p class="language-selector-en">
+I checked the value of <code>F</code> referring to this page and found that the password is encrypted with AES.<br>
+However, the length of data to obtain SYSKEY from in the given data also differed from the description in this page.<br>
+Seeing this, I googled "system sam aes encrypted john" and found this page:
+</p>
+<p><a href="https://github.com/CiscoCXSecurity/creddump7/issues/2">Pwdump on Windows 10 after password change with anniversary update installed · Issue #2 · CiscoCXSecurity/creddump7 · GitHub</a></p>
+
+<p class="language-selector-ja">
+このページより、<common-tool data-lang="ja">mimikatz</common-tool>でハッシュ値が求められそうだったので、
+「mimikatz sam security dump」でググり、以下のページを見つけた。
+</p>
+<p class="language-selector-en">
+Reading this page, I found that <common-tool data-lang="en">mimikatz</common-tool> should be useul to obtain the hash value.<br>
+I googled "mimikatz sam security dump" and found this page:
+</p>
+<p><a href="https://joshdawes.com/dumping-ntlm-hashes-from-sam-using-mimikatz/">Dumping NTLM Hashes from SAM using Mimikatz | JoshDawes.com</a></p>
+
+<span class="language-selector-ja">
+<p>
+このページを参考に、mimikatzの<code>lsadump::sam</code>コマンドでハッシュのダンプを行い、
+<code>grep</code>で<code>NTLM</code>を含む行を抽出した。
+</p><p>
+得られたハッシュ値を<common-tool data-lang="ja">CrackStation</common-tool>に入れて解析を行うと、
+ハッシュ値<code>3c99b8901b00758369f18b9df72012c8</code>に対応する値が<code>testtest</code>であることがわかった。<br>
+さらに、ダンプ結果からこのハッシュ値で検索を行うと、このハッシュ値に対応するアカウント名は<code>test</code>だとわかった。<br>
+これらを組み合わせることでflagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Referring to this page, I dumped the hashes via the <code>lsadump::sam</code> command in mimikatz
+and extracted lines that contains <code>NTLM</code> via <code>grep</code> from the result.
+</p><p>
+Cracking the hash values obtained via <common-tool data-lang="en">CrackStation</common-tool>,
+I found the hash value <code>3c99b8901b00758369f18b9df72012c8</code> corresponds to the value <code>testtest</code>.<br>
+After that, I searched for this hash value from the result of the dump, finding that the account name that corresponds to this hash value is <code>test</code>.<br>
+I obtained the flag by putting these together.
+</p>
+</span>
+
+<div class="flag">flag{test_testtest}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

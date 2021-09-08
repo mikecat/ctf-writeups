@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>MFT (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>MFT</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>C_$MFT</code> が与えられ、
+ダウンロードされた極秘情報 (ダウンロードされた日時が2021-07-18 18:30頃、ファイルサイズが465030) のファイル名を求められた。
+</p><p>
+<code>C_$MFT</code> からバイナリエディタで4バイトの465030を検索すると、
+0x395C809バイト目、0x5968688バイト目、0x63254E0バイト目、0x6325560バイト目、0x6325568バイト目 (0-origin) の5箇所で見つかった。<br>
+これらの位置に近いファイル名と思われるデータを探すと、以下のデータが見つかった。
+</p>
+<ul>
+<li>0x395C96Aバイト目: <code>AppxBlockMap.xml</code></li>
+<li>0x596869Aバイト目: <code>goodjob.zip</code></li>
+<li>0x5968702バイト目: <code>Thunderbird Setup 78.12.0.exe</code></li>
+<li>0x63254F2バイト目: <code>kimitsu.zip</code></li>
+</ul>
+<p>
+このうち <code>kimitsu.zip</code> を試すとCorrectになり、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>C_$MFT</code> was given and the file name of downloaded secret information
+(the downloaded date is around 2021-07-18 18:30 and the file size is 465030) was asked.
+</p><p>
+I searched for a 4-byte value "465030" and it was found at 5 places:
+0x395C809-th byte, 0x5968688-th byte, 0x63254E0-th byte, 0x6325560-th byte, and 0x6325568-th byte (the first byte is 0th)<br>
+I searched for data that looks like file names, and found these:
+</p>
+<ul>
+<li>0x395C96A-th byte: <code>AppxBlockMap.xml</code></li>
+<li>0x596869A-th byte: <code>goodjob.zip</code></li>
+<li>0x5968702-nd byte: <code>Thunderbird Setup 78.12.0.exe</code></li>
+<li>0x63254F2-nd byte: <code>kimitsu.zip</code></li>
+</ul>
+<p>
+When I tried <code>kimitsu.zip</code> from these candidates, it was judged as Correct and I obtained the flag.
+</p>
+</span>
+
+<div class="flag">flag{kimitsu.zip}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

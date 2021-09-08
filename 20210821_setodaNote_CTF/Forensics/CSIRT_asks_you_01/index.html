@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CSIRT_asks_you_01 (setodaNote CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>CSIRT_asks_you_01</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>Security.evtx</code> が与えられ、
+「不正な方法によってネットワーク経由のログインが成功したことを示している最初の記録日時 (UTC) と Event ID」
+を求められた。
+</p><p>
+<code>Security.evtx</code> をWindowsのイベント ビューアーで開き、
+まず解析しやすいように「すべてのイベントを名前をつけて保存...」でイベントのリストをCSVファイルに書き出した。<br>
+そして、問題<a href="../CSIRT_asks_you_02/" class="language-aware-link">CSIRT_asks_you_02</a>においてパスワードが脆弱だったのはアカウント<code>test</code>だったので、
+書き出した結果から<code>test</code>で検索し、下から上に見ていった。
+</p><p>
+その結果、2021/07/19 5:07:09 からアカウント名<code>test</code>のログインに失敗したというイベントが大量に記録されており、
+その後 2021/07/19 5:09:21 にログインに成功していることがわかった。
+</p><p>
+このログインに成功したイベントの情報より、flagが得られた。<br>
+なお、UTCでの時刻は、イベント ビューアーで「日付と時刻」と「イベント ID」をもとに該当のイベントを探し、
+「詳細」から「XML で表示」を選択すると、TimeCreated SystemTime として表示された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>Security.evtx</code> was given.
+The first recorded date (UTC) that is suggesting that a login via network succeeded in illegal way and the Event ID were asked.
+</p><p>
+I opened the file <code>Security.evtx</code> with the Event Viewer on Windows and
+I exported the list of events to a CSV file via "Save all events as..." to make it easier to analyze.<br>
+Then, as the account name with weak password in the challenge <a href="../CSIRT_asks_you_02/" class="language-aware-link">CSIRT_asks_you_02</a> was <code>test</code>,
+I searched for <code>test</code> from the exported data and looked from the bottom to the top.
+</p><p>
+As a result, I found many events that are saying that login to the account <code>test</code> failed from 2021/07/19 5:07:09,
+and an event of successful login after that, on 2021/07/19 5:09:21.
+</p><p>
+I obtained the flag from the information about this event of successful login.<br>
+I found the time in UTC as "TimeCreated SystemTime" by finding the event on the Event Viewer from the time and Event ID,
+and selecting "display in XML" in the "details" tab.
+</p>
+</span>
+
+<div class="flag">flag{2021/07/18_20:09:21_4624}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>
