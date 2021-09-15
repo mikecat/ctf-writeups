@@ -160,6 +160,9 @@ const commonToolList = {
 	},
 	"CrackStation": {
 		"": "https://crackstation.net/"
+	},
+	"Z3": {
+		"": "https://github.com/Z3Prover/z3"
 	}
 };
 
