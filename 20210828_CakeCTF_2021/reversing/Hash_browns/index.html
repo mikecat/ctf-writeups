@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Hash browns (CakeCTF 2021) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Hash browns</h1>
+<span class="language-selector-ja">
+<p>
+ELFファイル <code>hash_browns</code> が与えられた。
+</p><p>
+<code>hash_browns</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、以下の<code>main</code>関数があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A ELF file <code>hash_browns</code> was given.
+</p><p>
+Decompiling <code>hash_browns</code> via <common-tool data-lang="ja">Ghidra</common-tool>, I found this function <code>main</code>:
+</p>
+</span>
+<p><a href="main.c" class="code-link" data-collapse="true">main.c</a></p>
+
+<span class="language-selector-ja">
+<p>
+この<code>main</code>関数は、コマンドライン引数として受け取った文字列の長さをチェックした後、
+奇数番目の文字のMD5、偶数番目の文字のSHA-256を求め、それぞれの最初の5バイトの16進表記が指定のものかをチェックするものである。<br>
+比較対象は、MD5についてはテーブルを順に使うが、SHA-256は何らかの計算により使う場所を決めている。
+</p><p>
+また、ファイル <code>hash_browns</code> に <code>strings</code> コマンドを適用すると、16進文字列が並んでいる部分があった。<br>
+そこで、16進文字列から文字を求める以下のプログラムを作成した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This function <code>main</code> firstly checks the length of string given as the command-line argument.<br>
+Then, it calculates hash values of each characters (MD5 for odd-position, SHA-256 for even-position)
+and checks if the hexadecimal representations of the first 5 bytes of the hash values are what is desired.<br>
+Elements of a table is used in their order to compare with the MD5, and what element to compare with the SHA-256 is decided by some calculation.
+</p><p>
+Also, applying the <code>strings</code> command to the file <code>hash_browns</code>, I found a part with hexadecimal strings in a row.<br>
+Based on these, I created this program to obtain corresponding character from the hexadecimal strings:
+</p>
+</span>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<p class="language-selector-ja">
+<code>strings</code>コマンドの出力をこのプログラムの入力として与えると、以下の文字列が得られた。
+</p>
+<p class="language-selector-en">
+Giving the output of the <code>strings</code> command as the input for this program, I obtained this string:
+</p>
+<code-block data-extension="txt">
+CkCF(o)=--~(_)~PTTOO~(@)+--*(o)461784ae~_^O8A~2)*7~p^((bT~_5-O{~=^+^=^)=O}
+</code-block>
+<span class="language-selector-ja">
+<p>
+MD5はテーブルにある順に比較するため前半は意味がありそうだが、後半は非自明な順番になっているようである。
+</p><p>
+そこで、ファイル <code>hash_browns</code> に以下の改造を行い、
+チェックを無効化した上でSHA-256の最初の部分と比較している文字列を順番に出力させるようにした。
+(位置は0-origin)
+</p>
+<ul>
+<li>0x16ddバイト目の<code>0x85</code>を<code>0x39</code>に書き換える。 (test命令をcmp命令にする)</li>
+<li>0x1723バイト目からの<code>0x59 0xfa</code>を<code>0xe9 0xf9</code>に書き換える。 (strcmp関数のかわりにputs関数を呼び出す)</li>
+<li>0x1727バイト目の<code>0x85</code>を<code>0x39</code>に書き換える。 (test命令をcmp命令にする)</li>
+</ul>
+<p>
+改造したファイルを<common-tool data-lang="ja">CS50 IDE</common-tool>で実行し、
+その出力を<code>solve.pl</code>で処理すると、以下の文字列が得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+The former half should be meaningful because the MD5 is compared in the order in the table, but the latter looks in some non-clear order.
+</p><p>
+I applied these modifications to the file <code>hash_browns</code>
+to disable the checks and have it print the strings to compare with the prefixes of SHA-256 in the order.
+(for the positions, the first byte is 0th)
+</p>
+<ul>
+<li>Replace the 0x16dd-th byte (<code>0x85</code>) to <code>0x39</code>. (replace <code>test</code> instruction with <code>cmp</code> instruction)</li>
+<li>Replace 2 bytes from the 0x1723-rd byte (<code>0x59 0xfa</code>) to <code>0xe9 0xf9</code>. (have it call the function <code>puts</code> instead of <code>strcmp</code>)</li>
+<li>Replace the 0x1727-th byte (<code>0x85</code>) to <code>0x39</code>. (replace <code>test</code> instruction with <code>cmp</code> instruction)</li>
+</ul>
+<p>
+I executed the modified file on <common-tool data-lang="en">CS50 IDE</common-tool>
+and processed the output via <code>solve.pl</code>. The result was:
+</p>
+</span>
+<code-block data-extension="txt">
+aeT{^^=(p)~==~~OAOO~~^^+(_)*^-_8527b}
+</code-block>
+
+<p class="language-selector-ja">
+先ほど得られた文字列の前半と、この文字列を以下のプログラムで合体させることで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by merging the former part of the string previously obtained and this string via this program:
+</p>
+<p><a href="patatokukasii.pl" class="code-link" data-collapse="true">patatokukasii.pl</a></p>
+
+<div class="flag">CakeCTF{(^o^)==(-p-)~~(=_=)~~~POTATOOOO~~~(^@^)++(-_-)**(^o-)_486512778b4}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">CakeCTF 2021</a>
+</p>
+</body>
+</html>
