@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>readFlag2 (PBjar CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>readFlag2</h1>
+<p class="language-selector-ja">
+以下の問題文が与えられた。
+</p>
+<p class="language-selector-en">
+This challenge description was given:
+</p>
+<blockquote>
+I have republished the previous the contract at 0x585C403bC5c7eb62BF3630c7FeF1F837603bA866, but this time no source code for you this time. Luckily, the ABI of the smart contract is the same as the previous one. Figure out how to "get()" the flag. Important: This smart contract is on Ropsten
+</blockquote>
+
+<p class="language-selector-ja">
+<a href="../readFlag1/" class="language-aware-link">readFlag1</a>で開いたページのURL中のアドレスを書き換え、指定のアドレスを開いた。
+</p>
+<p class="language-selector-en">
+I opened the specified address by modifying the address in the URL of a page I opened in the challenge <a href="../readFlag1/" class="language-aware-link">readFlag1</a>.
+</p>
+<p><a href="https://ropsten.etherscan.io/address/0x585C403bC5c7eb62BF3630c7FeF1F837603bA866">Contract Address 0x585C403bC5c7eb62BF3630c7FeF1F837603bA866 | Etherscan</a></p>
+
+<p class="language-selector-ja">
+ページ中のTransactionsのうち、ToがContact CreationになっているもののTxn Hashのリンクを開いた。
+</p>
+<p class="language-selector-en">
+I opened the "Txn Hash" link in the "Transactions" where the "To" is "Contact Creation".
+</p>
+<p><a href="https://ropsten.etherscan.io/tx/0xa50cc4d707d8874e2494148ec2bab6138977838783ea200a45a8269384faaed4">Ropsten Transaction Hash (Txhash) Details | Etherscan</a></p>
+
+<p class="language-selector-ja">
+Click to see More をクリックし、表示されたInput Dataの所の16進数に<common-tool data-lang="ja">CyberChef</common-tool>で From Hex をかけると、結果にflagが含まれていた。
+</p>
+<p class="language-selector-en">
+I clicked "Click to see More" and applied "From Hex" in <commont-tool data-lang="en">CyberChef</commont-tool> to the hexadecimal string in the "Input Data".
+The flag was in the result.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')&input=NjA4MDYwNDA1MjYwNDA1MTgwNjA2MDAxNjA0MDUyODA2MDIyODE1MjYwMjAwMTYxMDM4YTYwMjI5MTM5NjAwMDkwODA1MTkwNjAyMDAxOTA2MTAwMzI5MjkxOTA2MTAwNDU1NjViNTAzNDgwMTU2MTAwM2Y1NzYwMDA4MGZkNWI1MDYxMDE0OTU2NWI4MjgwNTQ2MTAwNTE5MDYxMDBlODU2NWI5MDYwMDA1MjYwMjA2MDAwMjA5MDYwMWYwMTYwMjA5MDA0ODEwMTkyODI2MTAwNzM1NzYwMDA4NTU1NjEwMGJhNTY1YjgyNjAxZjEwNjEwMDhjNTc4MDUxNjBmZjE5MTY4MzgwMDExNzg1NTU2MTAwYmE1NjViODI4MDAxNjAwMTAxODU1NTgyMTU2MTAwYmE1NzkxODIwMTViODI4MTExMTU2MTAwYjk1NzgyNTE4MjU1OTE2MDIwMDE5MTkwNjAwMTAxOTA2MTAwOWU1NjViNWI1MDkwNTA2MTAwYzc5MTkwNjEwMGNiNTY1YjUwOTA1NjViNWI4MDgyMTExNTYxMDBlNDU3NjAwMDgxNjAwMDkwNTU1MDYwMDEwMTYxMDBjYzU2NWI1MDkwNTY1YjYwMDA2MDAyODIwNDkwNTA2MDAxODIxNjgwNjEwMTAwNTc2MDdmODIxNjkxNTA1YjYwMjA4MjEwODExNDE1NjEwMTE0NTc2MTAxMTM2MTAxMWE1NjViNWI1MDkxOTA1MDU2NWI3ZjRlNDg3YjcxMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA2MDAwNTI2MDIyNjAwNDUyNjAyNDYwMDBmZDViNjEwMjMyODA2MTAxNTg2MDAwMzk2MDAwZjNmZTYwODA2MDQwNTIzNDgwMTU2MTAwMTA1NzYwMDA4MGZkNWI1MDYwMDQzNjEwNjEwMDJiNTc2MDAwMzU2MGUwMWM4MDYzNmQ0Y2U2M2MxNDYxMDAzMDU3NWI2MDAwODBmZDViNjEwMDM4NjEwMDRlNTY1YjYwNDA1MTYxMDA0NTkxOTA2MTAxMTk1NjViNjA0MDUxODA5MTAzOTBmMzViNjA2MDYwMDA4MDU0NjEwMDVkOTA2MTAxOGE1NjViODA2MDFmMDE2MDIwODA5MTA0MDI2MDIwMDE2MDQwNTE5MDgxMDE2MDQwNTI4MDkyOTE5MDgxODE1MjYwMjAwMTgyODA1NDYxMDA4OTkwNjEwMThhNTY1YjgwMTU2MTAwZDY1NzgwNjAxZjEwNjEwMGFiNTc2MTAxMDA4MDgzNTQwNDAyODM1MjkxNjAyMDAxOTE2MTAwZDY1NjViODIwMTkxOTA2MDAwNTI2MDIwNjAwMDIwOTA1YjgxNTQ4MTUyOTA2MDAxMDE5MDYwMjAwMTgwODMxMTYxMDBiOTU3ODI5MDAzNjAxZjE2ODIwMTkxNWI1MDUwNTA1MDUwOTA1MDkwNTY1YjYwMDA2MTAwZWI4MjYxMDEzYjU2NWI2MTAwZjU4MTg1NjEwMTQ2NTY1YjkzNTA2MTAxMDU4MTg1NjAyMDg2MDE2MTAxNTc1NjViNjEwMTBlODE2MTAxZWI1NjViODQwMTkxNTA1MDkyOTE1MDUwNTY1YjYwMDA2MDIwODIwMTkwNTA4MTgxMDM2MDAwODMwMTUyNjEwMTMzODE4NDYxMDBlMDU2NWI5MDUwOTI5MTUwNTA1NjViNjAwMDgxNTE5MDUwOTE5MDUwNTY1YjYwMDA4MjgyNTI2MDIwODIwMTkwNTA5MjkxNTA1MDU2NWI2MDAwNWI4MzgxMTAxNTYxMDE3NTU3ODA4MjAxNTE4MTg0MDE1MjYwMjA4MTAxOTA1MDYxMDE1YTU2NWI4MzgxMTExNTYxMDE4NDU3NjAwMDg0ODQwMTUyNWI1MDUwNTA1MDU2NWI2MDAwNjAwMjgyMDQ5MDUwNjAwMTgyMTY4MDYxMDFhMjU3NjA3ZjgyMTY5MTUwNWI2MDIwODIxMDgxMTQxNTYxMDFiNjU3NjEwMWI1NjEwMWJjNTY1YjViNTA5MTkwNTA1NjViN2Y0ZTQ4N2I3MTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwNjAwMDUyNjAyMjYwMDQ1MjYwMjQ2MDAwZmQ1YjYwMDA2MDFmMTk2MDFmODMwMTE2OTA1MDkxOTA1MDU2ZmVhMjY0Njk3MDY2NzM1ODIyMTIyMDYxZjRmOTdhNzViMTY0NGFmMmY0YTA3Y2FjNGU3NDkwNmZhYmZmY2JkOWI3NGY2YTUwMTVmYWFhNGQ0NDA0ZWY2NDczNmY2YzYzNDMwMDA4MDMwMDMzNjY2YzYxNjc3Yjc3NjU2MjMzNmE3MzVmNzA2Yzc1NzM1ZjQxNDI0OTVmNjU3MTc1NjE2YzZjNzM1ZjY2NmM2MTY3N2Q"
+>From Hex - CyberChef</a></p>
+
+<div class="flag">flag{web3js_plus_ABI_equalls_flag}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

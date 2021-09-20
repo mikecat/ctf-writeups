@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TechLead (PBjar CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>TechLead</h1>
+<span class="language-selector-ja">
+<p>
+the deployer address of the Million token smart contract の the highest historical Ethereum balance を要求された。
+</p><p>
+<a href="https://etherscan.io/">Ethereum (ETH) Blockchain Explorer</a>を開き、検索欄に「Million」と入れると、以下のページが候補に出てきた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+"the highest historical Ethereum balance" of "the deployer address of the Million token smart contract" was asked.
+</p><p>
+I opened <a href="https://etherscan.io/">Ethereum (ETH) Blockchain Explorer</a> and entered "Million" to the search box, seeing this page appearing as a candidate:
+</p>
+</span>
+<p><a href="https://etherscan.io/token/0x6b4c7a5e3f0b99fcd83e9c089bddd6c7fce5c611">$16.12 | Million (MM) Token Tracker | Etherscan</a></p>
+
+<p class="language-selector-ja">
+このページ中の Profile Summary にある Contract のリンクを開いた。
+</p>
+<p class="language-selector-en">
+I opened the "Contract" link in the "Profile Summary" in the page.
+</p>
+<p><a href="https://etherscan.io/address/0x6b4c7a5e3f0b99fcd83e9c089bddd6c7fce5c611">Million: MM Token | 0x6b4c7a5e3f0b99fcd83e9c089bddd6c7fce5c611</a></p>
+
+<p class="language-selector-ja">
+このページ中の More Info にある Contract Creator のリンクを開いた。
+</p>
+<p class="language-selector-en">
+I opened the "Contract Creator" link in the "More Info" in the page.
+</p>
+<p><a href="https://etherscan.io/address/0x5922b0bbae5182f2b70609f5dfd08f7da561f5a4">Address 0x5922b0bbae5182f2b70609f5dfd08f7da561f5a4 | Etherscan</a></p>
+
+<p class="language-selector-ja">
+このページ中の Analytics タブにある ETH Highest Balance を参照することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by referring the "ETH Highest Balance" in the "Analytics" tab in the page.
+</p>
+
+<div class="flag">flag{1.4625790953780384}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>
