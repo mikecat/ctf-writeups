@@ -1,0 +1,9 @@
+Alright, I will send you a string, where each char contains either 0 or 1.
+Then you will send me a list of integers back with the same size, separated by spaces.
+Now for each number in your list, a, if it satisfies a to the power of 3 is congruent to 1 mod 12619295793 it will encode to 1.
+Otherwise, your number will encode to 0. Now I will concattenate all of your encoded numbers into a string.
+If this string equals the original string I sent you, then you will get the flag :yayy:.
+One final caveat: all your numbers must be unique and positive integers greater than 1 and less than 12619295793.
+00100010
+Enter: 2 3 1941430123 4 5 6 2588573497 7
+b'flag{pr1mes_r_pr3tty_sp3c14lll}'

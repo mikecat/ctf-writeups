@@ -1,0 +1,11 @@
+p_part = 126988097148801675630994936893637871129
+n = 37883362285621717817648802184202062652809417688523484794085024858731349219741059316667101586086544432111047890789263
+e = 3
+mult = 1 << 127
+
+PR.<x> = PolynomialRing(Zmod(n))
+# f = x * mult + p_part
+f = x + p_part * pow(mult, -1, n)
+
+x0 = f.small_roots(X=2^(256-127), beta=0.3)[0]  # find root < 2^kbits with factor >= n^0.3
+print(x0 * mult + p_part)

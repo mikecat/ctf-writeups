@@ -179,6 +179,12 @@ const commonToolList = {
 	"MMSSTV": {
 		"ja": "http://je3hht.g1.xrea.com/mmsstv/index.html",
 		"en": "https://hamsoft.ca/pages/mmsstv.php"
+	},
+	"Msieve": {
+		"": "https://sourceforge.net/projects/msieve/"
+	},
+	"SageMath": {
+		"": "https://www.sagemath.org/"
 	}
 };
 

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Not_Baby (PBjar CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Not_Baby</h1>
+<span class="language-selector-ja">
+<p>
+プログラム <code>script.py</code> とその出力 <code>out.txt</code> が与えられた。<br>
+<code>script.py</code> は、以下の処理をするものだった。
+</p>
+<ol>
+<li><code>flag.txt</code> の内容を読み込み、それをもとに整数<code>m</code>を生成する</li>
+<li><code>nums.txt</code> から3個の整数<code>a, b, c</code>を読み込む</li>
+<li><code>n=a**3+b**3-34*c**3</code>とする</li>
+<li><code>m</code>の65537乗を<code>n</code>で割った余りを計算し、<code>ct</code>とする</li>
+<li><code>n, 65537, ct</code>を出力する</li>
+</ol>
+<p>
+<code>n</code>の値を<common-tool data-lang="ja">factordb.com</common-tool>に入れると、以下の結果が得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A program <code>script.py</code> and its output <code>out.txt</code> were given.<br>
+What <code>script.py</code> does is:
+</p>
+<ol>
+<li>Read the contents of <code>flag.txt</code> and generate an integer <code>m</code> based on that.</li>
+<li>Read three integers <code>a, b, c</code> from <code>nums.txt</code>.</li>
+<li>Calculate <code>n=a**3+b**3-34*c**3</code></li>
+<li>Calculate <code>m</code> to the 65537th power modulo <code>n</code> and name it <code>ct</code>.</li>
+<li>Output <code>n, 65537, ct</code>.</li>
+</ol>
+<p>
+Putting the value of <code>n</code> to <common-tool data-lang="ja">factordb.com</common-tool> resulted in this:
+</p>
+</span>
+<code-block data-extension="txt">
+5743627527...64&lt;119&gt; = 2^2 · 73 · 181 · 11411 · 235111 · 4050682353...67&lt;105&gt;
+</code-block>
+
+<p class="language-selector-ja">
+最後の値
+</p>
+<p class="language-selector-en">
+I tried to factorize the last value
+</p>
+<code-block data-extension="txt">
+405068235301607959850203988278514454782583464657297479002456013587769963884971817073346255435009991910967
+</code-block>
+<span class="language-selector-ja">
+<p>
+について <common-tool data-lang="ja">Integer factorization calculator</common-tool> で素因数分解を試みた結果、1時間40分くらいで素因数分解に成功した。
+</p><p>
+得られた素因数を用い、以下のプログラムでflagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+via <common-tool data-lang="ja">Integer factorization calculator</common-tool>. As a result, it succeeded to factorize after about 1 hour and 40 minutes.
+</p><p>
+I obtained the flag with this program using the prime factors:
+</p>
+</span>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<div class="flag">flag{f4ct0ring_s0000oo00000o00_h4rd}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

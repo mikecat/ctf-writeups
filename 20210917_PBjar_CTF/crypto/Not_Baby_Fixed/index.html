@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Not_Baby_Fixed (PBjar CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Not_Baby_Fixed</h1>
+<span class="language-selector-ja">
+<p>
+プログラム <code>script.py</code> とその入力 <code>nums.txt</code> および出力 <code>out.txt</code> が与えられた。<br>
+<code>script.py</code> の内容は<a href="../Not_Baby/" class="language-aware-link">Not_Baby</a>のものとほぼ同じで、出力の形式のみが違っていた。
+</p><p>
+Not_Baby と同様に<common-tool data-lang="ja">Integer factorization calculator</common-tool>で<code>n</code>の素因数分解を試みると、
+約25分後には素因数分解されていない部分は以下の188桁の数1個になっていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A program <code>script.py</code>, its input <code>nums.txt</code> and output <code>out.txt</code> were given.<br>
+<code>script.py</code> was very similar to that in <a href="../Not_Baby/" class="language-aware-link">Not_Baby</a>. The format of output was the only difference.
+</p><p>
+I tried to factorize <code>n</code> via <common-tool data-lang="en">Integer factorization calculator</common-tool> just as Not_Baby.
+As a result, one 188-digit number remained unfactorized after about 25 minutes. This is the number:
+</p>
+</span>
+<code-block data-extension="txt">
+24044306141470122836526327719817809786885076499717262032724432402622824094872767885136373539655386164061947332072857325490641126195131896226892989183487084527633141038907298988762474925837
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+「素因数分解 CTF」でググって見つけた<common-tool data-lang="ja">Msieve</common-tool>でこの188桁の部分の素因数分解を試みると、
+<code>-e</code>オプションを使った時、約1時間で素因数分解に成功した。
+</p><p>
+得られた素因数を用い、以下のプログラムでflagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I googled "素因数分解 CTF" and found <common-tool data-lang="en">Msieve</common-tool>.
+Using this tool to factorize the 188-digit part, it succeeded to factorize after about an hour with <code>-e</code> option.
+</p><p>
+I obtained the flag with this program using the prime factors:
+</p>
+</span>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<div class="flag">flag{plz_n0_guess_sum_of_a_b_c_d1vides_n}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>
