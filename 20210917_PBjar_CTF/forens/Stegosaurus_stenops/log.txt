@@ -1,0 +1,24 @@
+YUKI.N>docker run --rm -it -v "D:\...\Stegosaurus_stenops:/steg" rickdejager/stegseek --seed stegosaurus.jpg
+Unable to find image 'rickdejager/stegseek:latest' locally
+latest: Pulling from rickdejager/stegseek
+a70d879fa598: Already exists
+c4394a92d1f8: Already exists
+10e6159c56c0: Already exists
+2a9284816e0c: Pull complete
+da918f5114c3: Pull complete
+172662ab993b: Pull complete
+Digest: sha256:a3c6a82d5b7dd94dc49098c5080a70da8103b7ed3b3718423b3a70d4b43c9a8a
+Status: Downloaded newer image for rickdejager/stegseek:latest
+StegSeek 0.6 - https://github.com/RickdeJager/StegSeek
+
+[i] Found (possible) seed: "258ba3c5"             9% (2477680000 seeds)
+        Plain size: 65.0 Byte(s) (compressed)
+        Encryption Algorithm: rijndael-128
+        Encryption Mode:      cbc
+
+YUKI.N>docker run --rm -it -v "D:\...\Stegosaurus_stenops:/steg" -v "D:\MyData\Downloads:/words" rickdejager/stegseek --crack stegosaurus.jpg /words/rockyou.txt
+StegSeek 0.6 - https://github.com/RickdeJager/StegSeek
+
+[i] Found passphrase: "snowflake"
+[i] Original filename: "flag.txt".
+[i] Extracting to "stegosaurus.jpg.out".

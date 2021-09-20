@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Art Mystery (PBjar CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Art Mystery</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>art.png</code> が与えられた。
+</p><p>
+このファイルを<common-tool data-lang="ja">TSXBIN</common-tool>で開くと、IHDR内のWidthとHeightが0になっていた。<br>
+WidthとHeightが壊れているPNGファイルは、<a href="https://qiita.com/mikecat_mixc/items/6d4d87c55fa50a592785#manipulated">Red Team Lounge CTF 2021 の Manipulated</a>で扱った。
+</p><p>
+そこで、Manipulated で用いた <code>extract.pl</code> を用いてIDATチャンクのデータを抽出し、
+<common-tool data-lang="ja">CyberChef</common-tool> で Zlib Inflate をかけると、1,894,064 バイトのデータが得られた。<br>
+<code>1894064 = 2 * 2 * 2 * 2 * 43 * 2753 = 688 * 2753</code> である。
+さらに、<code>2753 = 4 * 688 + 1</code> であり、これは1行が「表現方法1バイト + 1ピクセル4バイトのデータが688ピクセル分」であることに対応していると推測できる。
+</p><p>
+TSXBINでWidthとHeightにそれぞれ688を書き込むと、表示できる画像ファイルになり、画像中にflagが書かれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>art.png</code> was given.
+</p><p>
+Opening the file with <common-tool data-lang="en">TSXBIN</common-tool>, I found that Width and Height in IHDR were 0.<br>
+I have dealed with a PNG whose Width and Height are broken in the challenge <a href="https://qiita.com/mikecat_mixc/items/cddab715b29f6f576bfb#manipulated">"Manipulated" in Red Team Lounge CTF 2021</a>.
+</p><p>
+I extracted the data in the IDAT chunks via <code>extract.pl</code> I used in Manipulated and
+applied "Zlib Inflate" to the extracted data on <common-tool data-lang="en">CyberChef</common-tool>. The result was 1,894,064-byte data.<br>
+We can say that <code>1894064 = 2 * 2 * 2 * 2 * 43 * 2753 = 688 * 2753</code>.
+We can also say that <code>2753 = 4 * 688 + 1</code> and I thought this corresponds to a row made of "the format of this row (1 byte) + data for 688 pixels (4 bytes per pixel)".
+</p><p>
+According to this, I put 688 to Width and Height with TSXBIN.
+The result was a valid image file and the flag was written in the image.
+</p>
+</span>
+<p><a href="extract.pl" class="code-link" data-collapse="true">extract.pl</a></p>
+
+<div class="flag">flag{you_found_my_size!}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>
