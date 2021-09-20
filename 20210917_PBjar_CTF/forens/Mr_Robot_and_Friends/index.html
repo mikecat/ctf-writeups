@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Mr. Robot and Friends (PBjar CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Mr. Robot and Friends</h1>
+<span class="language-selector-ja">
+<p>
+約1GBのファイル <code>mrrobotandfriends.vmss</code> が与えられ、フィッシングメールを送った人の名前を要求された。
+</p><p>
+メールのデータはヘッダ <code>From:</code> を含むと推測し、
+バイナリエディタ (<common-tool data-lang="ja">TSXBIN</common-tool>) でShift_JISの文字列 <code>From:</code> を検索した。<br>
+すると、複数箇所で見つかり、特に 0x337ADFE1 バイト目 (0-origin) で見つかった周辺は以下のようなメールのデータの一部のようだった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>mrrobotandfriends.vmss</code> (about 1GB) was given, and the name of the person who sent a phishing e-mail was asked.
+</p><p>
+I guessed that e-mail data should contain a header <code>From:</code>
+and searched for a Shift_JIS string <code>From:</code> via a binary editor (<common-tool data-lang="en">TSXBIN</common-tool>).<br>
+As a result, it was found at multiple places.
+Especially, one of the findings was at the 0x337ADFE1-st byte (the first byte is 0th) and there was this data that looks like a part of an e-mail around the place.
+</p>
+</span>
+<p><a href="data-around-337ADFE1.txt" class="code-link" data-collapse="true">data-around-337ADFE1.txt</a></p>
+
+<p class="language-selector-ja">
+この部分の <code>From:</code> と <code>&lt;</code> の間の文字列に基づき、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag from the string between <code>From:</code> and <code>&lt;</code> in this part.
+</p>
+
+<div class="flag">flag{The_Whit3R0s3}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

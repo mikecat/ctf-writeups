@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Luna Guesser (PBjar CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Luna Guesser</h1>
+<span class="language-selector-ja">
+<p>
+音声ファイル <code>LunaGuesser.wav</code> が与えられ、どこから送られたものかを要求された。
+</p><p>
+音声を聴いてみるとピロピロ音であり、以前何かの問題で出ていた Slow-scan television っぽいと感じられた。<br>
+そこで、音声を <common-tool data-lang="ja">MMSSTV</common-tool> に入力すると、以下の画像が得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An audio file <code>LunaGuesser.wav</code> was given, and we are asked where the message was sent from.
+</p><p>
+Listening to the audio, I found it sounds like Slow-scan television I encountered in some past challenge.<br>
+I feeded the sounds to <common-tool data-lang="en">MMSSTV</common-tool>, and it resulted in this image:
+</p>
+</span>
+<p><img src="MMSSTV_result.png" alt="output from MMSSTV"></p>
+
+<p class="language-selector-ja">
+画像は月面に立てられた旗のようだったので、「moon american flag place」でググると、以下のページが見つかった。
+</p>
+<p class="language-selector-en">
+The image looked like a flag on the moon, so I googled "moon american flag place" and found this page:
+</p>
+<p><a href="https://en.wikipedia.org/wiki/Lunar_Flag_Assembly">Lunar Flag Assembly - Wikipedia</a></p>	
+
+<p class="language-selector-ja">
+このページには今回得られたのと似た画像が載っており、さらに以下のページへのリンクがあった。
+</p>
+<p class="language-selector-en">
+This page had an image that is similar to the result, and a link to this page:
+</p>
+<p><a href="https://en.wikipedia.org/wiki/Apollo_program">Apollo program - Wikipedia</a></p>
+
+<p class="language-selector-ja">
+このページの Apollo 11 の情報をもとに以下のflagの候補を試したが、Incorrectだった。
+</p>
+<p class="language-selector-en">
+I tried these candidates of flag based on information about Apollo 11 on this page, and they are judged as Incorrect:
+</p>
+<ul>
+<li><code>flag{sea_of_tranquility}</code></li>
+<li><code>flag{tranquility_base}</code></li>
+</ul>
+
+<span class="language-selector-ja">
+<p>
+さらに、<a href="https://en.wikipedia.org/wiki/Apollo_11">Apollo 11 - Wikipedia</a> を参考に <code>flag{little_west_crater}</code> を試したが、Incorrectだった。<br>
+このページにも今回得られたのと似た画像が載っていたので、「Apollo 11 landing where」でググり、調査を続行した。
+</p><p>
+<a href="https://www.nasa.gov/mission_pages/apollo/missions/apollo11.html">Apollo 11 Mission Overview | NASA</a>
+を参考に <code>flag{the_sea_of_tranquility}</code> を試すと、Incorrectとなった。
+</p><p>
+<a href="https://www.lpi.usra.edu/lunar/missions/apollo/apollo_11/landing_site/">Apollo 11 Landing Site Overview</a>
+を参考に <code>flag{mare_tranquillitatis}</code> を試すと、正解になった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+After that, I tried a candidate <code>flag{little_west_crater}</code> based on <a href="https://en.wikipedia.org/wiki/Apollo_11">Apollo 11 - Wikipedia</a>, and it was judged as Incorrect.<br>
+This page also had a image similar to the result, so I googled "Apollo 11 landing where" for further researching.
+</p><p>
+I tried a candidate <code>flag{the_sea_of_tranquility}</code> based on <a href="https://www.nasa.gov/mission_pages/apollo/missions/apollo11.html">Apollo 11 Mission Overview | NASA</a>, and it was judged as Incorrect.
+</p><p>
+I tried a candidate <code>flag{mare_tranquillitatis}</code> based on <a href="https://www.lpi.usra.edu/lunar/missions/apollo/apollo_11/landing_site/">Apollo 11 Landing Site Overview</a>, and it was accepted by the judge.
+</p>
+</span>
+
+<div class="flag">flag{mare_tranquillitatis}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>
