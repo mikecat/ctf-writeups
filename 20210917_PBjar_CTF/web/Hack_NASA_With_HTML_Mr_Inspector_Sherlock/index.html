@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Hack NASA With HTML Mr. Inspector Sherlock (PBjar CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Hack NASA With HTML Mr. Inspector Sherlock</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLが与えられた。
+</p><p>
+このページの下部にあったリンク「What?」のリンク先に、以下の記述があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page was given.
+</p><p>
+There was a link "What?" in the bottom area of this page. The linked page had this text:
+</p>
+</span>
+<blockquote>
+What Is This? Flag part 2: I_th0ugh1_sh3l0ck_w2s
+</blockquote>
+<p class="language-selector-ja">
+また、URLが与えられたページのソースを表示し、<code>flag</code> で検索すると、以下の部分が見つかった。
+</p>
+<p class="language-selector-en">
+Also, I viewed the source of the page with the given URL and searched for <code>flag</code>, finding this part:
+</p>
+<code-block data-extension="html">
+&lt;marquee scrollamount="300" direction="right"&gt;Flag part 3: _a_d3t3ct1iv3????!?!?!}&lt;/marquee&gt;
+</code-block>
+<p class="language-selector-ja">
+さらに、URLが与えられたページのソースを観察すると <code>animate.js</code> を参照しているのが見つかり、この中に以下の部分があった。
+</p>
+<p class="language-selector-en">
+Moreover, I found it using <code>animate.js</code> by inspecting the source of the page with the given URL.
+This file had this part:
+</p>
+<code-block data-extension="js">
+dynamicanimAttr = "dynamicanimation flag{wA1t_a_m1nUt3_"
+</code-block>
+<p class="language-selector-ja">
+これらを組み合わせることで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by putting these things together.
+</p>
+
+<div class="flag">flag{wA1t_a_m1nUt3_I_th0ugh1_sh3l0ck_w2s_a_d3t3ct1iv3????!?!?!}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>
