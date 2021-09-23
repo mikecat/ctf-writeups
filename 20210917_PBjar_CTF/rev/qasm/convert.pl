@@ -67,8 +67,8 @@ my %inst_name = (
 	0x5e, "resize_r",
 	0x5f, "getqsum_r",
 	0x60, "label",
-	0x70, "readstr",
-	0x71, "write_imm",
+	0x70, "readstr_r",
+	0x71, "write_r",
 );
 
 my $plen = length($prog);

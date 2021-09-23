@@ -1,0 +1,987 @@
+pushright_imm 103
+pushright_imm 105
+pushright_imm 109
+pushright_imm 109
+pushright_imm 101
+pushright_imm 32
+pushright_imm 102
+pushright_imm 108
+pushright_imm 97
+pushright_imm 103
+pushright_imm 32
+pushright_imm 62
+pushright_imm 58
+pushright_imm 40
+pushright_imm 10
+mov_r_imm 0, 15
+write_r 0
+readstr_r_r 0
+resize_imm 0
+mov_r_r 6, 0
+mov_r_r 5, 0
+sub_r_imm 0, 57
+jnz_0_imm 17
+label 0
+extright_imm 1
+mov_r_r 4, 5
+label 1
+getqsum_r 3
+getqlen_r 2
+resize_imm 2
+shiftright_r 6
+popleft_r 1
+add_r_r 3, 1
+mod_r_imm 3, 127
+shiftleft_imm 1
+pushright_r 3
+shiftright_imm 1
+shiftleft_r 6
+resize_r 2
+shiftright_imm 1
+sub_r_imm 4, 1
+ispos_0_r 4
+jnz_0_imm 1
+shiftleft_r 5
+sub_r_imm 5, 1
+ispos_0_r 5
+jnz_0_imm 0
+resize_imm 1
+shiftright_r 6
+shiftright_r 6
+resize_imm 0
+pushright_imm 6
+pushright_imm 34
+pushright_imm 82
+pushright_imm 81
+pushright_imm 107
+pushright_imm 65
+pushright_imm 66
+pushright_imm 47
+pushright_imm 66
+pushright_imm 0
+pushright_imm 54
+pushright_imm 53
+pushright_imm 120
+pushright_imm 70
+pushright_imm 81
+pushright_imm 6
+pushright_imm 40
+pushright_imm 82
+pushright_imm 14
+pushright_imm 22
+pushright_imm 65
+pushright_imm 1
+pushright_imm 10
+pushright_imm 18
+pushright_imm 45
+pushright_imm 85
+pushright_imm 28
+pushright_imm 53
+pushright_imm 47
+pushright_imm 32
+pushright_imm 39
+pushright_imm 32
+pushright_imm 102
+pushright_imm 71
+pushright_imm 57
+pushright_imm 27
+pushright_imm 120
+pushright_imm 65
+pushright_imm 70
+pushright_imm 98
+pushright_imm 23
+pushright_imm 125
+pushright_imm 32
+pushright_imm 74
+pushright_imm 2
+pushright_imm 101
+pushright_imm 104
+pushright_imm 62
+pushright_imm 60
+pushright_imm 55
+pushright_imm 4
+pushright_imm 14
+pushright_imm 89
+pushright_imm 63
+pushright_imm 117
+pushright_imm 100
+pushright_imm 125
+shiftleft_r 6
+mov_r_r 5, 6
+bitxor_r_r 1, 1
+label 2
+peekleft_r 2
+shiftright_r 6
+peekleft_r 3
+shiftleft_r 6
+sub_r_r 2, 3
+bitor_r_r 1, 2
+shiftright_imm 1
+sub_r_imm 5, 1
+ispos_0_r 5
+jnz_0_imm 2
+mov_r_r 0, 1
+jnz_0_imm 17
+label 16
+resize_imm 0
+pushright_imm 121
+pushright_imm 101
+pushright_imm 115
+pushright_imm 32
+pushright_imm 58
+pushright_imm 41
+pushright_imm 10
+mov_r_imm 0, 7
+write_r 0
+end
+label 17
+resize_imm 0
+pushright_imm 110
+pushright_imm 111
+pushright_imm 32
+pushright_imm 62
+pushright_imm 58
+pushright_imm 40
+pushright_imm 10
+mov_r_imm 0, 7
+write_r 0
+end
+bitand_r_imm 10, 119
+bitand_r_imm 10, 102
+bitand_r_imm 10, 116
+iszero_0_r 10
+bitand_r_imm 10, 51
+iszero_0_r 10
+bitand_r_imm 10, 101
+readstr_r 111
+readstr_r 10
+readstr_r 105
+readstr_r 10
+readstr_r 111
+readstr_r 114
+readstr_r 105
+readstr_r 111
+readstr_r 111
+readstr_r 111
+readstr_r 105
+readstr_r 10
+readstr_r 121
+readstr_r 111
+bitand_r_imm 10, 116
+bitand_r_imm 10, 99
+bitand_r_imm 10, 112
+bitand_r_imm 10, 103
+bitand_r_imm 10, 116
+readstr_r 111
+bitand_r_imm 10, 99
+bitand_r_imm 10, 104
+readstr_r 10
+bitand_r_imm 10, 105
+bitand_r_imm 10, 109
+readstr_r 111
+bitand_r_imm 10, 121
+readstr_r 97
+readstr_r 44
+bitand_r_imm 10, 121
+bitand_r_imm 10, 103
+bitand_r_imm 10, 100
+bitand_r_imm 10, 105
+bitand_r_imm 10, 104
+bitand_r_imm 10, 104
+bitand_r_imm 10, 110
+bitand_r_imm 10, 104
+bitand_r_imm 10, 115
+readstr_r 114
+bitand_r_imm 10, 119
+bitand_r_imm 10, 119
+bitand_r_imm 10, 109
+bitand_r_imm 10, 98
+bitand_r_imm 10, 107
+readstr_r 108
+readstr_r 108
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+readstr_r 101
+bitand_r_imm 10, 116
+readstr_r 101
+readstr_r 45
+readstr_r 114
+bitand_r_imm 10, 115
+readstr_r 33
+bitand_r_imm 10, 115
+bitand_r_imm 10, 100
+bitand_r_imm 10, 121
+bitand_r_imm 10, 116
+bitand_r_imm 10, 119
+readstr_r 97
+bitand_r_imm 10, 116
+readstr_r 117
+readstr_r 117
+readstr_r 46
+readstr_r 101
+readstr_r 101
+readstr_r 117
+readstr_r 115
+readstr_r 112
+readstr_r 112
+bitand_r_imm 10, 110
+bitand_r_r 121, 111
+bitand_r_r 10, 110
+bitand_r_imm 10, 115
+readstr_r 101
+bitand_r_imm 10, 104
+bitand_r_imm 10, 105
+bitand_r_imm 10, 105
+readstr_r 114
+bitand_r_imm 10, 105
+readstr_r 112
+bitand_r_imm 10, 105
+bitand_r_imm 10, 104
+bitand_r_r 109, 97
+bitand_r_r 10, 121
+readstr_r 105
+readstr_r 46
+readstr_r 117
+readstr_r 111
+bitand_r_imm 10, 97
+readstr_r 46
+bitand_r_imm 10, 105
+readstr_r 108
+readstr_r 101
+readstr_r 46
+bitand_r_imm 10, 105
+readstr_r 10
+readstr_r 10
+readstr_r 115
+bitand_r_r 119, 97
+bitand_r_r 10, 105
+readstr_r 97
+readstr_r 97
+write_r 117
+readstr_r 97
+readstr_r 10
+bitand_r_imm 10, 121
+bitand_r_imm 10, 105
+readstr_r 111
+bitand_r_imm 10, 110
+bitand_r_imm 10, 105
+readstr_r 117
+readstr_r 117
+readstr_r 115
+bitand_r_imm 10, 97
+readstr_r 10
+readstr_r 105
+bitand_r_imm 10, 104
+bitand_r_imm 10, 121
+readstr_r 111
+readstr_r 117
+bitand_r_imm 10, 105
+readstr_r 112
+bitand_r_imm 10, 105
+bitand_r_imm 10, 103
+bitand_r_imm 10, 119
+readstr_r 111
+bitand_r_r 101, 120
+readstr_r 101
+bitand_r_r 10, 110
+readstr_r 105
+readstr_r 63
+bitand_r_imm 10, 121
+readstr_r 97
+bitand_r_imm 10, 110
+readstr_r 46
+readstr_r 105
+readstr_r 105
+bitand_r_imm 10, 111
+bitand_r_imm 10, 121
+bitand_r_imm 10, 119
+readstr_r 111
+iszero_0_r 115
+bitand_r_imm 10, 111
+bitand_r_imm 10, 115
+bitand_r_imm 10, 97
+bitand_r_imm 10, 101
+bitand_r_imm 10, 119
+readstr_r 101
+bitand_r_imm 10, 97
+bitand_r_imm 10, 121
+readstr_r 46
+bitand_r_imm 10, 46
+bitand_r_imm 10, 108
+bitand_r_imm 10, 119
+bitand_r_imm 10, 119
+bitand_r_imm 10, 121
+readstr_r 10
+bitand_r_imm 10, 121
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+readstr_r 111
+readstr_r 114
+bitand_r_imm 10, 119
+bitand_r_imm 10, 121
+bitand_r_imm 10, 119
+bitand_r_imm 10, 121
+bitand_r_imm 10, 103
+readstr_r 46
+bitand_r_imm 10, 118
+bitand_r_imm 10, 119
+readstr_r 111
+bitand_r_imm 10, 116
+bitand_r_imm 10, 105
+readstr_r 101
+readstr_r 97
+readstr_r 97
+bitand_r_imm 10, 117
+readstr_r 10
+readstr_r 101
+bitand_r_imm 10, 121
+bitand_r_imm 10, 121
+readstr_r 101
+bitand_r_imm 10, 97
+bitand_r_imm 10, 105
+readstr_r 33
+readstr_r 105
+isneg_0_r 48
+readstr_r 97
+readstr_r 114
+readstr_r 114
+readstr_r 101
+readstr_r 108
+bitand_r_imm 10, 97
+bitand_r_imm 10, 116
+bitand_r_imm 10, 105
+bitand_r_imm 10, 105
+bitand_r_imm 10, 98
+bitand_r_imm 10, 116
+bitand_r_imm 10, 97
+bitand_r_imm 10, 121
+readstr_r 105
+bitand_r_imm 10, 116
+bitand_r_imm 10, 97
+bitand_r_imm 10, 105
+bitand_r_imm 10, 104
+bitand_r_imm 10, 105
+bitand_r_imm 10, 105
+bitand_r_imm 10, 119
+readstr_r 112
+readstr_r 115
+bitand_r_imm 10, 121
+bitand_r_imm 10, 105
+bitand_r_imm 10, 121
+bitand_r_imm 10, 121
+bitand_r_imm 10, 119
+bitand_r_imm 10, 104
+bitand_r_imm 10, 105
+bitand_r_imm 10, 99
+readstr_r 101
+bitand_r_imm 10, 119
+readstr_r 112
+bitand_r_imm 10, 106
+readstr_r 10
+readstr_r 101
+bitand_r_imm 10, 105
+bitand_r_imm 10, 119
+bitand_r_imm 10, 111
+bitand_r_imm 10, 97
+readstr_r 101
+bitand_r_imm 10, 116
+readstr_r 108
+bitand_r_imm 10, 116
+readstr_r 108
+readstr_r 10
+bitand_r_imm 10, 105
+bitand_r_imm 10, 119
+bitand_r_imm 10, 104
+readstr_r 101
+readstr_r 108
+bitand_r_imm 10, 111
+readstr_r 101
+bitand_r_imm 10, 115
+bitand_r_imm 10, 102
+readstr_r 114
+bitand_r_imm 10, 98
+bitand_r_imm 10, 109
+bitand_r_imm 33, 10
+readstr_r 44
+bitand_r_imm 10, 105
+write_r 117
+write_r 117
+write_r 117
+bitand_r_imm 10, 97
+write_r 117
+readstr_r 44
+write_r 117
+write_r 117
+bitand_r_imm 10, 109
+bitand_r_imm 10, 115
+bitand_r_imm 10, 104
+bitand_r_imm 10, 109
+bitand_r_imm 10, 105
+readstr_r 10
+readstr_r 114
+readstr_r 117
+readstr_r 114
+readstr_r 108
+readstr_r 105
+readstr_r 105
+bitand_r_imm 10, 112
+iszero_0_r 48
+iszero_0_r 33
+readstr_r 117
+readstr_r 108
+bitand_r_r 116, 104
+bitand_r_r 63, 10
+bitand_r_imm 10, 119
+write_r 117
+write_r 117
+bitand_r_imm 10, 116
+write_r 117
+bitand_r_imm 10, 119
+bitand_r_imm 10, 116
+bitand_r_imm 10, 98
+bitand_r_imm 10, 116
+bitand_r_imm 10, 105
+readstr_r 46
+readstr_r 105
+readstr_r 104
+readstr_r 10
+bitand_r_imm 10, 104
+bitand_r_imm 10, 109
+bitand_r_imm 10, 119
+bitand_r_imm 10, 105
+readstr_r 116
+readstr_r 10
+bitand_r_imm 10, 100
+readstr_r 46
+readstr_r 115
+readstr_r 117
+readstr_r 10
+bitand_r_imm 10, 101
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+readstr_r 10
+readstr_r 108
+readstr_r 108
+bitand_r_imm 10, 119
+readstr_r 111
+readstr_r 97
+readstr_r 114
+bitand_r_imm 10, 116
+write_r 117
+bitand_r_r 105, 39
+bitand_r_r 63, 10
+readstr_r 112
+readstr_r 101
+write_r 117
+bitand_r_imm 10, 116
+readstr_r 111
+write_r 117
+readstr_r 111
+bitand_r_imm 10, 105
+isneg_0_r 46
+bitand_r_imm 10, 105
+write_r 117
+readstr_r 108
+bitand_r_imm 10, 105
+readstr_r 105
+bitand_r_imm 10, 98
+bitand_r_imm 10, 121
+readstr_r 111
+bitand_r_imm 10, 121
+readstr_r 46
+readstr_r 101
+readstr_r 105
+write_r 117
+readstr_r 46
+readstr_r 101
+readstr_r 108
+write_r 117
+readstr_r 115
+bitand_r_imm 10, 121
+readstr_r 111
+readstr_r 111
+bitand_r_imm 10, 110
+readstr_r 10
+readstr_r 114
+bitand_r_r 104, 111
+bitand_r_r 10, 119
+readstr_r 97
+bitand_r_imm 10, 105
+readstr_r 101
+readstr_r 114
+readstr_r 97
+bitand_r_imm 10, 116
+readstr_r 114
+readstr_r 101
+readstr_r 114
+readstr_r 97
+readstr_r 114
+readstr_r 114
+readstr_r 114
+readstr_r 101
+readstr_r 108
+readstr_r 108
+readstr_r 117
+readstr_r 115
+bitand_r_imm 10, 116
+bitand_r_imm 10, 104
+readstr_r 104
+readstr_r 105
+readstr_r 116
+bitand_r_imm 10, 114
+bitand_r_imm 10, 118
+write_r 117
+bitand_r_imm 10, 99
+bitand_r_imm 10, 102
+bitand_r_imm 10, 109
+readstr_r 114
+readstr_r 111
+readstr_r 111
+bitand_r_imm 10, 119
+readstr_r 114
+readstr_r 101
+readstr_r 108
+bitand_r_imm 10, 105
+readstr_r 105
+bitand_r_imm 10, 105
+bitand_r_imm 10, 99
+readstr_r 97
+readstr_r 112
+bitand_r_imm 10, 121
+readstr_r 114
+readstr_r 101
+readstr_r 101
+readstr_r 108
+readstr_r 10
+readstr_r 112
+readstr_r 114
+bitand_r_imm 10, 104
+bitand_r_imm 10, 98
+bitand_r_imm 10, 115
+readstr_r 105
+readstr_r 105
+bitand_r_imm 10, 111
+readstr_r 111
+readstr_r 111
+readstr_r 108
+readstr_r 114
+readstr_r 108
+bitand_r_imm 10, 116
+bitand_r_imm 10, 121
+bitand_r_imm 10, 109
+readstr_r 111
+ispos_0_r 48
+iszero_0_r 53
+readstr_r 108
+readstr_r 108
+readstr_r 97
+bitand_r_imm 10, 105
+bitand_r_imm 10, 116
+bitand_r_imm 10, 119
+readstr_r 10
+readstr_r 44
+bitand_r_imm 10, 111
+bitand_r_imm 10, 121
+bitand_r_imm 10, 111
+bitand_r_imm 10, 111
+bitand_r_imm 10, 115
+bitand_r_imm 10, 109
+readstr_r 108
+bitand_r_imm 10, 105
+readstr_r 105
+bitand_r_imm 10, 119
+bitand_r_imm 10, 104
+readstr_r 46
+readstr_r 44
+write_r 117
+readstr_r 108
+readstr_r 115
+readstr_r 101
+isneg_0_r 48
+iszero_0_r 10
+readstr_r 101
+readstr_r 108
+readstr_r 101
+readstr_r 97
+bitand_r_imm 10, 105
+bitand_r_imm 10, 105
+bitand_r_imm 10, 110
+bitand_r_imm 10, 110
+bitand_r_imm 10, 107
+readstr_r 115
+bitand_r_imm 10, 116
+readstr_r 97
+bitand_r_imm 10, 105
+bitand_r_imm 10, 119
+bitand_r_imm 10, 121
+readstr_r 44
+bitand_r_imm 10, 112
+bitand_r_imm 10, 116
+readstr_r 116
+bitand_r_imm 10, 107
+bitand_r_imm 10, 119
+bitand_r_imm 10, 121
+bitand_r_imm 10, 105
+bitand_r_imm 10, 119
+bitand_r_imm 10, 104
+bitand_r_imm 10, 97
+readstr_r 112
+bitand_r_imm 10, 108
+bitand_r_imm 10, 97
+bitand_r_imm 10, 102
+bitand_r_imm 10, 116
+bitand_r_imm 10, 103
+readstr_r 114
+bitand_r_imm 10, 105
+bitand_r_imm 10, 105
+bitand_r_imm 10, 105
+bitand_r_imm 10, 121
+readstr_r 10
+write_r 117
+readstr_r 97
+bitand_r_imm 10, 111
+bitand_r_imm 10, 104
+bitand_r_imm 10, 121
+bitand_r_imm 10, 100
+bitand_r_imm 10, 105
+readstr_r 105
+bitand_r_imm 10, 97
+bitand_r_imm 10, 105
+bitand_r_imm 10, 111
+bitand_r_imm 33, 10
+bitand_r_imm 10, 111
+bitand_r_imm 10, 111
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+bitand_r_imm 10, 105
+bitand_r_imm 10, 121
+write_r 117
+bitand_r_imm 10, 116
+readstr_r 101
+bitand_r_imm 10, 115
+bitand_r_imm 10, 105
+bitand_r_imm 10, 97
+readstr_r 111
+bitand_r_imm 10, 111
+readstr_r 108
+bitand_r_imm 10, 116
+readstr_r 111
+readstr_r 97
+readstr_r 108
+bitand_r_imm 10, 97
+readstr_r 63
+readstr_r 108
+readstr_r 117
+bitand_r_imm 10, 111
+bitand_r_imm 10, 98
+bitand_r_imm 10, 116
+bitand_r_imm 10, 105
+readstr_r 10
+bitand_r_imm 10, 119
+readstr_r 104
+readstr_r 10
+readstr_r 114
+readstr_r 101
+readstr_r 112
+readstr_r 108
+bitand_r_imm 10, 109
+bitand_r_imm 10, 119
+readstr_r 114
+bitand_r_imm 10, 104
+bitand_r_imm 10, 121
+bitand_r_imm 10, 119
+readstr_r 116
+readstr_r 112
+bitand_r_r 115, 109
+bitand_r_r 10, 105
+readstr_r 115
+readstr_r 108
+readstr_r 101
+readstr_r 108
+bitand_r_imm 10, 102
+bitand_r_imm 10, 102
+bitand_r_imm 10, 102
+bitand_r_imm 10, 102
+bitand_r_imm 10, 102
+bitand_r_imm 10, 116
+bitand_r_imm 10, 118
+bitand_r_imm 10, 105
+bitand_r_imm 10, 104
+bitand_r_imm 10, 115
+bitand_r_imm 10, 121
+readstr_r 101
+readstr_r 104
+readstr_r 97
+ispos_0_r 55
+readstr_r 108
+readstr_r 115
+readstr_r 46
+readstr_r 114
+bitand_r_imm 10, 46
+readstr_r 114
+bitand_r_imm 10, 104
+bitand_r_imm 10, 103
+readstr_r 10
+readstr_r 97
+readstr_r 115
+bitand_r_imm 10, 105
+bitand_r_imm 10, 115
+readstr_r 114
+bitand_r_imm 10, 115
+readstr_r 10
+bitand_r_imm 10, 116
+bitand_r_imm 10, 119
+bitand_r_imm 10, 119
+readstr_r 114
+bitand_r_imm 10, 109
+readstr_r 111
+readstr_r 105
+bitand_r_imm 10, 105
+readstr_r 97
+readstr_r 112
+bitand_r_imm 10, 116
+readstr_r 101
+readstr_r 108
+readstr_r 112
+readstr_r 101
+readstr_r 114
+readstr_r 101
+readstr_r 111
+readstr_r 97
+readstr_r 97
+readstr_r 10
+readstr_r 101
+readstr_r 97
+readstr_r 97
+readstr_r 111
+bitand_r_imm 10, 118
+bitand_r_imm 10, 114
+bitand_r_imm 10, 98
+bitand_r_imm 10, 121
+readstr_r 111
+bitand_r_imm 10, 105
+readstr_r 97
+bitand_r_imm 10, 111
+readstr_r 108
+readstr_r 10
+readstr_r 46
+readstr_r 108
+readstr_r 114
+bitand_r_imm 10, 97
+readstr_r 111
+readstr_r 108
+readstr_r 97
+readstr_r 97
+readstr_r 111
+bitand_r_imm 10, 102
+readstr_r 111
+bitand_r_imm 10, 97
+bitand_r_imm 10, 116
+readstr_r 97
+readstr_r 105
+readstr_r 114
+readstr_r 101
+readstr_r 114
+readstr_r 101
+bitand_r_imm 10, 121
+readstr_r 101
+readstr_r 101
+bitand_r_imm 10, 116
+readstr_r 97
+bitand_r_imm 10, 108
+bitand_r_imm 10, 116
+readstr_r 105
+readstr_r 111
+readstr_r 112
+readstr_r 33
+readstr_r 97
+readstr_r 111
+readstr_r 97
+readstr_r 111
+readstr_r 111
+bitand_r_imm 10, 105
+readstr_r 97
+readstr_r 116
+readstr_r 101
+readstr_r 108
+readstr_r 10
+readstr_r 10
+readstr_r 116
+bitand_r_imm 10, 100
+bitand_r_imm 10, 109
+readstr_r 101
+bitand_r_imm 10, 105
+bitand_r_imm 10, 119
+readstr_r 97
+readstr_r 116
+ispos_0_r 52
+readstr_r 108
+readstr_r 111
+readstr_r 105
+readstr_r 108
+bitand_r_imm 10, 119
+readstr_r 112
+readstr_r 101
+readstr_r 108
+bitand_r_imm 10, 105
+bitand_r_imm 10, 110
+readstr_r 108
+bitand_r_imm 10, 116
+readstr_r 105
+readstr_r 105
+readstr_r 101
+bitand_r_imm 10, 111
+readstr_r 108
+readstr_r 105
+bitand_r_imm 10, 119
+readstr_r 111
+readstr_r 101
+readstr_r 105
+bitand_r_imm 10, 46
+readstr_r 116
+readstr_r 108
+readstr_r 101
+readstr_r 108
+readstr_r 97
+bitand_r_imm 10, 119
+readstr_r 101
+readstr_r 108
+write_r 117
+readstr_r 97
+readstr_r 101
+bitand_r_r 116, 104
+bitand_r_r 10, 103
+bitand_r_imm 10, 103
+bitand_r_imm 10, 119
+bitand_r_imm 10, 104
+bitand_r_imm 10, 108
+readstr_r 45
+readstr_r 33
+readstr_r 45
+readstr_r 33
+readstr_r 112
+bitand_r_imm 10, 119
+readstr_r 105
+readstr_r 105
+bitand_r_imm 10, 115
+readstr_r 108
+bitand_r_imm 10, 109
+bitand_r_imm 10, 109
+bitand_r_imm 10, 111
+readstr_r 121
+readstr_r 108
+bitand_r_imm 10, 100
+bitand_r_imm 10, 119
+readstr_r 97
+bitand_r_imm 10, 105
+readstr_r 97
+bitand_r_imm 10, 105
+bitand_r_imm 10, 118
+readstr_r 117
+readstr_r 10
+bitand_r_imm 10, 121
+readstr_r 10
+readstr_r 10
+readstr_r 10
+bitand_r_imm 10, 121
+readstr_r 10
+bitand_r_imm 10, 121
+readstr_r 10
+bitand_r_imm 10, 121
+readstr_r 10
+bitand_r_imm 10, 121
+readstr_r 10
+bitand_r_imm 10, 121
+readstr_r 10
+bitand_r_imm 10, 104
+bitand_r_imm 10, 119
+readstr_r 108
+readstr_r 112
+readstr_r 111
+bitand_r_imm 10, 116
+readstr_r 10
+readstr_r 46
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+bitand_r_imm 10, 119
+readstr_r 117
+ispos_0_r 55
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+bitand_r_imm 10, 119
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+bitand_r_imm 10, 118
+readstr_r 111
+bitand_r_imm 10, 103
+bitand_r_imm 10, 114
+bitand_r_imm 10, 115
+readstr_r 105
+bitand_r_imm 10, 110
+bitand_r_imm 10, 116
+bitand_r_imm 10, 119
+bitand_r_imm 10, 116
+readstr_r 117
+bitand_r_imm 10, 112
+readstr_r 46
+bitand_r_imm 10, 116
+readstr_r 108
+readstr_r 97
+bitand_r_imm 10, 106
+readstr_r 10
+readstr_r 97
+bitand_r_imm 10, 110
+readstr_r 10
+bitand_r_imm 10, 100
+readstr_r 10
+bitand_r_imm 10, 99
+bitand_r_imm 10, 121
+bitand_r_imm 10, 121
+bitand_r_imm 10, 114
+bitand_r_imm 10, 100
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+bitand_r_imm 10, 116
+readstr_r 111
+readstr_r 111
+readstr_r 101
+bitand_r_imm 10, 119
+bitand_r_imm 10, 107
+bitand_r_imm 10, 116
+bitand_r_imm 10, 101
+readstr_r 116
+bitand_r_imm 10, 105
+readstr_r 111
+bitand_r_imm 10, 97
+readstr_r 101
+bitand_r_imm 10, 116
+bitand_r_imm 10, 105
+bitand_r_imm 10, 104
+bitand_r_imm 10, 99
+readstr_r 10
+readstr_r 112
+bitand_r_imm 10, 115
+readstr_r 105
+bitand_r_imm 10, 105
+write_r 117
+readstr_r 10
+readstr_r 97
+bitand_r_imm 10, 98
+readstr_r 10
+readstr_r 114
+readstr_r 10
+bitand_r_imm 10, 105
+bitand_r_imm 10, 116
+bitand_r_imm 10, 108
+bitand_r_imm 10, 108
+bitand_r_imm 10, 109
+readstr_r 10
+readstr_r 10
+readstr_r 114
+bitand_r_imm 10, 97
+readstr_r 10
+readstr_r 44

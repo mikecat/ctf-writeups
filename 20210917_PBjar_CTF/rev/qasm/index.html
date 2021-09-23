@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>qasm (PBjar CTF) Writeup</title>
+<script src="../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>qasm</h1>
+<span class="language-selector-ja">
+<p>
+ELFファイル <code>qasm</code> と、それの入力ファイル <code>prog.qasm</code> が与えられた。
+</p><p>
+<code>qasm</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、
+以下の<code>main</code>関数と、<code>f00</code>から<code>f71</code>までの「f」と16進数2桁を組み合わせた名前の関数があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An ELF file <code>qasm</code> and an file to use as input of that <code>prog.qasm</code> were given.
+</p><p>
+Decompiling <code>qasm</code> via <common-tool data-lang="en">Ghidra</common-tool>,
+I found this fundtion <code>main</code> and functions from <code>f00</code> to <code>f71</code>, which are named with "f" and two-didit hexadecimal numbers.
+</p>
+</span>
+<p><a href="main.c" class="code-link" data-collapse="true">main.c</a></p>
+
+<span class="language-selector-ja">
+<p>
+これは、以下の特徴を持つ仮想マシンのプログラムのようである。
+</p>
+<ul>
+<li>読み込んだファイルをプログラムとして実行する。</li>
+<li>命令は1バイトであり、0x00～0x7fが有効である。 (何もしない命令を含む)</li>
+<li>0x80～0xffのバイトを命令として実行しようとすると、バイトを符号付きの値として扱っている上に範囲の上限しかチェックしていないため、範囲外へのアクセスが発生する。</li>
+<li>有効な命令の後には、1個1バイトの引数が命令の種類によって決められた個数(0個の場合もある)続く。
+<li>0x00～0x71の命令の処理内容は、順に<code>f00</code>～<code>f71</code>の関数に対応していると推測できる。</li>
+<li>0x72～0x7fは、何もしない命令である。</li>
+</ul>
+<p>
+これを踏まえ、以下の逆アセンブラを作成した。
+なお、このプログラムは命令の引数の数を取得するためにファイル<code>qasm</code>を参照する。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This looks like a program for virtual machine with these characteristics:
+</p>
+<ul>
+<li>It executes the file read as a program.</li>
+<li>An instruction is expressed using one byte. Valid byte for instructions is 0x00 to 0x7f. (including "no operation" instructions)</li>
+<li>Trying to execute bytes with value in the range 0x80 to 0xff results in out-of-range access because this program treats bytes as signed values and checking only upper limit of the range.</li>
+<li>After valid instructions, there follows several bytes for arguments. One argument takes one byte and the number of arguments are defined for each instructions. (some instructions take 0 arguments)</li>
+<li>I guessed that the instructions from 0x00 to 0x71 are defined by the functions <code>f00</code> to <code>f71</code>, respectively.</li>
+<li>Instructions from 0x72 to 0x7f are "no operation" instructions.</li>
+</ul>
+<p>
+Based on these information, I created this disassembler.
+This program refers to the file <code>qasm</code> to determine the number of arguments for each instructions.
+</p>
+</span>
+<p><a href="convert.pl" class="code-link" data-collapse="true">convert.pl</a></p>
+
+<p class="language-selector-ja">
+以下が <code>prog.qasm</code> を逆アセンブルした結果である。
+</p>
+<p class="language-selector-en">
+This is disassembled <code>prog.qasm</code>:
+</p>
+<p><a href="convert_res.txt" class="code-link" data-collapse="true">convert_res.txt</a></p>
+
+<p class="language-selector-ja">
+さらに可読性を高めるため、以下のように整理した。
+なお、<code>convert_res.txt</code>の後半部分は実行されなそうだったので、この結果には含まれていない。
+</p>
+<p class="language-selector-en">
+For better readability, I organized what are done like this.
+I didn't include latter part of <code>convert_res.txt</code> which didn't seem to be executed.
+</p>
+<p><a href="kaiseki.txt" class="code-link" data-collapse="true">kaiseki.txt</a></p>
+
+<span class="language-selector-ja">
+<p>
+解析の結果、これは、以下のような処理をしているようだった。
+</p>
+<ol>
+<li>文字列を読み込む。</li>
+<li>読み込んだ文字列の長さをチェックし、57バイトでなかったら <code>no &gt;:(</code> を出力して終了する。</li>
+<li>読み込んだ文字列に対し、足し算を用いた何らかの変換を行う。</li>
+<li>変換結果とあらかじめ埋め込まれた数列を比較する。</li>
+<li>比較の結果、全ての要素が一致していたら <code>yes :)</code> を、そうでなければ <code>no &gt;:(</code> を出力する。</li>
+</ol>
+<p>
+入力がどのような数列に変換されるかを調べるため、<common-tool data-lang="ja">CS50 IDE</common-tool>のGDBを用い、
+比較のために数列の値を取得するのに使われる関数<code>f53</code>内の<code>ret</code>命令にブレークポイントを置き、変換結果の値を調べた。<br>
+ここでは変換結果と比較対象の値が交互に取得されるので、GDBの<code>c 2</code>コマンドを用いて1回ブレークポイントを無視させることで、変換結果の値を連続で見ることができる。<br>
+また、<code>ignore (ブレークポイント番号) 100</code> コマンドでブレークポイントを100回無視する設定にしてから実行を開始することで、57個中最後7個の値を見ることができる。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Analyzing this, I found this doing this process:
+</p>
+<ol>
+<li>Read a string.</li>
+<li>Check the length of the string read. If the length is not 57 bytes, output <code>no &gt;:(</code> and exit.</li>
+<li>Apply some conversion using addition to the string read.</li>
+<li>Compare the result of conversion and an embed sequence of numbers.</li>
+<li>Output <code>yes :)</code> if all elements of the sequences are the same. Output <code>no &gt;:(</code> otherwise.</li>
+</ol>
+<p>
+To investigate how the input is converted, I used GDB in <common-tool data-lang="en">CS50 IDE</common-tool>.<br>
+I set a breakpoint on the <code>ret</code> instruction in the function <code>f53</code>, which is used to fetch elements of the sequences for comparision, to obtain the values in the result of conversion.<br>
+This function is used to fetch the value in the conversion result and one in the target of comparision in turn.<br>
+We can use a command <code>c 2</code> in GDB to have it ignore the breakpoint once and continuously watch the values in the conversion result.<br>
+Also, we can watch the last 7 elements out of 57 by using the <code>ignore (the no. of breakpoint) 100</code> command to have it ignore the breakpoint 100 times before starting execution.
+</p><p>
+When I entered this:
+</p>
+</span>
+<code-block data-extension="txt">
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+</code-block>
+<p class="language-selector-ja">
+を入力すると、変換結果の最初の6要素は
+</p>
+<p class="language-selector-en">
+The first 6 elements in the conversion result were:
+</p>
+<code-block data-extension="txt">
+0x42, 0x5a, 0x14, 0x6e, 0x6a, 0x8
+</code-block>
+<p class="language-selector-ja">
+となり、隣り合う要素の差 (mod 127) が33 (<code>!</code>の文字コード) ずつ変わっていることに気がついた。<br>
+また、変換結果の最後の7要素を見ると、
+</p>
+<p class="language-selector-en">
+I found that the difference of the next elements (modulo 127) was changing by 33 (the character code for <code>!</code>).<br>
+Also, the last 7 elements in the conversion result were:
+</p>
+<code-block data-extension="txt">
+0x23, 0x3a, 0x72, 0x4c, 0x47, 0x63, 0x21
+</code-block>
+<p class="language-selector-ja">
+となり、最後から順に0x21の1倍、3倍、6倍、10倍、15倍、21倍、28倍 (mod 127) となっていることに気がついた。<br>
+さらに、
+</p>
+<p class="language-selector-en">
+I found that these are 1, 3, 6, 10, 15, 21, 28 times 0x21 modulo 127, respectively, from the last element.<br>
+Moreover, when I entered this:
+</p>
+<code-block data-extension="txt">
+-------------------------------------------nmlkjihgfedcba
+</code-block>
+<p class="language-selector-ja">
+を入力すると、最後の7要素は
+</p>
+<p class="language-selector-en">
+The last 7 elements became:
+</p>
+<code-block data-extension="txt">
+0x22, 0x4b, 0x62, 0x65, 0x52, 0x27, 0x61
+</code-block>
+<p class="language-selector-ja">
+となり、最後からn番目 (1-origin) の値は「最後からk番目の値をk倍したもの」の最後から1番目からn番目までの和 mod 127 になっていそうなことに気がついた。<br>
+これに基づき、以下のプログラムでflagが得られた。
+</p>
+<p class="language-selector-en">
+And I guessed that the n-th element from the last is the sum of n elements of "k times the k-th element from the last" from the last modulo 127.<br>
+Based on this, I obtained the flag via this program:
+</p>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<p class="language-selector-ja">
+このプログラムで用いたリストの値は、以下のRecipeにより <code>prog.qasm</code> の逆アセンブル結果から抽出した。
+</p>
+<p class="language-selector-en">
+The values in the list used in this program is extracted from the disassembled <code>prog.qasm</code> using this Recipe:
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'pushright_imm%20'%7D,'',true,false,true,false)From_Decimal('Line%20feed',false)To_Decimal('Comma',false)&input=cHVzaHJpZ2h0X2ltbSA2CnB1c2hyaWdodF9pbW0gMzQKcHVzaHJpZ2h0X2ltbSA4MgpwdXNocmlnaHRfaW1tIDgxCnB1c2hyaWdodF9pbW0gMTA3CnB1c2hyaWdodF9pbW0gNjUKcHVzaHJpZ2h0X2ltbSA2NgpwdXNocmlnaHRfaW1tIDQ3CnB1c2hyaWdodF9pbW0gNjYKcHVzaHJpZ2h0X2ltbSAwCnB1c2hyaWdodF9pbW0gNTQKcHVzaHJpZ2h0X2ltbSA1MwpwdXNocmlnaHRfaW1tIDEyMApwdXNocmlnaHRfaW1tIDcwCnB1c2hyaWdodF9pbW0gODEKcHVzaHJpZ2h0X2ltbSA2CnB1c2hyaWdodF9pbW0gNDAKcHVzaHJpZ2h0X2ltbSA4MgpwdXNocmlnaHRfaW1tIDE0CnB1c2hyaWdodF9pbW0gMjIKcHVzaHJpZ2h0X2ltbSA2NQpwdXNocmlnaHRfaW1tIDEKcHVzaHJpZ2h0X2ltbSAxMApwdXNocmlnaHRfaW1tIDE4CnB1c2hyaWdodF9pbW0gNDUKcHVzaHJpZ2h0X2ltbSA4NQpwdXNocmlnaHRfaW1tIDI4CnB1c2hyaWdodF9pbW0gNTMKcHVzaHJpZ2h0X2ltbSA0NwpwdXNocmlnaHRfaW1tIDMyCnB1c2hyaWdodF9pbW0gMzkKcHVzaHJpZ2h0X2ltbSAzMgpwdXNocmlnaHRfaW1tIDEwMgpwdXNocmlnaHRfaW1tIDcxCnB1c2hyaWdodF9pbW0gNTcKcHVzaHJpZ2h0X2ltbSAyNwpwdXNocmlnaHRfaW1tIDEyMApwdXNocmlnaHRfaW1tIDY1CnB1c2hyaWdodF9pbW0gNzAKcHVzaHJpZ2h0X2ltbSA5OApwdXNocmlnaHRfaW1tIDIzCnB1c2hyaWdodF9pbW0gMTI1CnB1c2hyaWdodF9pbW0gMzIKcHVzaHJpZ2h0X2ltbSA3NApwdXNocmlnaHRfaW1tIDIKcHVzaHJpZ2h0X2ltbSAxMDEKcHVzaHJpZ2h0X2ltbSAxMDQKcHVzaHJpZ2h0X2ltbSA2MgpwdXNocmlnaHRfaW1tIDYwCnB1c2hyaWdodF9pbW0gNTUKcHVzaHJpZ2h0X2ltbSA0CnB1c2hyaWdodF9pbW0gMTQKcHVzaHJpZ2h0X2ltbSA4OQpwdXNocmlnaHRfaW1tIDYzCnB1c2hyaWdodF9pbW0gMTE3CnB1c2hyaWdodF9pbW0gMTAwCnB1c2hyaWdodF9pbW0gMTI1"
+>Find / Replace, From Decimal, To Decimal - CyberChef</a></p>
+
+<div class="flag">flag{i_w0nd3r_1f_th1s_is_ev3n_4_qu3u3_4nym0r3_2396538203}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>
