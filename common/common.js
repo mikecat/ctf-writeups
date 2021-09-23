@@ -412,7 +412,7 @@ function addLinkToCommonTools() {
 		} else {
 			console.log("warning: \"" + name + "\" is not registered as common tool name.");
 		}
-1	}
+	}
 }
 
 function renderWriteupBy() {
