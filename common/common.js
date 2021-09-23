@@ -415,8 +415,25 @@ function addLinkToCommonTools() {
 1	}
 }
 
+function renderWriteupBy() {
+	const rawElements = document.getElementsByTagName("writeup-by"), elements = [];
+	for (let i = 0; i < rawElements.length; i++) {
+		elements.push(rawElements[i]);
+	}
+	for (let i = 0; i < elements.length; i++) {
+		const p = document.createElement("p");
+		p.appendChild(document.createTextNode("writeup by "));
+		const a = document.createElement("a");
+		a.setAttribute("href", "https://ctftime.org/user/109502");
+		a.appendChild(document.createTextNode("MikeCAT"));
+		p.appendChild(a);
+		elements[i].replaceWith(p);
+	}
+}
+
 window.addEventListener("load", function() {
 	highlightCode();
 	setupLanguageSelector();
 	addLinkToCommonTools();
+	renderWriteupBy();
 });
