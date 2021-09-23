@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Owner (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Owner</h1>
+<p class="language-selector-ja">
+以下の問題文が与えられた。
+</p>
+<p class="language-selector-en">
+This challenge description was given:
+</p>
+<blockquote>
+Only the owner of the smart contract 0x850C8db4739F66869757f09752811c4b692F02b8 can view the flag on http://198.199.71.110/. Important: This smart contract is on Ropsten
+</blockquote>
+
+<p class="language-selector-ja">
+問題文で指定されたWebページを開き、ソースを表示すると、<code>/static/js/main.chunk.js</code> を参照していた。<br>
+これを開いて調べると、<code>function Flag()</code>内に以下の行があった。
+</p>
+<p class="language-selector-en">
+I opened the web page specifid in the challenge description and viewing the source, finding that it uses <code>/static/js/main.chunk.js</code>.<br>
+Opening the file and investigating, I found this line in <code>function Flag()</code>:
+</p>
+<code-block data-extension="js">
+        children: "flag{Unpr0t3ct3d_funct1ons}"
+</code-block>
+
+<p class="language-selector-ja">
+flagが得られた。
+</p>
+<p class="language-selector-en">
+Here I obtained the flag.
+</p>
+
+<div class="flag">flag{Unpr0t3ct3d_funct1ons}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Break that Binary! (RACTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Break that Binary!</h1>
+<span class="language-selector-ja">
+<p>
+ELFファイル<code>program</code>、IPv4アドレスとポート番号、そしてUsernameとPasswordが与えられた。
+これらの情報を利用し、<common-tool data-lang="ja">Tera Term</common-tool>でSSH接続ができた。
+</p><p>
+サーバには以下のファイルが配置されていた。
+ここのファイル<code>program</code>は、与えられたファイル<code>program</code>と同じであると予想できる。<br>
+また、ファイル<code>flag.txt</code>および<code>keyfile</code>は、直接読むことはできないが、<code>program</code>からは参照できるようである。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An ELF file <code>program</code>, a pair of an IPv4 address and a port number, an Username, and a Password were given.
+With these information, a server was available to be connected via SSH with <common-tool data-lang="en">Tera Term</common-tool>.
+</p><p>
+There are these files on the server.
+The file <code>program</code> on the server should be the same as the given file <code>program</code>.<br>
+Also, I cannot read the files <code>flag.txt</code> and <code>keyfile</code> directly, but they looked available from <code>program</code>.
+</p>
+</span>
+<code-block data-extension="txt">
+$ ls -l
+total 260
+-rwx------ 1 root 0     34 2021-08-13 16:53 flag.txt
+-rwx------ 1 root 0     16 2021-08-13 16:55 keyfile
+-rwsr-xr-x 1 root 0 255840 2021-08-13 16:55 program
+</code-block>
+<p class="language-selector-ja">
+<code>program</code>を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、以下のようになった。<br>
+<code>keyfile</code>のデータと時刻から鍵とIVを生成し、<code>flag.txt</code>の内容をAESで暗号化した結果を出力するようである。
+</p>
+<p class="language-selector-en">
+Decompiling <code>program</code> via <common-tool data-lang="en">Ghidra</common-tool> yielded following result.<br>
+This program generates a key and IV from the contents of <code>keyfile</code> and the time,
+encrypts the contents of <code>flag.txt</code>, and prints the ciphertext.
+</p>
+<p><a href="main.c" class="code-link" data-collapse="true">main.c</a></p>
+
+<p class="language-selector-ja">
+<code>mv</code>コマンドによる<code>keyfile</code>の名前変更は可能だったので、
+以下のようにして<code>keyfile</code>を既知の内容のものに差し替え、時刻を確認しながら暗号文を出力させた。
+</p>
+<p class="language-selector-en">
+It was possible to rename the <code>keyfile</code> via <code>mv</code> command,
+so I changed <code>keyfile</code> to a file with known contents and had it print ciphertext with checking the time.
+</p>
+<code-block data-extension="txt">
+$ mv keyfile k
+$ echo -n mikenekomofumofu &gt; keyfile
+$ date; ./program; date
+Sun Aug 15 13:23:52 UTC 2021
+ab4dbda80de2533a25744db7334a306b28288baac1005c39388773986ee9c417c7eed369f69e6a58bb73aa3a05b1b1be
+Sun Aug 15 13:23:52 UTC 2021
+</code-block>
+<p class="language-selector-ja">
+表示された時刻をもとに、<a href="https://keisan.casio.jp/exec/system/1526003938">日付⇒UNIX時間変換 - 高精度計算サイト</a>で鍵とIVの生成に使う値の一部を求めた。<br>
+これを利用し、以下のプログラムであり得る全ての鍵とIVを出力させた。
+</p>
+<p class="language-selector-en">
+Based on the displayed time, I used <a href="https://keisan.casio.com/exec/system/15276413743130">Convert Date & Time to Unix timestamp Calculator - High accuracy calculation</a>
+to obtain a part of the value to be used for generating a key and IV.<br>
+Using this value, I used following program to generate all possible pairs of the key and IV.
+</p>
+<p><a href="keygen.c" class="code-link" data-collapse="true">keygen.c</a></p>
+
+<p class="language-selector-ja">
+このプログラムの出力を利用し、以下のプログラムでAESの復号を行った。
+</p>
+<p class="language-selector-en">
+Using the output of this program, I used following program to decrypt AES.
+</p>
+<p><a href="bruteforce.pl" class="code-link" data-collapse="true">bruteforce.pl</a></p>
+
+<p class="language-selector-ja">
+このプログラムの出力からテキストエディタで<code>ractf</code>を検索することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by searching for <code>ractf</code> via a text editor from the output of this program.
+</p>
+
+<div class="flag">ractf{Curb_Y0ur_M3mOry_Alloc4t10n}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">RACTF 2021</a>
+</p>
+</body>
+</html>

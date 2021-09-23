@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>strong_password (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>strong_password</h1>
+<span class="language-selector-ja">
+<p>
+ファイル<code>TopSecret.zip</code>と、<code>情報セキュリティガイドライン（別紙１）.pdf</code>が与えられた。<br>
+zipファイルはパスワードで保護されており、pdfファイルよりパスワードは以下の要素を順に結合したものであることが予想できた。
+</p>
+<ul>
+<li>大文字または小文字の英字3文字</li>
+<li><code>@#$%!-</code>のうちどれか1文字</li>
+<li>日付を表す数字8桁</li>
+<li><code>@#$%!-</code>のうちどれか1文字</li>
+</ul>
+</span>
+<span class="language-selector-en">
+<p>
+Files <code>TopSecret.zip</code> and <code>情報セキュリティガイドライン（別紙１）.pdf</code> were given.<br>
+The ZIP file was protected by a password. Reading the PDF file, the password should be these elements concatenated in this order:
+</p>
+<ul>
+<li>3 English alphabets (upper or lower case)</li>
+<li>One of <code>@#$%!-</code></li>
+<li>8 digits of numbers that specifies a date</li>
+<li>One of <code>@#$%!-</code></li>
+</ul>
+<p>
+I decided to use <common-tool data-lang="en">hashcat</common-tool> to crack the password referring this page:
+</p>
+</span>
+<p><a href="https://qiita.com/lumin/items/cf1e10cccfe5727f8180">GPUでZIPパスワードを解析する - Qiita</a></p>
+
+<span class="language-selector-ja">
+<p>
+を参考に、<common-tool data-lang="ja">hashcat</common-tool>を用いてパスワードを解析することにした。
+</p><p>
+まず、<common-tool data-lang="ja">John the Ripper</common-tool>に含まれる<code>zip2john</code>を用いて、zipファイルからハッシュ値を求めた。<br>
+以下が求まったハッシュ値である。
+</p>
+</span>
+<p class="language-selector-en">
+Firstly, I used <code>zip2john</code> in <common-tool data-lang="en">John the Ripper</common-tool> to obtain the hash value from the ZIP file.<br>
+This is the hash value:
+</p>
+<p><a href="hash.txt" class="code-link">hash.txt</a></p>
+
+<p class="language-selector-ja">
+次に、以下のコマンドを用い、hashcatでパスワードの解析を行った。<br>
+<code>hashcat.exe</code>があるディレクトリをカレントディレクトリとした状態で解析を行わないと、実行に失敗した。<br>
+<code>-a 3</code> は Attack Mode の指定、<code>-w 4</code> は Performance の指定、<code>-m 17210</code> は解析を行うハッシュ値の種類の指定である。<br>
+後半ではパスワードの各部分に使われる文字を指定している。日付はとりあえず2000年～2099年の間だと仮定して解析を行った。
+</p>
+<p class="language-selector-en">
+Then, I used this command to crack the password via hashcat.<br>
+The execution failed without using the directory in which <code>hashcat.exe</code> is as the working directory.<br>
+<code>-a 3</code> specifies the Attack Mode. <code>-w 4</code> specifies the Performance. <code>-m 17210</code> specifies the kind of the hash value to crack.<br>
+The latter part of the command specifies the characters used in each parts of the password.
+This specification is based on an assumption that the date is within the year 2000 to 2099.
+</p>
+<code-block data-extension="txt">
+hashcat -a 3 -w 4 -m 17210 D:\...\hash.txt -1 ?u?l -2 "@#$%!-" -3 01 -4 0123 ?1?1?1?220?d?d?3?d?4?d?2
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+結果、数秒でパスワードは <code>qYL%20210228!</code> だとわかった。
+</p><p>
+このパスワードを用いて <code>TopSecret.zip</code> を展開すると、<code>TopSecret.txt</code> にflagが書かれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+As a result, it revealed the password in a few seconds. The password was <code>qYL%20210228!</code>.
+</p><p>
+I unzipped the file <code>TopSecret.zip</code> using this password.
+I found the flag written in <code>TopSecret.txt</code>.
+</p>
+</span>
+
+<div class="flag">flag{And_n0w_h3re_is_my_s3cre7}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

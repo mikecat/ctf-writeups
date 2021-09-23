@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Host (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Host</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>host.pcap</code> が与えられ、通信先のWebサーバのホスト名を要求された。
+</p><p>
+<code>host.pcap</code> に対して<code>strings</code>コマンドを実行したところ、
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>host.pcap</code> was given and I was asked to determine the host name of the destination web server.
+</p><p>
+I applied the <code>strings</code> command to <code>host.pcap</code>, finding this line:
+</p>
+</span>
+<code-block data-extension="txt">
+Host: ctf.setodanote.net
+</code-block>
+
+<p class="language-selector-ja">
+という行があり、<code>ctf.setodanote.net</code> がホスト名であると考えられた。
+</p>
+<p class="language-selector-en">
+From this line, the host name should be <code>ctf.setodanote.net</code>.
+</p>
+
+<div class="flag">flag{ctf.setodanote.net}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>browser_db (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>browser_db</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>stella_9s84jetw.default-release_places.sqlite</code> が与えられた。
+</p><p>
+このファイルを<common-tool data-lang="ja">TkSQLite</common-tool>で開いて観察すると、
+テーブル <code>moz_places</code> に <code>title</code> が <code>flag{goosegoosego} at DuckDuckGo</code> となっている行があった。<br>
+ここにflagが含まれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>stella_9s84jetw.default-release_places.sqlite</code> was given.
+</p><p>
+Opening the file via <common-tool data-lang="en">TkSQLite</common-tool> and observing,
+I found a row whose <code>title</code> was <code>flag{goosegoosego} at DuckDuckGo</code> in the table <code>moz_places</code>.<br>
+The flag was in this data.
+</p>
+</span>
+
+<div class="flag">flag{goosegoosego}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

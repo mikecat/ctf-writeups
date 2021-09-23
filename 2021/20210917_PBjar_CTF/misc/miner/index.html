@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>miner (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>miner</h1>
+<p class="language-selector-ja">
+以下の問題文が与えられた。
+</p>
+<p class="language-selector-en">
+This challenge description was given:
+</p>
+<blockquote>
+Block #11834380 on the Ethereum Blockchain was mined on Febuary 11th at 9:12:59 AM UTC. What is the address of the miner who validated this block? Flag format: flag{0x0000000000000000000000000000000000000000}
+</blockquote>
+
+<p class="language-selector-ja">
+「Ethereum block」でググると、以下のサイトが見つかった。
+</p>
+<p class="language-selector-en">
+I googled "Ethereum block" and found this page:
+</p>
+<p><a href="https://etherscan.io/blocks">Ethereum Blocks | Etherscan</a></p>
+
+<p class="language-selector-ja">
+ページ上の適当なブロックを開き、問題文で指定されたブロックを開くためにURLを書き換えた。
+</p>
+<p class="language-selector-en">
+I opened a page for a random block and modified the URL to open the block specified in the challenge description.
+</p>
+<p><a href="https://etherscan.io/block/11834380">Ethereum Blocks #11834380 | Etherscan</a></p>
+
+<p class="language-selector-ja">
+このページには以下の情報があり、これをもとにflagが得られた。
+</p>
+<p class="language-selector-en">
+This page had this information and I obtained the flag based on this:
+</p>
+<blockquote>
+Mined by:
+0xd224ca0c819e8e97ba0136b3b95ceff503b79f53 (UUPool) in 5 secs 
+</blockquote>
+
+<div class="flag">flag{0xd224ca0c819e8e97ba0136b3b95ceff503b79f53}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

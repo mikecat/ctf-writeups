@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ProgrammersHateProgramming 2 (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>ProgrammersHateProgramming 2</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLと、ファイル <code>ProgrammersHateProgramming2-sourcecode.php</code> が与えられた。
+</p><p>
+Webページは<a href="../ProgrammersHateProgramming/" class="language-aware-link">ProgrammersHateProgramming</a>と同様に、
+文字列を送信して <code>.php</code> で終わるURLのページを作れるものだった。<br>
+ファイルからは、入力の文字列から <code>&lt;?php</code>、<code>?&gt;</code>、<code>&lt;?</code>、<code>flag</code> をこの順番で消した後、
+さらに<code>cat</code>や<code>ls</code>などの文字列を消してページを作っているらしいことが読み取れた。
+</p><p>
+<code>&lt;?php</code> を消した後に <code>flag</code> を消すので、<code>&lt;?php</code> に <code>flag</code> を挟むことで <code>&lt;?php</code> を作らせることができる。<br>
+また、<code>passthru</code> は消す対象に含まれておらず、実行するコマンドは文字列を分割することで消されるのを回避できる。
+</p><p>
+これを踏まえ、<code>&lt;flag?php passthru("l" . "s -al /");</code> を送信すると、
+ルートディレクトリにファイル <code>flag.php</code> があることがわかった。
+</p><p>
+さらに、 <code>&lt;flag?php passthru("c" . "at /f" . "lag.php");</code> を送信することで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page and a file <code>ProgrammersHateProgramming2-sourcecode.php</code> were given.
+</p><p>
+The web page was accepting submission of strings and creating pages whose URL ends with <code>.php</code> like one in <a href="../ProgrammersHateProgramming/" class="language-aware-link">ProgrammersHateProgramming</a>.<br>
+Reading the given file, I found that it first removes <code>&lt;?php</code>, <code>?&gt;</code>, <code>&lt;?</code>, and <code>flag</code> from the input string in this order,
+and then removes strings like <code>cat</code> and <code>ls</code> to create pages.
+</p><p>
+Since it removes <code>flag</code> after removing <code>&lt;?php</code>, we can have it create <code>&lt;?php</code> by adding <code>flag</code> inside <code>&lt;?php</code>.<br>
+Also, <code>passthru</code> was not a subject of removal and we can prevent commands to execute from being deleted by splitting the strings.
+</p><p>
+Based on this, I sent a string <code>&lt;flag?php passthru("l" . "s -al /");</code> and found that there is a file <code>flag.php</code> in the root directory.
+</p><p>
+After that, I obtained the flag by sending a string <code>&lt;flag?php passthru("c" . "at /f" . "lag.php");</code>.
+</p>
+</span>
+
+<div class="flag">flag{wow_that_was_a_lot_of_filters_anyways_how_about_that_meaningful_connection_i_mentioned_earlier_:)}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

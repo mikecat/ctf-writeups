@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>nostrings (CakeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>nostrings</h1>
+<span class="language-selector-ja">
+<p>
+ELFファイル <code>chall</code> が与えられた。
+</p><p>
+<code>chall</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、
+<code>entry</code>関数から<code>FUN_001011a9</code>関数を第1引数として<code>__libc_start_main</code>関数を呼び出していた。<br>
+<code>FUN_001011a9</code>関数の逆コンパイル結果は、以下のものである。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A ELF file <code>chall</code> was given.
+</p><p>
+Decompiling <code>chall</code> via <common-tool data-lang="en">Ghidra</common-tool>,
+I found that the function <code>entry</code> is calling the function <code>__libc_start_main</code> with the function <code>FUN_001011a9</code> as the first argument.<br>
+This is the result of decompiling of the function <code>FUN_001011a9</code>:
+</p>
+</span>
+<p><a href="FUN_001011a9.c" class="code-link" data-collapse="true">FUN_001011a9.c</a></p>
+
+<p class="language-selector-ja">
+この関数は、<code>scanf</code>関数で文字列を<code>local_58</code>に読み込んだ後、<code>local_60</code>を1に初期化し、
+<code>local_5c</code>を0から0x39まで1ずつ増やしながら以下の計算を行い、
+最終的に<code>local_60</code>が0かどうかを判定するものである。
+</p>
+<p class="language-selector-en">
+This function firstly reads a string to <code>local_58</code> via the <code>scanf</code> function.
+Then, after initializing <code>local_60</code> to 1, it performs following calculation with incrementing <code>local_5c</code> from 0 to 0x39.
+Finally, it checks if <code>local_60</code> is zero.
+</p>
+<code-block data-extension="c">
+local_60 = (uint)((uint)(byte)s__00104020[(long)(int)local_58[local_5c] * 0x7f + (long)local_5c]
+                 == (int)local_58[local_5c]) * local_60;
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+この計算は、配列<code>s__00104020</code>の指定の要素が入力データ<code>local_58</code>の今見ている要素と一致しているなら<code>local_60</code>の値を変えず、
+そうでなければ<code>local_60</code>の値を0にする、というものである。<br>
+したがって、最終的な<code>local_60</code>の値を1にするには、この計算全てについて値を一致させないといけない。
+</p><p>
+Ghidra上で00105000にあるデータがファイル中の0x4000バイト目(0-origin)に存在したことからオフセットを計算し、
+以下のプログラムを用いてflagを求めた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This calculation keeps the value of <code>local_60</code> if the specified element of the array <code>s__00104020</code> equals to current element of the input data <code>local_58</code>,
+and sets <code>local_60</code> to zero otherwise.<br>
+This means that all pairs of values checked here should be equal to make the final value of <code>local_60</code> to be 1.
+</p><p>
+I calculated the offset from the fact that the data on 00105000 in Ghidra existed from 0x4000-th byte in the file (the first byte is 0th),
+and obtained the flag via this program:
+</p>
+</span>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<div class="flag">CakeCTF{th3_b357_p14c3_70_hid3_4_f14g_i5_in_4_f14g_f0r357}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">CakeCTF 2021</a>
+</p>
+</body>
+</html>

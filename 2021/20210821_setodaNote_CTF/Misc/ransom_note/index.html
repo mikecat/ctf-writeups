@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ransom_note (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>ransom_note</h1>
+<p class="language-selector-ja">
+以下のファイル群が与えられた。
+</p>
+<p class="language-selector-en">
+These files were given:
+</p>
+<ul>
+<li><code>Image from iOS.jpg</code></li>
+<li><code>NPIEWI-DECRYPT.txt</code></li>
+<li><code>secret.txt.npiewi</code></li>
+</ul>
+<span class="language-selector-ja">
+<p>
+<code>Image from iOS.jpg</code> からは、「ENCRYPTED BY GANDCRAB 5.0.3」という文字列が読み取れた。
+</p><p>
+「gandcrab decrypt」でググった結果、Bitdefender社がGandCrabで暗号化されたファイルの復号ツールを提供しているようであったが、
+ダウンロードして実行してみると長い上に読みにくい利用規約が表示された。<br>
+しかも、その利用規約には、製品の登録をしないといけない的なことが書かれているようだった。
+</p><p>
+このツールの利用は諦め、「GANDCRAB 5.0.3 decryptor」でググった結果、以下のサイトが見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I read a string "ENCRYPTED BY GANDCRAB 5.0.3" from the image <code>Image from iOS.jpg</code>.
+</p><p>
+I googled "gandcrab decrypt" and found that Bitdefender is providing a tool to decrypt files encrypted via GandCrab.<br>
+However, when I downloaded and executed the tool, it showed a terms of use that looked so long and hard to read for me.
+Moreover, the terms had a part that looks saying that we need to register the tool for using.
+</p><p>
+I gave up to use this tool and googled "GANDCRAB 5.0.3 decryptor", finding this page:
+</p>
+</span>
+<p><a href="https://answers.microsoft.com/en-us/protect/forum/all/grandcrab-ransomware-shuts-down-decryptor/b4ebd579-7820-4065-8efd-c30f4d2d3cfa"
+>Grandcrab ransomware shuts down - Decryptor available. - Microsoft Community</a></p>
+
+<p class="language-selector-ja">
+このサイトから、以下のサイトが紹介されていた。
+</p>
+<p class="language-selector-en">
+This page was linked from the page:
+</p>
+<p><a href="https://blog.360totalsecurity.com/en/rogue-virus-gandcrab-family-finale-has-been-ringing-qihoo-360-launched-v5-2-decryption-tool/"
+>Rogue- Virus" -GandCrab -family-finale-has-been-ringing?</a></p>
+
+<p class="language-selector-ja">
+このサイトを参考に「360 Total Security decrypt gandcrab」でググると、以下のサイトが見つかった。
+</p>
+<p class="language-selector-en">
+I googled "360 Total Security decrypt gandcrab" referring the page, finding this page:
+</p>
+<p><a href="https://blog.360totalsecurity.com/en/gandcrab-ransomware-decryption-tool/">360 has released GandCrab Ransomware decryption tool</a></p>
+
+<p class="language-selector-ja">
+このサイトからダウンロードできるツールを用いることで<code>secret.txt.npiewi</code>を復号することができ、
+復号結果にflagが書かれていた。
+</p>
+<p class="language-selector-en">
+I succeeded to decrypt <code>secret.txt.npiewi</code> via the tool that was available from the page.
+The flag was in the decrypted data.
+</p>
+
+<div class="flag">flag{unlock1ng_y0ur_d1gital_life_with0ut_paying;)}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

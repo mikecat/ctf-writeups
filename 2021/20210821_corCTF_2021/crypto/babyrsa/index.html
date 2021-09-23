@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>babyrsa (corCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>babyrsa</h1>
+<span class="language-selector-ja">
+<p>
+チャットの画面と思われる画像<code>babyrsa.PNG</code>、プログラム<code>script.py</code>とその出力<code>output.txt</code>が与えられた。<br>
+<code>output.txt</code>の内容は以下のものであった。
+</p>
+<ul>
+<li>大きい整数<code>n</code></li>
+<li><code>e = 65537</code></li>
+<li><code>flag</code>を<code>e</code>乗して<code>n</code>で割った余り<code>ct</code></li>
+<li>画像<code>babyrsa.PNG</code>にかかれている数字列</li>
+<li>「<code>(n, p, q)</code>」</li>
+</ul>
+<p>
+これらの情報から、画像中の数字列は上から順に<code>n</code>、<code>p</code>、<code>q</code>に対応し、かつ<code>n = p * q</code>であると考えられた。<br>
+また、最初に与えられた<code>n</code>と数字列の関係から、<code>p</code>と<code>q</code>はそれぞれ途中の41桁が抜けていることが読み取れた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An image like a chat application <code>babyrsa.PNG</code>, a program <code>script.py</code> and its output <code>output.txt</code> were given.<br>
+The contents of <code>output.txt</code> was:
+</p>
+<ul>
+<li>An large integer <code>n</code></li>
+<li><code>e = 65537</code></li>
+<li><code>ct</code>, which is <code>flag</code> to the <code>e</code>-th power modulo <code>n</code></li>
+<li>The sequence of numbers written in the image <code>babyrsa.PNG</code></li>
+<li>"<code>(n, p, q)</code>"</li>
+</ul>
+<p>
+From these information, I thought that the sequences of numbers in the image corresponds to <code>n</code>, <code>p</code>, and <code>q</code> from the top, and that <code>n = p * q</code>.<br>
+Also, from the relation of the sequence of numbers and the given <code>n</code>, I could say that 41 digits in the middle are dropped from each of <code>p</code> and <code>q</code>.
+</p><p>
+I thought that Coppersmith's Attack should be useful because about a half of <code>p</code> and <code>q</code> are known, referring to:
+</p>
+</span>
+<p><a href="https://www.slideshare.net/sonickun/rsa-n-ssmjp">RSA暗号運用でやってはいけない n のこと #ssmjp</a></p>
+<p class="language-selector-ja">
+を参考に、<code>p</code>や<code>q</code>の半分程度の情報がわかっているので、
+Coppersmith's Attack が適用可能な可能性があると考えた。
+</p>
+<p class="language-selector-en">
+Using this, I tried to obtain the value of <code>p</code> with <common-tool data-lang="en">Sage Cell Server</common-tool>:
+</p>
+<p><a href="https://inaz2.hatenablog.com/entry/2016/01/20/022936">SageMathを使ってCoppersmith's Attackをやってみる - ももいろテクノロジー</a></p>
+
+<p class="language-selector-ja">
+これを利用し、<common-tool data-lang="ja">Sage Cell Server</common-tool>で<code>p</code>の値を求めることを試みた。<br>
+しかし、与えられた<code>p</code>の下位の情報を無視して上位の情報だけで解こうとしても、解けなかった。<br>
+また、方程式<code>f = p_given + x * (10^30)</code>の解を求めようとすると、
+</p>
+<p class="language-selector-en">
+However, the answer didn't appear when I tried to solve it using only the information of the upper part of <code>p</code>, ignoring the lower part.<br>
+Also, when I tried to solve an equation <code>f = p_given + x * (10^30)</code>, it said:
+</p>
+<blockquote>
+ArithmeticError: Polynomial must be monic.
+</blockquote>
+<span class="language-selector-ja">
+<p>
+と出てしまった。「monic」とは、最高次の係数が1であることらしい。
+</p><p>
+ここで、<code>p*q</code>で割って1余る数は、整数<code>k</code>を用いて<code>k*p*q+1</code>と表すことができ、
+<code>p</code>で割っても1余る。<br>
+このことを利用すると、<code>p_given</code>と<code>x * (10^30)</code>の両方に<code>n</code>を法とする<code>10^30</code>の逆元を掛けることで、
+<code>x</code>の係数を1にすることができ、解を求めることができるようになる。
+</p><p>
+実際に、以下のプログラムをSage Cell Serverで実行すると、<code>p</code>の足りない部分を求めることができた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+"monic" looks like to mean that the coefficient of the term of highest degree is 1.
+</p><p>
+By the way, when a number modulo <code>p*q</code> is 1, the number can be expressed as <code>k*p*q+1</code> with an integer <code>k</code>, so the number modulo <code>p</code> is also 1.<br>
+Using this property, the equation becomes solvable after multiplying the inverse of <code>10^30</code> (modulo <code>n</code>)
+to both of <code>p_given</code> and <code>x * (10^30)</code> to make the coefficient of <code>x</code> to be 1.
+</p><p>
+I succeeded to obtain the missing part of <code>p</code> by executing this program on Sage Cell Server:
+</p>
+</span>
+<p><a href="solve.txt" class="code-link" data-extension="py" data-collapse="true">solve.txt</a></p>
+
+<p class="language-selector-ja">
+<code>p</code>の値がわかったので、<code>n</code>を<code>p</code>で割ることで<code>q</code>の値もわかる。<br>
+これらの値を用いて<a href="https://ja.wikipedia.org/wiki/RSA%E6%9A%97%E5%8F%B7">RSA暗号</a>の復号を行い、
+結果を16進数で表して<common-tool data-lang="ja">CyberChef</common-tool>の From Hex を適用することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+Getting the value of <code>p</code>, we can know the value of <code>q</code> by dividing <code>n</code> by <code>p</code>.<br>
+Using these values, I obtained the flag by decrypting <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">the RSA cipher</a>,
+expressing the result in hexadecimal and applying "From Hex" on <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+
+<div class="flag">corctf{1_w4s_f0rc3d_t0_wr1t3_ch4ll5_4nd_1_h4d_n0_g00d_1d345_pl5_n0_bully_;-;}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">corCTF 2021</a>
+</p>
+</body>
+</html>

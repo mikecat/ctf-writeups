@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>I'm a Shouty Man (RACTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>I'm a Shouty Man</h1>
+<span class="language-selector-ja">
+<p>
+音声ファイルが大量に入ったzipファイルが与えられた。
+ファイル名が大文字か小文字かが違うだけで被っているファイルがあったので、<common-tool data-lang="ja">7-Zip</common-tool>の自動リネームを利用して展開した。<br>
+音声ファイル群は、1文字ずつ発声している短いデータと、約30分の<code>sounds.webm</code>からなっていた。
+</p><p>
+まず、<code>sounds.webm</code>を<common-tool data-lang="ja">VLC media player</common-tool>で速度を上げて再生し、
+間違いをあまり気にせずに読まれる文字を書き取った。
+結果は以下のようになった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A zip file that contains many audio files was given.
+There are files whose names collide with only difference of upper/lower case, so I utilized auto rename of <common-tool data-lang="en">7-Zip</common-tool> to extract.<br>
+There were short data with voice of one character, and about 30-minute data <code>sounds.webm</code>.
+</p><p>
+Firstly, I played <code>sounds.webm</code> in increased speed via <common-tool data-lang="en">VLC media player</common-tool>
+and wrote down the characters read with paying little care for mistakes.
+This is the result:
+</p>
+</span>
+<code-block data-extension="txt">
+Bml2YW11cyBzZWQpZWxpdCBpbnRlcmR1bSwcY29udmFsbGlzIHRlbGx1cy4gBmBz
+dGlidWx1bSBxdWlzIG1pIGByYXQuIHlbdSBtYXkgYmUgd29uZGByaW5nIHdlZXJl
+IhRlZSBmbEFnIGlzIHJpZ2h0IG5ddy4gd2BsbGBsZXQtbWUtdGBsbGB5b3UsIGl0
+j3Mtc29tZXdrZXJlLiB0aGUtZmxhZyBjb3BsZGBiZSByYWN0ZntrYWhhfSBzciBt
+dGBjb3BsZGBiZSByYWN0Zntsb2x9LiBOYW0gZWxlbWBudHBtIGdyYXZpZGEtZG9s
+b3IgaW4gZmfjaWxtc2lzliBJbiBrYWmgaGFiaXRhc3NlIHBsYXRlYSBkaWN0dW1z
+dG4gQWxtgXBhbSBibGFuZGl0IGR1aSB1tGB1cmihIGltcGByZGlldGB0aWijaWR1
+bnQuIEludGBnZXIGYXQgZGlhbSByaG9uY3BzLGBtYWN1bGlzIHR1cnBtcyBtZCwt
+bHJtc3RtcXBlIGBzdG4gQ3JhcyBmYXBjaWJ1cyBtYXNzYSBsaWJlcm8sIHNtdCBh
+bWB0IHZ1bHB1dGF0ZSBdZGldIGNdbnNlcXBhdGBjdXJzbXMgdEhlIHJFYUwgZkxB
+ZyBtNSByYWN0ZntdTWdfaXQ1X2FOX2F1ZDEwzGhpbDMhISF9IER1aXMgZXUgbGln
+dWxhIGXsaXF1YW0sIHNhZ2l0bGlzIHZlbGl0IGluIHNgZGFsZXMgdnBscHB0YXRl
+</code-block>
+<p class="language-selector-ja">
+この結果を<common-tool data-lang="ja">CyberChef</common-tool>でBase64デコードすると、以下のようになった。
+</p>
+<p class="language-selector-en">
+Decoding this result as Base64 via <common-tool data-lang="en">CyberChef</common-tool> yielded this:
+</p>
+<blockquote>
+.ivamus sed)elit interdum,.convallis tellus. .`stibulum quis mi `rat. y[u may be wond`ring weere".ee flAg is right n]w. w`ll`let-me-t`ll`you, it.s-somewkere. the-flag copld`be ractf{kaha} sr mt`copld`be ractf{lol}. Nam elem`ntpm gravida-dolor in fgãilmsis. In kai habitasse platea dictumstn Alm.pam blandit dui u´`urh¡ imp`rdiet`tih£idunt. Int`ger.at diam rhoncps,`maculis turpms md,-lrmstmqpe `stn Cras fapcibus massa libero, smt am`t vulputate ]di] c]nseqpat`cursms tHe rEaL fLAg m5 ractf{]Mg_it5_aN_aud10Ìhil3!!!} Duis eu ligula eìiquam, sagitlis velit in s`dales vplpptate
+</blockquote>
+<span class="language-selector-ja">
+<p>
+この結果は<code>ractf{]Mg_it5_aN_aud10Ìhil3!!!}</code>というflagっぽい部分を含むが、やはり間違いがあるようである。
+</p></p>
+InputとOutputの関係からこのflagっぽい部分に対応する<code>sounds.webm</code>の部分は
+25:15 ～ 27:09 であることがわかったので、この部分を間違わないように聞き取った。<br>
+bとdとv、tとpといった紛らわしい文字の判別には、1文字ずつの音声データとの比較が役に立った。
+</p><p>
+結果は以下のようになり、これをBase64デコードすることでflagを含む結果が得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This result contains a part that looks like the fiag <code>ractf{]Mg_it5_aN_aud10Ìhil3!!!}</code>, but it looks containing some errors.
+</p><p>
+The relation between the Input and Output suggested that the part of <code>sounds.webm</code>
+that corresponds to this part is 25:15 to 27:09, so I carefully listened to this part to avoid errors.<br>
+Comparing to the data for single character was helpful to distinguish between similar characters like (b, d, v) or (t, p).
+</p><p>
+This is the result:
+</p>
+</span>
+<code-block data-extension="txt">
+NSByYWN0ZntvTWdfaXQ1X2FOX2F1ZDEwcGhpbDMhISF9
+</code-block>
+<p class="language-selector-en">
+Decoding this as Base64 yielded a string that contains the flag.
+</p>
+
+<div class="flag">ractf{oMg_it5_aN_aud10phil3!!!}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">RACTF 2021</a>
+</p>
+</body>
+</html>

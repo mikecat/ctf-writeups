@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>lets_bake (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>lets_bake</h1>
+<p class="language-selector-ja">
+以下の文字列が与えられた。
+</p>
+<p class="language-selector-en">
+This string was given:
+</p>
+<code-block data-extension="txt">
+Input:
+NzRmNDRiMWE0Y2M2ZGNiNzc3NTMyNTcwZjk0MTE4NTMyNTcxZjE1YTE1NTJkY2M0
+
+Recipe:
+RnJvbV9CYXNlNjQoJ0EtWmEtejAtOSsvPScsdHJ1ZSkN]b2[sRnJvbV9IZXgoJ05vbmUnKQ0=]b2[sRm9yaygnJScsJ18nLGZhbHNlKQ0=]b2[sUkM0KHsnb3B0aW9uJzonVVRGOCcsJ3N0cmluZyc6J2NoZWYnfSwnTGF0aW4xJywnTGF0aW4xJyk=
+</code-block>
+
+<p class="language-selector-ja">
+Recipe: の後に書かれている文字列を<code>]b2[</code>で分割し、2行目以降の先頭に適当なデータを補って<common-tool data-lang="ja">CyberChef</common-tool>で From Base64 を適用した。
+</p>
+<p class="language-selector-en">
+I splitted the string after "Recipe:" by <code>]b2[</code>, added padding to the head of 2nd line and later, and applied "From Base64" on <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Fork('%5C%5Cn','%5C%5Cn',false)From_Base64('A-Za-z0-9%2B/%3D',true)&input=Um5KdmJWOUNZWE5sTmpRb0owRXRXbUV0ZWpBdE9Tc3ZQU2NzZEhKMVpTa04KWlpac1JuSnZiVjlJWlhnb0owNXZibVVuS1EwPQpaWlpzUm05eWF5Z25KU2NzSjE4bkxHWmhiSE5sS1EwPQpaWlpzVWtNMEtIc25iM0IwYVc5dUp6b25WVlJHT0Njc0ozTjBjbWx1WnljNkoyTm9aV1luZlN3blRHRjBhVzR4Snl3blRHRjBhVzR4SnlrPQ"
+>Fork, From Base64 - CyberChef</a></p>
+
+<p class="language-selector-ja">
+その結果、以下の文字列が得られた。
+</p>
+<p class="language-selector-en">
+The result was:
+</p>
+<code-block data-extension="txt">
+From_Base64('A-Za-z0-9+/=',true)
+e.lFrom_Hex('None')
+e.lFork('%','_',false)
+e.lRC4({'option':'UTF8','string':'chef'},'Latin1','Latin1')
+</code-block>
+
+<p class="language-selector-ja">
+これに沿ってCyberChefのRecipeを設定し、入力として Input: の後の文字列を貼り付けると、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by setting Recipe in CyberChef according to this and pasting the string after "Input:" as the input. 
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)From_Hex('None')Fork('%25','_',false)RC4(%7B'option':'UTF8','string':'chef'%7D,'Latin1','Latin1')&input=TnpSbU5EUmlNV0UwWTJNMlpHTmlOemMzTlRNeU5UY3daamswTVRFNE5UTXlOVGN4WmpFMVlURTFOVEprWTJNMA"
+>From Base64, From Hex, Fork, RC4 - CyberChef</a></p>
+
+<div class="flag">flag{hello_baked_cipher}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

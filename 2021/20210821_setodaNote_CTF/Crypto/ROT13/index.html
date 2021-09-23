@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ROT13 (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>ROT13</h1>
+<p class="language-selector-ja">
+以下の文字列が与えられた。
+</p>
+<p class="language-selector-en">
+This string was given:
+</p>
+<code-block data-extension="txt">
+synt{Rira_lbh_Oehghf?}
+</code-block>
+
+<p class="language-selector-ja">
+この文字列に<common-tool data-lang="ja">CyberChef</common-tool>で ROT13 (Amount: 13) を適用することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by applying "ROT13" (Amount: 13) in <common-tool data-lang="en">CyberChef</common-tool> to this string.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=ROT13(true,true,false,13)&input=c3ludHtSaXJhX2xiaF9PZWhnaGY/fQ"
+>ROT13 - CyberChef</a></p>
+
+<div class="flag">flag{Even_you_Brutus?}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

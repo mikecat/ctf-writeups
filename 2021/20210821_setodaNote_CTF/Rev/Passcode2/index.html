@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Passcode2 (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Passcode2</h1>
+<span class="language-selector-ja">
+<p>
+ELFファイル<code>passcode2</code>が与えられた。
+</p><p>
+<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルしてみると、
+<code>entry</code>関数から<code>__libc_start_main</code>関数が<code>FUN_00101175</code>関数などを引数として呼び出されていた。<br>
+<code>FUN_00101175</code>関数は以下のものである。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A ELF file <code>passcode2</code> was given.
+</p><p>
+Decompiling via <common-tool data-lang="en">Ghidra</common-tool>,
+I found that the function <code>entry</code> is calling the function <code>__libc_start_main</code> with the function <code>FUN_00101175</code> as one of the arguments.<br>
+This is the function <code>FUN_00101175</code>:
+</p>
+</span>
+<p><a href="FUN_00101175.c" class="code-link" data-collapse="true">FUN_00101175.c</a></p>
+
+<span class="language-selector-ja">
+<p>
+この関数は、入力を読み込んだ後、その長さが0xbであり、かつ各バイトが<code>local_124</code>の対応する要素に0x2aをXORした値と一致していれば、
+入力データを<code>flag{</code>と<code>}</code>の間に入れて出力するようであった。
+</p><p>
+<common-tool data-lang="ja">TDM-GCC</common-tool>の<code>objdump</code>で<code>passcode2</code>を逆アセンブルすると、
+以下のように<code>-0x11c(%rbp)</code>を起点とする領域のデータに0x2aをXORしているので、
+<code>local_124</code>は<code>-0x11c(%rbp)</code>に対応することが読み取れた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This function reads input and checks if the length of the input is 0xb and each bytes in the input are equal to the corresponding element of<code>local_124</code>, exclusive-ored with 0x2a.
+If the input passes the check, it prints the input data between <code>flag{</code> and <code>}</code>.
+</p><p>
+I disassembled <code>passcode2</code> via <code>objdump</code> in <common-tool data-lang="en">TDM-GCC</common-tool>.
+I found that <code>local_124</code> corresponds to <code>-0x11c(%rbp)</code> because exclusive-or with 0x2a is calculated for
+data starts from <code>-0x11c(%rbp)</code> like this:
+</p>
+</span>
+<code-block data-extension="txt">
+    1404:	48 8d 8d e4 fe ff ff 	lea    -0x11c(%rbp),%rcx
+    140b:	48 8b 55 f8          	mov    -0x8(%rbp),%rdx
+    140f:	48 01 ca             	add    %rcx,%rdx
+    1412:	0f b6 12             	movzbl (%rdx),%edx
+    1415:	83 f2 2a             	xor    $0x2a,%edx
+</code-block>
+
+<p class="language-selector-ja">
+さらに、以下の部分で<code>-0x11c(%rbp)</code>にデータを設定している。
+</p>
+<p class="language-selector-en">
+Also, this part sets some data to <code>-0x11c(%rbp)</code>.
+</p>
+<code-block data-extension="txt">
+    12b6:	c6 85 e4 fe ff ff 18 	movb   $0x18,-0x11c(%rbp)
+    12bd:	c6 85 e5 fe ff ff 1f 	movb   $0x1f,-0x11b(%rbp)
+    12c4:	c6 85 e6 fe ff ff 04 	movb   $0x4,-0x11a(%rbp)
+    12cb:	c6 85 e7 fe ff ff 79 	movb   $0x79,-0x119(%rbp)
+    12d2:	c6 85 e8 fe ff ff 4f 	movb   $0x4f,-0x118(%rbp)
+    12d9:	c6 85 e9 fe ff ff 5a 	movb   $0x5a,-0x117(%rbp)
+    12e0:	c6 85 ea fe ff ff 04 	movb   $0x4,-0x116(%rbp)
+    12e7:	c6 85 eb fe ff ff 18 	movb   $0x18,-0x115(%rbp)
+    12ee:	c6 85 ec fe ff ff 1a 	movb   $0x1a,-0x114(%rbp)
+    12f5:	c6 85 ed fe ff ff 1b 	movb   $0x1b,-0x113(%rbp)
+    12fc:	c6 85 ee fe ff ff 1e 	movb   $0x1e,-0x112(%rbp)
+    1303:	c6 85 ef fe ff ff 00 	movb   $0x0,-0x111(%rbp)
+</code-block>
+
+<p class="language-selector-ja">
+このデータを読み取り、0x2aをXORすると、<code>25.Sep.2014</code>となった。<br>
+<code>25.Sep.2014</code>を<code>flag{</code>と<code>}</code>の間に入れることで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I read the data and applied exclusive-or with 0x2a. This resulted in <code>25.Sep.2014</code>.<br>
+I obtained the flag by putting <code>25.Sep.2014</code> between <code>flag{</code> and <code>}</code>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')XOR(%7B'option':'Hex','string':'2a'%7D,'Standard',false)&input=MTggMWYgMDQgNzkgNGYgNWEgMDQgMTggMWEgMWIgMWU"
+>From Hex, XOR - CyberChef</a></p>
+
+<div class="flag">flag{25.Sep.2014}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>
+

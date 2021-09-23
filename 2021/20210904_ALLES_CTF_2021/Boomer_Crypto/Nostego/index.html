@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Nostego (ALLES! CTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Nostego</h1>
+<span class="language-selector-ja">
+<p>
+画像ファイル <code>ALLES.enc.png</code> と、それを作成したと考えられるプログラム <code>challenge.py</code> が与えられた。
+</p><p>
+<code>challenge.py</code> を読むと、それぞれの場所について適当なオフセットを加えた位置のピクセルの値の平均を取って出力の色にしていることが読みとれた。
+</p><p>
+そこで、逆に今ある画像の色を平均をとる元の位置に配り、平均を取る以下のプログラムを作成した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An image file <code>ALLES.enc.png</code> and a program that seems used to generate the image <code>challenge.py</code> were given.
+</p><p>
+Reading <code>challenge.py</code>, I found it generating colors in the output by correcting pixels with adding some offsets and taking the average of the pixels.
+</p><p>
+Based on this, I created this program that distributes colors in an existing image to the places the colors are corrected from and takes the average.
+</p>
+</span>
+<p><a href="gyaku.py" class="code-link" data-collapse="true">gyaku.py</a></p>
+<p class="language-selector-ja">
+<code>ALLES.enc.png</code> をこのプログラムに入力すると、以下の出力が得られた。
+</p>
+<p class="language-selector-en">
+I used <code>ALLES.enc.png</code> as the input of this program, obtaining this output:
+</p>
+<p><img src="ALLES-enc-gyaku.png" alt="ALLES-enc-gyaku.png"></p>
+
+<p class="language-selector-ja">
+<common-tool data-lang="ja">GIMP</common-tool> でトーンカーブを調整すると、以下の画像が得られた。<br>
+以下の画像は、入力 132 を出力 0、入力 142 を出力 81 にするように設定したものである。
+</p>
+<p class="language-selector-en">
+I adjusted the tone curve of the image via <common-tool data-lang="en">GIMP</common-tool>.<br>
+Configuring it to map the input value 132 to the output value 0, and the input value 142 to the output 81, I obtained this image:
+</p>
+<p><img src="ALLES-enc-gyaku-tc-132-0-142-81.png" alt="ALLES-enc-gyaku-tc-132-0-142-81.png"></p>
+
+<p class="language-selector-ja">
+この画像から気合でflagを読み取った。
+</p>
+<p class="language-selector-en">
+I managed to read the flag from this image.
+</p>
+
+<div class="flag">ALLES!{why_solve_st3g0_wh3n_y0u_c4n_h4ve_crypto}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">ALLES! CTF 2021</a>
+</p>
+</body>
+</html>

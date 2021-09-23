@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Shellcode (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Shellcode</h1>
+<span class="language-selector-ja">
+<p>
+IPv4アドレスとポート番号、ELFファイル<code>shellcode</code>、
+そしてブラウザ上でLinuxのターミナルが使えるサービスのURLが与えられた。
+</p><p>
+<code>shellcode</code>を<common-tool data-lang="ja">TDM-GCC</common-tool>の<code>objdump</code>で逆アセンブルして読むと、
+読み込み先のアドレスを<code>printf</code>関数で出力した後、<code>scanf</code>関数でそこに文字列を読み込んでいることが読み取れた。<br>
+この読み込み先のアドレスは<code>-0x50(%rbp)</code>であり、リターンアドレスは0x58バイト先である。
+</p><p>
+そこで、シェルを起動するプログラムを入力し、リターンアドレスをそのアドレスに設定してみることにした。<br>
+以下が今回使用したシェルを起動するプログラムのソースコードである。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An IPv4 address and a port number, a ELF file <code>shellcode</code>,
+and an URL of a service where we can use a Linux terminal on a Web browser was given.
+</p><p>
+Disassenbling <code>shellcode</code>via <code>objdump</code> in <common-tool data-lang="en">TDM-GCC</common-tool>,
+I found that printing the address where the input is read to via the function <code>printf</code> and reading a string via the function <code>scanf</code> after that.<br>
+The address to store what is read was <code>-0x50(%rbp)</code> and the return address is 0x58 bytes ahead from there.
+</p><p>
+Based on this, I decided to try to input a program to launch the shell and set the return address to the address of the program.<br>
+This is the source code for the program to launch the shell used for this challenge:
+</p>
+</span>
+<p><a href="launch-shell.asm" class="code-link" data-collapse="true">launch-shell.asm</a></p>
+
+<p class="language-selector-ja">
+これを<common-tool data-lang="ja">NASM</common-tool>でアセンブルして埋め込んだ以下のプログラムを作り、ターミナルに送って実行した。
+</p>
+<p class="language-selector-en">
+I assembled this via <common-tool data-lang="en">NASM</common-tool> and embed the result to this program.
+Then, I sent this program to the terminal and executed that.
+</p>
+<p><a href="attack.pl" class="code-link" data-collapse="true">attack.pl</a></p>
+
+<span class="language-selector-ja">
+<p>
+プログラムを送るのは、以下の手順で行った。
+</p>
+<ol>
+<li>プログラムに、<common-tool data-lang="ja">CyberChef</common-tool>で Gzip と To Base64 をかける。</li>
+<li>処理結果をコピーし、ターミナルで <code>echo (処理結果) | base64 -d | gunzip > attack.pl</code> というコマンドを実行する。
+処理結果は右クリックから「貼り付け」で貼り付ける。</li>
+</ol>
+<p>
+結果は、ルートディレクトリのディレクトリ名と思われる文字列が並び、flagがありそうな様子は無かった。<br>
+プログラムを調整して調査を行ったところ、<code>/home/user/flag</code>というファイルが見つかり、
+以下のプログラムを実行することでflagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+How I sent the program is:
+<ol>
+<li>Apply "Gzip" and "To Base64" to the program on <common-tool data-lang="en">CyberChef</common-tool>.</li>
+<li>Copy the result and execute a command <code>echo (the result) | base64 -d | gunzip > attack.pl</code> on the terminal.
+I pasted the result using the "Paste" menu after right-clicking.</li>
+</ol>
+<p>
+As a result, strings that looked like the directories in the root directory appeared and there didn't seem the flag.<br>
+I modified the program for investigation. As a rseult, I found a file <code>/home/user/flag</code> and obtained the flag via this program:
+</p>
+</span>
+<p><a href="attack-mod.pl" class="code-link" data-collapse="true">attack-mod.pl</a></p>
+
+<div class="flag">flag{It_is_our_ch0ices_that_show_what_w3_truly_are_far_m0re_thAn_our_abi1ities}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

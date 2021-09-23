@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Stegosaurus stenops (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Stegosaurus stenops</h1>
+<span class="language-selector-ja">
+<p>
+画像ファイル <code>stegosaurus.jpg</code> が与えられた。
+</p><p>
+「ctf stego common tool」でググり、以下のページを見つけた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An image file <code>stegosaurus.jpg</code> was given.
+</p><p>
+I googled "ctf stego common tool" and found this page:
+</p>
+</span>
+<p><a href="https://0xrick.github.io/lists/stego/">Steganography - A list of useful tools and resources - 0xRick</a></p>
+
+<span class="language-selector-ja">
+<p>
+このページで紹介されていた<a href="https://github.com/Paradoxis/StegCracker">StegCracker</a>のページで紹介されていた<common-tool data-lang="ja">Stegseek</common-tool>と、
+辞書ファイル <common-tool data-lang="ja">rockyou.txt</common-tool> を用い、flagが得られた。
+</p><p>
+具体的には、以下の操作で得られたファイル <code>stegosaurus.jpg.out</code> にflagが書かれていた。<br>
+なお、<code>D:\MyData\Downloads</code> に <code>rockyou.txt</code> を置いてあり、一部のパスを省略している。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I obtained the flag using <common-tool data-lang="en">Stegseek</common-tool>, which was referred in the page for <a href="https://github.com/Paradoxis/StegCracker">StegCracker</a>, which was introduced in the page,
+and a dictionary file <common-tool data-lang="en">rockyou.txt</common-tool>.
+</p><p>
+Specifically, the flag was in the file <code>stegosaurus.jpg.out</code> obtained from following operation.<br>
+Note that <code>rockyou.txt</code> is in the directory <code>D:\MyData\Downloads</code>, and that some paths in this log are omitted.
+</p>
+</span>
+<p><a href="log.txt" class="code-link" data-collapse="true">log.txt</a></p>
+
+<div class="flag">flag{ungulatus_better_than_stenops}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

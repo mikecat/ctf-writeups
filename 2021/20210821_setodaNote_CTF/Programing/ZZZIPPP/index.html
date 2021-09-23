@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ZZZIPPP (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>ZZZIPPP</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>flag1000.zip</code> が与えられた。
+</p><p>
+このファイルに<code>strings</code>コマンドを適用すると、<code>flag.txt</code>および<code>flag1.zip</code>～<code>flag999.zip</code>があることが読み取れた。
+</p><p>
+そこで、<code>flag.txt</code>というデータがある以下の部分(0x10ca5バイト目～0x10e94バイト目 (0-origin)) を抜き出し、
+<common-tool data-lang="ja">CyberChef</common-tool>で Extract Files を適用した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>flag1000.zip</code> was given.
+</p><p>
+I applied the <code>strings</code> command, finding strings <code>flag.txt</code>, and <code>flag1.zip</code> to <code>flag999.zip</code>.
+</p><p>
+Seeing this, I pulled the part with the string <code>flag.txt</code> (0x10ca5-th byte to 0x10e94-th byte (the first byte is 0th)) out
+and applied "Extract Files" on <common-tool data-lang="ja">CyberChef</common-tool>.
+</p>
+</span>
+<p><a href="around-flag-txt.bin" class="code-link" data-collapse="true" data-binary="true">around-flag-txt.bin</a></p>
+
+<p class="language-selector-ja">
+得られたファイルのうち <code>extracted_at_0x32.zip</code> を解凍すると、flagが書かれたファイル <code>flag.txt</code> が得られた。
+</p>
+<p class="language-selector-en">
+Unzipping the file <code>extracted_at_0x32.zip</code> in the result yielded a file <code>flag.txt</code> that contained the flag.
+</p>
+
+<div class="flag">flag{loop-zip-1989-zip-loop}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

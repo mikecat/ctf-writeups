@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>MITRE (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>MITRE</h1>
+<p class="language-selector-ja">
+以下の文字列が与えられた。
+</p>
+<p class="language-selector-en">
+This string was given:
+</p>
+<code-block data-extension="txt">
+T1495T1152T1155T1144 T1130T1518 flag{T1170T1118T1099T1496T1212_T1531T1080T1127T1020T1081T1208_T1112T1098T1199T1159T1183T1220_T1111T1147T1220}
+</code-block>
+
+<p class="language-selector-en">
+I did some searching on:
+</p>
+<p><a href="https://attack.mitre.org/">MITRE ATT&CK®</a></p>
+<span class="language-selector-ja">
+<p>
+で検索したところ、<code>T1495</code> はヒットしたが、<code>T1152</code> はヒットしなかった。
+</p><p>
+「MITRE T1152」でググると、以下のサイトが見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+As a result, I found <code>T1495</code>, but I couldn't find <code>T1152</code>.
+</p><p>
+I googled "MITRE T1152" and found this page:
+</p>
+</span>
+<p><a href="https://www.attack-mitre-japan.com/techniques/enterprise/"
+>Enterprise Techniques - attack-mitre-japan</a></p>
+
+<p class="language-selector-ja">
+このサイトでページ内検索を用いて<code>T</code>と数字4文字の文字列を検索すると、以下の対応が得られた。
+</p>
+<p class="language-selector-en">
+I searched for the strings that begins with <code>T</code> and 4 numbers follows within this page, and these relationship:
+</p>
+<code-block data-extension="txt">
+T1495  Firmware Corruption
+T1152  Launchctl
+T1155  AppleScript
+T1144  Gatekeeper Bypass
+
+T1130  Install Root Certificate
+T1518  Software Discovery
+
+T1170  Mshta
+T1118  InstallUtil
+T1099  Timestomp
+T1496  Resource Hijacking
+T1212  Exploitation for Credential Access
+
+T1531  Account Access Removal
+T1080  Taint Shared Content
+T1127  Trusted Developer Utilities
+T1020  Automated Exfiltration
+T1081  Credentials in Files
+T1208  Kerberoasting
+
+T1112  Modify Registry
+T1098  Account Manipulation
+T1199  Trusted Relationship
+T1159  Launch Agent
+T1183  Image File Execution Options Injection
+T1220  XSL Script Processing
+
+T1111  Two-Factor Authentication Interception
+T1147  Hidden Users
+T1220  XSL Script Processing
+</code-block>
+
+<p class="language-selector-ja">
+与えられた文字列中の「<code>T</code>と数字4文字の文字列」をここで対応する名前の頭文字に置換することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by replacing "the strings begins with <code>T</code> and 4 numbers follows" to the corresponding names in this table.
+</p>
+
+<div class="flag">flag{MITRE_ATTACK_MATLIX_THX}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>
+

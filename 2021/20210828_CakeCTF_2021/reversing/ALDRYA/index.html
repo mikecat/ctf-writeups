@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ALDRYA (CakeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>ALDRYA</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、以下のファイルが与えられた。
+</p>
+<ul>
+<li>ELFファイル <code>aldrya</code></li>
+<li>テキストファイル <code>README.md</code></li>
+<li>ファイル <code>sample.aldrya</code></li>
+<li>ELFファイル <code>sample.elf</code></li>
+<li>Pythonのプログラム <code>server.py</code></li>
+</ul>
+<p>
+<code>aldrya</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルして読むと、以下の処理をしていることがわかった。
+</p>
+<ol>
+<li>コマンドライン引数としてELFファイルとALDRYAファイルのパスを受け取り、それらのファイルを開く。</li>
+<li>ELFファイルについて、先頭がELFファイルのマジックナンバーであることと、サイズがALDRYAファイルのデータと矛盾しないことをチェックする。</li>
+<li>ELFファイルを0x100バイトごとに区切り、この範囲のデータをもとに計算した値とALDRYAファイルに記録された値が一致するかをチェックする。</li>
+<li>全てのチェックに通れば、ELFファイルを実行する。</li>
+</ol>
+<p>
+また、<code>server.py</code> は、URLを入力するとそこからファイルをダウンロードし、
+ELFファイルをダウンロードしたファイル、ALDRYAファイルを<code>sample.aldrya</code>として<code>aldrya</code>を実行するものだった。
+</p><p>
+そこで、まずは<code>aldrya</code>が行う値の計算を再現する以下のプログラムを用意した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and following files were given:
+</p>
+<ul>
+<li>A ELF file <code>aldrya</code></li>
+<li>A text file <code>README.md</code></li>
+<li>A file <code>sample.aldrya</code></li>
+<li>A ELF file <code>sample.elf</code></li>
+<li>A Python program <code>server.py</code></li>
+</ul>
+<p>
+Decompiling <code>aldrya</code> via <common-tool data-lang="en">Ghidra</common-tool>, I found it doing these process:
+</p>
+<ol>
+<li>Get paths of a ELF file and a ALDRYA file from the command-line arguments and open the files.</li>
+<li>Check the ELF file to make sure that the prefix is the magic number for a ELF file and the size matches with the contents of the ALDRYA file.</li>
+<li>Divide the ELF file to 0x100-byte blocks and check if values calculated from the blocks and read from ALDRYA file matches.</li>
+<li>Execute the ELF file if it passed all checks.</li>
+</ol>
+<p>
+Also, <code>server.py</code> accepts an input of URL, download a file from there,
+and execute <code>aldrya</code> using the downloaded file as the ELF file and <code>samply.aldrya</code> as the ALDRYA file.
+</p><p>
+Based on these, firstly I created this program to simulate the calculation of the value in <code>aldrya</code>.
+</p>
+</span>
+<p><a href="get.pl" class="code-link" data-collapse="true">get.pl</a></p>
+
+<span class="language-selector-ja">
+<p>
+このプログラムを用い、<code>sample.elf</code>のいくつかのブロックについて計算した値が<code>sample.aldrya</code>に記録されているものと一致することを確認し、
+他のブロックについても一致すると予想した。
+</p><p>
+そこで、<code>sample.elf</code>のエントリポイントに書かれているコードをシェルを起動するプログラムに差し替え、
+差し替えたコードを含むブロックから計算した値がもともとのブロックから計算した値と一致するように実行しない部分を書き換えることにした。<br>
+エントリポイントは、<code>readelf -h</code>コマンドの実行結果より0x1060である。<br>
+「シェルを起動するプログラム」は、以下のコードを<common-tool data-lang="ja">NASM</common-tool>でアセンブルして作成した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I confirmed that values for some blocks in <code>sample.elf</code> matches with the values stored in <code>sample.aldrya</code>,
+and guessed that values for the other blocks should also match.
+</p><p>
+I decided to replace the code in the entry point of <code>sample.elf</code> with a program to launch the shell,
+and modify the data not to execute to match the value calculated from the modified block to the value from the original block.<br>
+The entry point is 0x1060, according to the result of the command <code>readelf -h</code>.<br>
+I created "a program to launch the shell" by assembling following code via <common-tool data-lang="en">NASM</common-tool>.
+</p>
+</span>
+<p><a href="shell.asm" class="code-link" data-collapse="true">shell.asm</a></p>
+
+<p class="language-selector-ja">
+書き換え後、以下のプログラムを用い、<common-tool data-lang="ja">Z3</common-tool>で値を一致させるようなデータを求めた。
+</p>
+<p class="language-selector-en">
+After modifying, I used this program to find data to match the value via <common-tool data-lang="en">Z3</common-tool>.
+</p>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<p class="language-selector-ja">
+最終的に、差し替えたコードを含む0x1000バイト目(0-origin)からのブロックは以下のようになった。
+</p>
+<p class="language-selector-en">
+This is the final block from the 0x1000-th byte (the first byte is 0th) that contains modified code.
+</p>
+<p><a href="sample_mod_part_1000.bin" class="code-link" data-collapse="true" data-binary="true">sample_mod_part_1000.bin</a></p>
+
+<p class="language-selector-ja">
+書き換えたELFファイルをインターネットからHTTPアクセスできる場所に置き、
+<common-tool data-lang="ja">Tera Term</common-tool>でTCPサーバに接続してそのURLを送信することで、
+シェルを起動することができた。<br>
+<code>README.md</code>より、flagはルートディレクトリにあるようなので、
+コマンド <code>cd /</code> を実行し、<code>ls</code> を実行した。<br>
+その結果、ファイル <code>flag-4c147adf5f7a18258f6709ed9402d902.txt</code> があることがわかり、コマンド <code>cat *.txt</code> によりflagが得られた。
+</p>
+<p class="language-selector-en">
+I succeeded to launch the shell by placing the modified ELF file to where HTTP access from the internet is available,
+connecting to the TCP server via <common-tool data-lang="en">Tera Term</common-tool>, and sending the URL of the file.<br>
+The flag should be in the root directory according to <code>README.md</code>,
+so I executed <code>cd /</code> command and then <code>ls</code> command.<br>
+As a result, I found a file <code>flag-4c147adf5f7a18258f6709ed9402d902.txt</code>.
+I obtained the flag by executing a command <code>cat *.txt</code>.
+</p>
+
+<div class="flag">CakeCTF{jUst_cH3ck_SHA256sum_4nd_7h47's_f1n3}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">CakeCTF 2021</a>
+</p>
+</body>
+</html>

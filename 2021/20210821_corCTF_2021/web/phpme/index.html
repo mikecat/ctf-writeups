@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>phpme (corCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>phpme</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLと、Admin BotのURLが与えられた。<br>
+WebページにアクセスするとPHPのソースコードが表示され、
+Cookieの<code>secret</code>が指定の値、かつリクエストボディが指定の要素を含むJSONであるPOSTリクエストを受け取ると、
+JSONで指定したURLにflagを送るようになっていることが読み取れた。<br>
+Admin Botは、指定したURLにアクセスしてくれるものだった。
+</p><p>
+正確には、ただPOSTリクエストを送るだけでなく、返される<code>script</code>タグの中身を実行できる形で表示させないといけない。<br>
+調査の結果、HTMLの<code>form</code>タグに属性<code>enctype="text/plain"</code>を指定することで、
+特殊文字をエンコードせずに送信させ、それによってJSONを送信させることが可能であることがわかった。
+</p><p>
+<a href="http://html5.cyberlab.info/elements/forms/form-enctype.html">enctype属性 ≪ form要素 ≪ メタデータ ≪ 要素 ≪ HTML5入門</a>
+</p><p>
+これを利用し、以下のHTMLファイル (<code>example.com</code>のかわりに<common-tool data-lang="ja">RequestBin.com</common-tool>のエンドポイントのドメインを用いる) をインターネットからHTTPアクセスできる場所に置き、
+そのURLをAdmin Botに送ることで、flagをリクエストボディとしてRequestBinに送ってもらうことができた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page and an URL of Admin Bot were given.<br>
+The web page showed a PHP source code.
+Reading that, I found that it will send a flag to an URL specified in JSON
+when it receives a POST request with <code>secret</code> with a specific value in the Cookie
+and the request body is a JSON with a specific entry.<br>
+The Admin Bot will access URLs specified by the user.
+</p><p>
+Strictly speaking, not just sending a POST request but displaying the responce in a way in which what in the <code>script</code> tag in the response will be executed.<br>
+After some studying, I found that we can have it send a JSON by adding an attribute <code>enctype="text/plain"</code> to a HTML <code>form</code> tag
+to have it send data without encoding special characters.
+</p><p>
+<a href="https://www.w3schools.com/tags/att_form_enctype.asp">HTML form enctype Attribute</a>
+</p><p>
+Using this, I succeeded to have it send the flag to RequestBin as the request body
+by putting this HTML file (use the domain of an endpoint of <common-tool data-lang="en">RequestBin.com</common-tool> instead of <code>example.com</code>)
+to a place which is accessible from the Internet and sending its URL to the Admin Bot.
+</p>
+</span>
+<p><a href="attack.html.txt" class="code-link" data-extension="html" data-collapse="true">attack.html</a></p>
+
+<div class="flag">corctf{ok_h0pe_y0u_enj0yed_the_1_php_ch4ll_1n_th1s_CTF!!!}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">corCTF 2021</a>
+</p>
+</body>
+</html>

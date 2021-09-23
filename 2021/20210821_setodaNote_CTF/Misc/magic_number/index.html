@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>magic_number (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>magic_number</h1>
+<p class="language-selector-ja">
+ファイル群と以下の文字列が与えられ、これらの文字列が示すファイルを探すことを要求された。
+</p>
+<p class="language-selector-en">
+A set of files and these strings were given, and I was asked to find the files specified by these strings.
+</p>
+<code-block data-extension="txt">
+[89 50 4e 47]
+[52 61 72 21]
+[ff d8 ff e0]
+</code-block>
+<span class="language-selector-ja">
+<p>
+文字列を16進数として解釈すると、<code>89 50 4e 47</code>には「PNG」を表すASCII文字コードが含まれ、
+<code>52 61 72 21</code>には「Rar!」を表すASCII文字コードである。<br>
+また、<code>ff d8 ff e0</code>については、<code>ff</code>が含まれていることからJPEGっぽい印象を受けた。
+</p><p>
+そこで、以下のように、<code>od</code>コマンドと<code>head</code>コマンドを用い、ファイルの先頭部分を確かめた。<br>
+結果、これらのファイルの先頭部分は指定された文字列になっていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Seeing the strings as hexadecimal number, <code>89 50 4e 47</code> contains the ASCII code for "PNG" and
+<code>52 61 72 21</code> is the ASCII code for "Rar!".<br>
+Also, <code>ff d8 ff e0</code> looked like a JPEG because it contains <code>ff</code>.
+</p><p>
+Based on this, I used the commands <code>od</code> and <code>head</code> in this way to check the initial parts of the files.<br>
+As a result, I found that the initial parts of the files are the strings given.
+</p>
+</span>
+<code-block data-extension="txt">
+YUKI.N>od -Ax -t x1 post.png | head -n 1
+000000 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52
+
+YUKI.N>od -Ax -t x1 rar.rar | head -n 1
+000000 52 61 72 21 1a 07 01 00 33 92 b5 e5 0a 01 05 06
+
+YUKI.N>od -Ax -t x1 light.jpg | head -n 1
+000000 ff d8 ff e0 00 10 4a 46 49 46 00 01 01 01 00 60
+od: 書き込みエラー
+od: 書き込みエラー: Invalid argument
+</code-block>
+
+<p class="language-selector-ja">
+これらのファイルのファイル名を指定のフォーマットに当てはめることで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by putting the file names of the files to the specified format.
+</p>
+
+<div class="flag">flag{post_rar_light}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

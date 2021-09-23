@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>cOrL (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>cOrL</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLが与えられた。
+</p><p>
+このWebページには、Usernameの入力欄、Passwordの入力欄、Loginボタンがあった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page was given.
+</p><p>
+The web page had an input field for Username, an input field for Password, and a "Login" button.
+</p>
+</span>
+
+<h2>
+<span class="language-selector-ja">序盤での解き方</span>
+<span class="language-selector-en">How to obtain the flag in the early phase</span>
+</h2>
+<p class="language-selector-ja">
+Password を <code>a</code> とし、Username として以下のものを試してみたが、有効な結果は得られなかった。
+</p>
+<p class="language-selector-en">
+I set the Password to <code>a</code> and tried following strings as Username, but resulted in nothing meaningful.
+</p>
+<ul>
+<li><code>' or 1=1 --</code></li>
+<li><code>" or 1=1 --</code></li>
+<li><code>' or 1=1 #</code></li>
+<li><code>" or 1=1 #</code></li>
+</ul>
+<span class="language-selector-ja">
+<p>
+Username と Password を逆にしてみても、有効な結果は得られなかった。
+</p><p>
+与えられたURLのドメインとポートのパス <code>/flag.txt</code> にアクセスしてみると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I also tried swapping Username and Password, finding it also didn't work.
+</p><p>
+I tried accessing the path <code>/flag.txt</code> with the domain and port number in the given URL and obtained the flag.
+</p>
+</span>
+
+<h2>
+<span class="language-selector-ja">中盤以降での解き方</span>
+<span class="language-selector-en">How to obtain the flag later</span>
+</h2>
+<p class="language-selector-ja">
+しばらくすると、<code>/flag.txt</code> は 404 Not Found を返すようになり、問題文に以下が追加されていた。
+</p>
+<p class="language-selector-en">
+After a while, <code>/flag.txt</code> became returning "404 Not Found" and this text was added in the challenge description:
+</p>
+<blockquote>
+Think of common usernames and passwords for admin
+</blockquote>
+
+<p class="language-selector-ja">
+Username と Password をともに <code>admin</code> にして送信してみると、以下の表示がされた。
+</p>
+<p class="language-selector-en">
+Sending <code>admin</code> as both of Username and Password resulted in this displayed:
+</p>
+<blockquote>
+the admin must have <strong>put</strong> some additional security protections here
+</blockquote>
+
+<p class="language-selector-ja">
+<common-tool data-lang="ja">Firefox</common-tool>の開発者ツールで<code>index.php</code>へのリクエストのメソッドを<code>PUT</code>に書き換え、
+「編集して再送信」をすると、flagが表示された。
+</p>
+<p class="language-selector-en">
+I set the method of the request for <code>index.php</code> to <code>PUT</code> in the Developer Tool in <common-tool data-lang="en">Firefox</common-tool>
+and sent the request via "Edit and Resend".<br>
+It resulted in the flag displayed.
+</p>
+
+<h2>flag</h2>
+<div class="flag">flag{HTTP_r3qu35t_m3th0d5_ftw}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

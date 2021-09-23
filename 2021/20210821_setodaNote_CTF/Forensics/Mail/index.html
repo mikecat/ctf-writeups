@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Mail (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Mail</h1>
+<span class="language-selector-ja">
+<p>
+ディレクトリ <code>ImapMail</code> 以下、ファイル群 (<code>.msf</code> が多い) が与えられた。
+</p><p>
+ファイル <code>ImapMail/mail.setodanote.net/Sent-1</code> の内容をチェックすると、
+<code>filename="kimitsu.zip"</code> に続いてBase64エンコードされたデータがあった。<br>
+このデータをデコードして展開すると、ファイル <code>goodjob.png</code> が出てきた。<br>
+このファイルにflagが書かれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Files (including many <code>.msf</code> files) in a directory <code>ImapMail</code> were given.
+</p><p>
+Checking contents of a file <code>ImapMail/mail.setodanote.net/Sent-1</code>,
+I found a Base64-encoded data after <code>filename="kimitsu.zip"</code>.<br>
+Decoding the data and unzipping yielded a file <code>goodjob.png</code>.<br>
+The flag was written in the file.
+</p>
+</span>
+
+<div class="flag">flag{You've_clearly_done_a_good_job_there!!}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

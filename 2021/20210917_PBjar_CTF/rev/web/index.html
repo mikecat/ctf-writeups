@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>web (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>web</h1>
+<span class="language-selector-ja">
+<p>
+ELFファイル <code>v1</code> が与えられた。
+</p><p>
+このファイルに <code>strings</code> コマンドをかけると、<code>http://137.184.108.185/v2</code> というURLが出てきた。<br>
+しかし、このURLへのアクセスを試みたが、繋がらなかった。
+</p><p>
+しばらくすると、DiscordでURL <code>http://147.182.172.217:42100/v1</code> が発表された。<br>
+このURLにアクセスすると別のELFファイルがダウンロードでき、URL <code>http://147.182.172.217:42100/v2</code> が含まれていた。<br>
+このURLが示すファイル <code>v2</code> には、URL <code>http://147.182.172.217:42100/v3</code> が含まれていた。
+</p><p>
+このことから、URLは連番で、ダウンロードできるファイルは次のURLを含むと予想できた。<br>
+そこで、URLの数字を適当に変えて試していった結果、
+<code>http://147.182.172.217:42100/v100000000</code> からは約18.3KBのファイルがダウンロードでき、
+<code>http://147.182.172.217:42100/v150000000</code> では version not found と表示された。
+</p><p>
+さらに、1からある番号までは必ず version not found にならず、それを超えると必ず version not found になると仮定し、
+以下のようにPythonのインタラクティブを用いて二分探索を行った。
+</p><p>
+まず、範囲を示す変数を初期化し、範囲の中央の番号を返す関数<code>m()</code>を用意する。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A ELF file <code>v1</code> was given.
+</p><p>
+Applying the <code>strings</code> command to this file, I found an URL <code>http://137.184.108.185/v2</code>.<br>
+However, I couldn't connect to this URL.
+</p><p>
+After a while, an URL <code>http://147.182.172.217:42100/v1</code> was announced on Discord.<br>
+Accessing to this URL yielded another ELF file which contains an URL <code>http://147.182.172.217:42100/v2</code>.<br>
+The file <code>v2</code> pointed at by this URL contained an URL <code>http://147.182.172.217:42100/v3</code>.
+</p><p>
+Based on these, I guessed that sequencing number is used for the URL and files pointed at by an URL contains URL with the next number.<br>
+I tried changing the number in URL and found that
+<code>http://147.182.172.217:42100/v100000000</code> has a file that is about 18.3KB, and that
+<code>http://147.182.172.217:42100/v150000000</code> shows "version not found".
+</p><p>
+With an assumption that no numbers from <code>v1</code> to some point yields "version not found"
+and that all numbers beyond the point yields "version not found",
+I performed a binary search using the interactive mode of Python.
+</p><p>
+To perform a binary search, firstly initialize variables to represent the range
+and create a function <code>m()</code> that returns the number for the center of current range.
+</p>
+</span>
+<code-block data-extension="py">
+l = 100000000
+r = 150000000
+def m():
+	return (l + r) // 2
+</code-block>
+<span class="language-selector-ja">
+<p>
+次に、<code>m()</code> を実行すると範囲の中央の番号が得られるので、それをURLにセットしてアクセスする。<br>
+version not found となったら <code>r = m()</code> を実行、そうでない場合は<code>l = m()</code> を実行し、範囲を更新する。<br>
+再び <code>m()</code> を実行すると、新しい範囲の中央の番号が得られる。<br>
+これを繰り返すことで、version not found になるかどうかの境界がある範囲を絞っていく事ができる。
+</p><p>
+その結果、
+<code>http://147.182.172.217:42100/v133791021</code> からは約16.3KBのファイルがダウンロードでき、
+<code>http://147.182.172.217:42100/v133791022</code> では version not found と表示された。<br>
+</p><p>
+<code>http://147.182.172.217:42100/v133791021</code> からダウンロードしたファイルに <code>strings</code> コマンドをかけると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Then, obtain the number for the center of current range by executing <code>m()</code> and access an URL with the number.<br>
+If it yielded "version not found", execute <code>r = m()</code>. Otherwise, execute <code>l = m()</code>. This updates the range.<br>
+Executing <code>m()</code> after that yields the number of for the center of new range.<br>
+We can nallow the range which has the border of whether to yield "version not found" or not by repeating this.
+</p><p>
+As a result, I found that
+<code>http://147.182.172.217:42100/v133791021</code> yields a file that is about 16.3KB, and that
+<code>http://147.182.172.217:42100/v133791022</code> shows "version not found".
+</p><p>
+I obtained the flag by applying the <code>strings</code> command to the file downloaded from <code>http://147.182.172.217:42100/v133791021</code>.
+</p>
+</span>
+
+<div class="flag">flag{h0w_l0ng_wher3_y0u_g0ne_f0r_3910512832}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>tippy tappies (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>tippy tappies</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>tippytappies.pcapng</code> が与えられた。
+</p><p>
+このファイルを<common-tool data-lang="ja">Wireshark</common-tool>で開くと、USBのデータのようで、
+No. 54に「Usage (Keyboard)」とあることからUSBキーボードのデータであると推測できた。
+</p><p>
+USBキーボードのデータは<a href="../../../20210821_setodaNote_CTF/Network/Logger/" class="language-aware-link">setodaNote CTF の Logger</a>で扱ったので、
+<code>get_data.pl</code> をこの問題のデータに合わせて調整し、<code>convert.pl</code> はそのまま使うことにした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>tippytappies.pcapng</code> was given.
+</p><p>
+Opening the file with <common-tool data-lang="en">Wireshark</common-tool>, it looked like data on USB.
+I found that it should be data for a USB keyboard because the packet No. 54 had "Usage (Keyboard)".
+</p><p>
+I had been dealed with data from a USB keyboard in a challenge <a href="../../../20210821_setodaNote_CTF/Network/Logger/" class="language-aware-link">"Logger" in setodaNote CTF</a>,
+so I decided to adjust <code>get_data.pl</code> for this challenge and use <code>convert.pl</code> as-is.
+</p>
+</span>
+<p><a href="get_data.pl" class="code-link" data-collapse="true">get_data.pl</a></p>
+<p><a href="../../../20210821_setodaNote_CTF/Network/Logger/convert.pl" class="code-link" data-collapse="true">convert.pl</a></p>
+
+<p class="language-selector-ja">
+<code>tippytappies.pcapng</code> から <code>get_data.pl</code> を用いて抽出したデータを <code>convert.pl</code> で変換すると、以下の結果が得られた。<br>
+(得られたデータのうち先頭の意味をなさなそうな部分は省き、0x08を「前の文字を消す」という意味として解釈した)
+</p>
+<p class="language-selector-en">
+I extracted some data from <code>tippytappies.pcapng</code> via <code>get_data.pl</code> and processed the result via <code>convert.pl</code>.<br>
+This is the result after omitting meaningless things on the top and interpreting 0x08 as "delete a character before that":
+</p>
+<code-block data-extension="txt">
+sudo apt-get update
+user
+sudo apt-get install weechat
+Y
+weechat
+/connect chat.freenode.net
+/server add freenode chat.freenode.net
+/connect freenode
+/nick goose
+/nick thegoose
+/msg hal9000
+/query hal9000
+this mission is too important for me to allow you to jeopardize it
+flag wowgoodusbdetectivework
+</code-block>
+
+<p class="language-selector-ja">
+この結果の最終行に<code>{}</code>を補うことで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by adding <code>{}</code> to the last line of this result.
+</p>
+
+<div class="flag">flag{wowgoodusbdetectivework}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

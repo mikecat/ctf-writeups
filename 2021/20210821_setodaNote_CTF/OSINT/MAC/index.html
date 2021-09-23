@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>MAC (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>MAC</h1>
+
+<p class="language-selector-en">
+With this conversion:
+</p>
+<code-block data-extension="txt">
+00:03:93 = A
+00:01:A9 = B
+04:2A:E2 = C
+</code-block>
+<p class="language-selector-ja">
+と変換されるとき、
+</p>
+<p class="language-selector-en">
+The question was how this will be converted:
+</p>
+<code-block data-extension="txt">
+flag{2C:C2:60_FC:EC:DA_00:02:B3_AC:44:F2_FC:4E:A4}
+</code-block>
+<p class="language-selector-ja">
+はどうなるか、と問われた。
+</p>
+<p class="language-selector-en">
+Using this page for searching each parts:
+</p>
+<p><a href="https://macvendors.com/">Home | MAC Vendor Lookup Tool & API | MACVendors.com</a></p>
+
+<p class="language-selector-ja">
+でそれぞれの部分を検索すると、以下の対応が得られた。
+</p>
+<p class="language-selector-en">
+I obtained these results:
+</p>
+<code-block data-extension="txt">
+00:03:93  Apple, Inc.
+00:01:A9  BMW AG
+04:2A:E2  Cisco Systems, Inc
+
+2C:C2:60  Oracle Corporation
+FC:EC:DA  Ubiquiti Networks Inc.
+00:02:B3  Intel Corporation
+AC:44:F2  YAMAHA CORPORATION
+FC:4E:A4  Apple, Inc.
+</code-block>
+
+<p class="language-selector-ja">
+それぞれの頭文字を当てはめることで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by putting the first characters of each results.
+</p>
+
+<div class="flag">flag{O_U_I_Y_A}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

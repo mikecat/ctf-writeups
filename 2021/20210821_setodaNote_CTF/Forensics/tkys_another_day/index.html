@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>tkys_another_day (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>tkys_another_day</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>tkys_another_day.png</code> が与えられた。
+</p><p>
+このファイルを<common-tool data-lang="ja">TweakPNG</common-tool>で開くと、APNGに関するチャンクが多く存在することがわかった。<br>
+<common-tool data-lang="ja">APNG Disassembler</common-tool>を用いて各フレームの画像を取り出し、
+書かれていた文字列を組み合わせることで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>tkys_another_day.png</code> was given.
+</p><p>
+Reading the file with <common-tool data-lang="en">TweakPNG</common-tool>, I found many chunks for APNG.<br>
+I obtained the flag by extracting images of each frames via <common-tool data-lang="en">APNG Disassembler</common-tool> and gathering the texts written in the frames.
+</p>
+</span>
+
+<div class="flag">flag{a_fake_illness_is_the_most_serious_disease_f5ab7}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

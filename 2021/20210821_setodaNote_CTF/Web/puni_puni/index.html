@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>puni_puni (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>puni_puni</h1>
+<p class="language-selector-ja">
+以下のデータが与えられた。
+</p>
+<p class="language-selector-en">
+This data was given:
+</p>
+<code-block data-extension="txt">
+xn--q6jaaaaaa08db0x8nc9t1b8fsviei84atb4i0lc
+xn--q6jaaaaa03dpd4mb3jc5rpa0g9jpk07acadc.
+xn--q6jylla3va3j6c8138a8eptvb303cxv4ft3o4ue63a
+xn--v8ja6aj2a3cri3ag4a2r6cx2a1rkk1272c7j4ajd4bmf0kjhg6rb.
+xn--q6j6gav1a0b2e1bh1ac2cl29ad7728kdjen6cz80dju6bqexchl9gel8b.
+</code-block>
+
+<p class="language-selector-ja">
+「xn--q6 decode」でググると、これは<a href="https://ja.wikipedia.org/wiki/Punycode">Punycode</a>らしいことがわかった。<br>
+そこで、<common-tool data-lang="ja">CyberChef</common-tool>でデコードを行った。
+</p>
+<p class="language-selector-en">
+I googled "xn--q6 decode" and found that this data looks like <a href="https://en.wikipedia.org/wiki/Punycode">Punycode</a>.<br>
+I decoded this via <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Fork('%5C%5Cn','%5C%5Cn',false)From_Punycode(true)&input=eG4tLXE2amFhYWFhYTA4ZGIweDhuYzl0MWI4ZnN2aWVpODRhdGI0aTBsYwp4bi0tcTZqYWFhYWEwM2RwZDRtYjNqYzVycGEwZzlqcGswN2FjYWRjLgp4bi0tcTZqeWxsYTN2YTNqNmM4MTM4YThlcHR2YjMwM2N4djRmdDNvNHVlNjNhCnhuLS12OGphNmFqMmEzY3JpM2FnNGEycjZjeDJhMXJrazEyNzJjN2o0YWpkNGJtZjBramhnNnJiLgp4bi0tcTZqNmdhdjFhMGIyZTFiaDFhYzJjbDI5YWQ3NzI4a2RqZW42Y3o4MGRqdTZicWV4Y2hsOWdlbDhiLg"
+>Fork, From Punycode - CyberChef</a></p>
+
+<p class="language-selector-ja">
+すると、以下の結果が得られた。
+</p>
+<p class="language-selector-en">
+The result was:
+</p>
+<code-block data-extension="txt">
+フラグは、さん、さん、ピー、ユー、エヌ、ワイ、
+シー、オー、ディー、イー、よん、よん、です.
+カタカナ表記は半角英小文字に、
+ひらがな表記は半角数字にしたものがフラグです.
+なお、読点は区切り文字なので取り除いてください.
+</code-block>
+
+<p class="language-selector-ja">
+指示通りの文字列を作成し、<code>flag{}</code>で囲むことで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by creating the string as instructed and adding <code>flag{}</code>.
+</p>
+
+<div class="flag">flag{33punycode44}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

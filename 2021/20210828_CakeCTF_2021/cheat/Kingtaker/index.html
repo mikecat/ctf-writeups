@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Kingtaker (CakeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Kingtaker</h1>
+<span class="language-selector-ja">
+<p>
+Webブラウザ上でキャラクターを動かして規定の手数以内で王冠を集めるゲームのURLが与えられた。
+</p><p>
+<common-tool data-lang="ja">Firefox</common-tool>でゲームを開き、進めた。<br>
+その結果、1面と2面はクリアできたが、3面は手数が足りなくなり、クリアする方法がわからなかった。
+</p><p>
+そこで、<common-tool data-lang="ja">Cheat Engine</common-tool>をFirefoxのプロセスにアタッチし、
+表示されている残りの手数を 4 Bytes でサーチした。<br>
+そして、1歩動いて残りの手数が変わった所で、さらにサーチを行った。<br>
+ここで候補が無くなったら、アタッチするプロセスを変えてサーチをやり直した。<br>
+候補が残ったら、この値を99などに書き換えることで手数を増やすことができ、3面をクリアできた。
+</p><p>
+4面は、手数が十分あっても通常の移動ではクリアできない構造だった。<br>
+3面の時と同じプロセスにアタッチした状態で、4 Bytes の Unknown initial value でサーチを行い、<br>
+右に動いて Increased Value のサーチ、左に動いて Decreased Value のサーチを行うと、
+候補を10個程度に絞り込むことができ、1マス動くと値が32変わる様子がみられた。<br>
+これをもとに、残りの手数に近いアドレスの値を適切な値に書き換えることで、
+キャラクターを移動させ、クリアすることができた。
+</p><p>
+4面をクリアすると、flagが表示された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a browser game in which we control a character to correct crowns within pre-defined number of moves was given.
+</p><p>
+I opened the game in <common-tool data-lang="en">Firefox</common-tool> and played the game.<br>
+I cleared the 1st and 2nd stage, but I couldn't clear the 3rd stage due to lack of moves.
+</p><p>
+I attached <common-tool data-lang="en">Cheat Engine</common-tool> to a Firefox process and searched for the shown number of moves left (4 Bytes).<br>
+Then, after making one move and making the number of moves left change, I performed the search again.<br>
+When no candidates are left at this point, I changed the process to attach and searched again.<br>
+When there is a candidate left, I changed the value to, for example, 99. This lead to increasing the number of moves and I cleared the 3rd stage.
+</p><p>
+The 4th stage wasn't able to clear only using normal moves even if there were enough number of moves.<br>
+Keeping attacheing to the same process as I used for the 3rd stage, I first searched "Unknown initialvalue" (4 Bytes).<br>
+Then, I searched "Increased Value" after moving right and "Decreased Value" after moving left.
+As a result, there were around 10 candidates left and the value changed by 32 by one-block move.<br>
+I cleared this stage by changing the value whose address is near the number of moves left to proper value so that the character moves.
+</p><p>
+The flag was displayed when I cleared the 4th stage.
+</p>
+</span>
+
+<div class="flag">CakeCTF{M4yb3_I_c4n_s3rv3_U_inst34d?}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">CakeCTF 2021</a>
+</p>
+</body>
+</html>

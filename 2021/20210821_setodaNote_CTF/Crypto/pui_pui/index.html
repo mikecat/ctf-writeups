@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>pui_pui (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>pui_pui</h1>
+<p class="language-selector-ja">
+以下の文字列が与えられた。
+</p>
+<p class="language-selector-en">
+This string was given:
+</p>
+<p><a href="data.txt" class="code-link">data.txt</a></p>
+
+<p class="language-selector-ja">
+<common-tool data-lang="ja">CyberChef</common-tool>でこの文字列から<code>\x</code>を消し、From Hex を適用した。
+</p>
+<p class="language-selector-en">
+I removed <code>\x</code> from this string and applied "From Hex" in <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Simple%20string','string':'%5C%5Cx'%7D,'',true,false,true,false)From_Hex('Auto')&input=XHg0MVx4M2FceDQ0XHg2Zlx4MjBceDc5XHg2Zlx4NzVceDIwXHg2Ylx4NmVceDZmXHg3N1x4MjBceDRkXHg2Zlx4NmNceDYzXHg2MVx4NzJceDNmXHgwYVx4MGFceDQyXHgzYVx4NGZceDY2XHgyMFx4NjNceDZmXHg3NVx4NzJceDczXHg2NVx4MjFceDIwXHg0OVx4MjBceDZjXHg2Zlx4NzZceDY1XHgyMFx4NzRceDY4XHg2NVx4MjBceDczXHg2M1x4NjVceDZlXHg2NVx4MjBceDc3XHg2OFx4NjVceDcyXHg2NVx4MjBceDY4XHg2NVx4MjBceDczXHg2OVx4NmVceDZiXHg3M1x4MjBceDY5XHg2ZVx4NzRceDZmXHgyMFx4NzRceDY4XHg2NVx4MjBceDYyXHg2Y1x4NjFceDczXHg3NFx4MjBceDY2XHg3NVx4NzJceDZlXHg2MVx4NjNceDY1XHgyMFx4NzdceDY4XHg2OVx4NmNceDY1XHgyMFx4NjdceDY5XHg3Nlx4NjlceDZlXHg2N1x4MjBceDc0XHg2OFx4NjVceDIwXHg3NFx4NjhceDc1XHg2ZFx4NjJceDczXHgyMFx4NzVceDcwXHgyZVx4MGFceDBhXHg0MVx4M2FceDJlXHgyZVx4MmVceDIwXHg1N1x4NjhceDYxXHg3NFx4M2ZceDBhXHgwYVx4NDJceDNhXHg2Mlx4NzRceDc3XHgyY1x4MjBceDc0XHg2OFx4NjVceDIwXHg2Nlx4NmNceDYxXHg2N1x4MjBceDY5XHg3M1x4MjBceDY2XHg2Y1x4NjFceDY3XHg3Ylx4NDhceDYxXHg3Nlx4NjVceDVmXHg3OVx4NmZceDc1XHg1Zlx4NjVceDc2XHg2NVx4NzJceDVmXHg2OFx4NjVceDYxXHg3Mlx4NjRceDVmXHg2Zlx4NjZceDVmXHg0OFx4NjVceDc4XHg2NFx4NzVceDZkXHg3MFx4M2ZceDdkXHgyZVx4MGE"
+>Find / Replace, From Hex - CyberChef</a></p>
+
+<p class="language-selector-ja">
+結果、以下の文字列が得られた。
+</p>
+<p class="language-selector-en">
+The result was:
+</p>
+<code-block data-extension="txt">
+A:Do you know Molcar?
+
+B:Of course! I love the scene where he sinks into the blast furnace while giving the thumbs up.
+
+A:... What?
+
+B:btw, the flag is flag{Have_you_ever_heard_of_Hexdump?}.
+</code-block>
+
+<p class="language-selector-ja">
+この文字列にflagが含まれていた。
+</p>
+<p class="language-selector-en">
+The flag was in this string.
+</p>
+
+<div class="flag">flag{Have_you_ever_heard_of_Hexdump?}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

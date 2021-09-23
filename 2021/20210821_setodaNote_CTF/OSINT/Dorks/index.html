@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dorks (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Dorks</h1>
+<span class="language-selector-ja">
+<p>
+「Google で login.php を URL に含むページを検索するための検索語句」を要求された。
+</p><p>
+Googleで適当なキーワードで検索し、「設定」の「検索オプション」を開き、
+「すべてのキーワードを含む」を「login.php」、「検索対象の範囲」を「ページ URL のみ」に設定して検索すると、
+<code>allinurl: login.php</code> というクエリになった。<br>
+しかし、<code>flag{allinurl:login.php}</code> はIncorrectになった。
+</p><p>
+次に、「google 検索演算子 一覧」でググると、以下のサイトなどがヒットした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+"A search query for searching for pages whose URLs contain login.php on Google" was requested.
+</p><p>
+I searched for some random word and opened "search option" in the "config".<br>
+Then, I set "contain all keywords" to "login.php" and "range of search target" to "only page URLs" and seached,
+resulting in a query <code>allinurl: login.php</code>.<br>
+However, <code>flag{allinurl:login.php}</code> was judged as Incorrect.
+</p><p>
+After that, I googled "google 検索演算子 一覧" and found these pages, for example:
+</p>
+</span>
+<ul>
+<li><a href="https://miya-it.com/archives/google-search-operator/">意外と便利！Google検索で使える検索演算子まとめ | ホームページ・VRコンテンツ制作｜株式会社宮澤印刷IT事業部</a></li>
+<li><a href="https://big-mac.jp/column/search-operator-list-that-can-be-used-for-google-search/">google検索で使える検索演算子一覧 | デジタルマーケティング・Web制作・PR支援のBigmac inc</a></li>
+<li><a href="https://www.affde.com/ja/google-search-operators.html">SEOのための14の便利なGoogle検索演算子（完全なリスト） - Affde マーケティング</a></li>
+<li><a href="https://michisugara.jp/special_syntax_search">「検索演算子」と「特別構文検索」を使って賢く検索│パソコン実践BLOG -道すがら講堂-</a></li>
+</ul>
+
+<p class="language-selector-ja">
+これらのサイトを参考に、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag referring to these pages.
+</p>
+
+<div class="flag">flag{inurl:login.php}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

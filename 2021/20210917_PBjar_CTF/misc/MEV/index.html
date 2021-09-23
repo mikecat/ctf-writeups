@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>MEV (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>MEV</h1>
+<p class="language-selector-ja">
+以下の問題文が与えられた。
+</p>
+<p class="language-selector-en">
+This challenge description was given:
+</p>
+<blockquote>
+The miner of Block #12983883 on the Ethereum Blockchain partakes in the common practice of MEV. What is the exact amount of Ether that was transfered to the miner as a bribe from the transaction that was included first in this block? Info about MEV: https://ethereum.org/en/developers/docs/mev/ Flag format: flag{0.006942069420}
+</blockquote>
+
+<p class="language-selector-ja">
+<a href="../miner/" class="language-aware-link">miner</a>で使ったURL中の番号を書き換えることで、指定のブロックを開いた。
+</p>
+<p class="language-selector-en">
+I opened the specified block by modifying the number in a URL I used in the challenge <a href="../miner/" class="language-aware-link">miner</a>.
+</p>
+<p><a href="https://etherscan.io/block/12983883">Ethereum Blocks #12983883 | Etherscan</a></p>
+
+<p class="language-selector-ja">
+このページ中の「145 transactions」というリンクを開き、表示されたリスト中の最後の Txn Hash のリンクを開いた。
+</p>
+<p class="language-selector-en">
+I opened the link "145 transactions" in the page, and opened the last "Txn Hash" link in the list.
+</p>
+<p><a href="https://etherscan.io/tx/0xddb777fbc72b8c3f31f687e302412c2f663b704bcf2faab5d938cd3f9c8b41f8">Ethereum Transaction Hash (Txhash) Details | Etherscan</a></p>
+
+<p class="language-selector-ja">
+このページ中の Interacted With (To) の所に書かれている、MEV Bot から今回のブロックの Mined by の所のアドレスへのTRANSFERの額を参照することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by seeing the amount of "TRANSFER" from "MEV Bot" to the address in "Mined by" of the block
+written in "Interacted With (To)" in the page.
+</p>
+
+<div class="flag">flag{0.009672680170055358}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

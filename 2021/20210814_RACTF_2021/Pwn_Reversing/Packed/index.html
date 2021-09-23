@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Packed (RACTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Packed</h1>
+<span class="language-selector-ja">
+<p>
+ファイル<code>really_awesome_console_application.exe</code>が与えられ、
+ユーザ名<code>John Smith</code>のライセンスキーを求められた。
+</p><p>
+<code>really_awesome_console_application.exe</code>を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、
+<code>entry</code>関数から<code>FUN_00401220</code>関数が以下のように<code>main</code>関数っぽい形で呼び出されていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>really_awesome_console_application.exe</code> wag given and
+asked for the license key for the username <code>John Smith</code>.
+</p><p>
+I decompiled <code>really_awesome_console_application.exe</code> via <common-tool data-lang="en">Ghidra</common-tool>.
+I found that the function <code>FUN_00401220</code> is called from the function <code>entry</code> like how the function <code>main</code> should be called like this:
+</p>
+</span>
+<code-block data-extension="c">
+uVar9 = _get_initial_narrow_environment();
+puVar10 = (undefined4 *)__p___argv();
+uVar2 = *puVar10;
+puVar10 = (undefined4 *)__p___argc();
+unaff_ESI = FUN_00401220(*puVar10,uVar2,uVar9);
+</code-block>
+<p class="language-selector-ja">
+<code>FUN_00401220</code>関数の中身は以下のようになっており、
+<code>local_48</code>にファイル名を構築した後、何らかの処理を行い、
+<code>local_48</code>を引数として<code>system</code>関数と<code>remove</code>関数を呼び出していた。
+</p>
+<p class="language-selector-en">
+Here is the function <code>FUN_00401220</code>:
+</p>
+<p><a href="FUN_00401220.cpp" class="code-link" data-collapse="true">FUN_00401220.cpp</a></p>
+<p class="language-selector-en">
+This program first constructs a file name on <code>local_48</code>.
+Then, after doing some process, it calls the functions <code>system</code> and <code>remove</code>
+with <code>local_48</code> as the arguments.
+</p>
+<span class="language-selector-ja">
+<p>
+そこで、<code>system</code>関数に何が渡されているのかを調査するため、以下の改造を行った。
+</p>
+<ul>
+<li>
+<code>system</code>関数と<code>remove</code>関数を呼び出している部分をNOPで埋める。<br>
+すなわち、Ghidra上の表示では<code>[0x40142a, 0x40143b)</code>、ファイル中の位置では<code>[0x82a, 0x83b)</code>を0x90で埋める。
+</li><li>
+出力するメッセージをEDXに設定している部分をNOPで埋める。<br>
+すなわち、Ghidra上の表示では<code>[0x401444, 0x401449)</code>、ファイル中の位置では<code>[0x844, 0x849)</code>を0x90で埋める。
+</li><li>
+<code>local_48</code>の値をEAXのかわりにEDXに入れる。<br>
+すなわち、Ghidra上の表示では<code>0x401428</code>、ファイル中の位置では<code>0x828</code>のバイトを0x45から0x55に書き換える。
+</li><li>
+デバッガが検出されても終了しないようにする。<br>
+すなわち、Ghidra上の表示では<code>[0x401273, 0x40127b)</code>、ファイル中の位置では<code>[0x673, 0x67b)</code>を0x90で埋める。
+</li>
+</ul>
+<p>
+この改造により<code>local_48</code>に格納されたパスを出力させることを狙ったが、アクセス違反になってしまった。<br>
+そこで、GDB上で実行し、アクセス違反になった時のスタック上のデータを調査することで、パスを発見した。
+</p><p>
+結果、このパスが示す場所には別の実行可能ファイルがあった。<br>
+<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルしてみると、<code>FUN_004010e0</code>関数が<code>main</code>関数に相当しそうだった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Seeing this, I made following modifications to the executable file to observe what is passed to the <code>system</code> function.
+</p>
+<ul>
+<li>Fill the part to call the functions <code>systen</code> and <code>remove</code> with NOP.<br>
+In other words, fill <code>[0x40142a, 0x40143b)</code> on Ghidra (<code>[0x82a, 0x83b)</code> in the file) with 0x90.
+</li><li>
+Fill the part to set the message to print to EDX with NOP.<br>
+In other words, fill <code>[0x401444, 0x401449)</code> on Ghidra (<code>[0x844, 0x849)</code> in the file) with 0x90.
+</li><li>
+Have it put the value of <code>local_48</code> to EDX instead of EAX.<br>
+In other words, change <code>0x401428</code> on Ghidra (<code>0x828</code> in the file) from 0x45 to 0x55.
+</li><li>
+Prevent it from terminating when a debugger is detected.<br>
+In other words, fill <code>[0x401273, 0x40127b)</code> on Ghidra (<code>[0x673, 0x67b)</code> in the file) with 0x90.
+</li>
+</ul>
+<p>
+The aim of this modifications is having it to print the path stored in <code>local_48</code>, but it resulted in Segmentation Fault.<br>
+I ran this modified program on GDB and examined what is on the stack on Segmentation Fault to find the path.
+</p><p>
+As a result, I found another executable file on where the path points at.<br>
+Decompiling with <common-tool data-lang="en">Ghidra</common-tool>, I found the function <code>FUN_004010e0</code> should corresponds to the <code>main</code> function.
+</p>
+</span>
+<p><a href="FUN_004010e0.cpp" class="code-link" data-collapse="true">FUN_004010e0.cpp</a></p>
+<span class="language-selector-ja">
+<p>
+この関数は、入力を読み込んだ後何らかの処理をし、最後に生成されたデータと入力したデータを比較している。<br>
+実行してみると、your name と License key の入力を求められた。<br>
+GDB上で実行してみると、Unauthorized software detected! と出力されて実行が終了した。
+</p><p>
+そこで、プログラムを書き換えて比較処理の直前で処理を止め、後からGDBをアタッチすることにした。<br>
+具体的には、Ghidra上の表示で0x401239、ファイル中の位置で0x639から<code>eb fe</code> (同じ命令に飛ぶjmp) を書き込んだ。
+</p><p>
+実行し、your name に指定の<code>John Smith</code>を入れ、License key は適当に入力した。<br>
+停止後GDBをアタッチし、スタック上に見つかった値に<code>ractf{}</code>を加えることで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This function reads some input, does some processing, and compares the generated data with the entered data.<br>
+When I executed the program, I was asked to enter "your name" and "License key".<br>
+When I executed the program on GDB, it printed "Unauthorized software detected!" and the execution ended.
+</p><p>
+I decided to stop the execution just before the comparision by modifying the program and attach GDB after that.<br>
+I put <code>eb fe</code> (jmp instruction to jump to the same instruction) from 0x401239 on Ghidra (0x639 in the file).
+</p><p>
+I executed the modified program, put <code>John Smith</code> as specified to "your name", and entered some random string for "License key".<br>
+I attached GDB after the program stopped. Then I obtained the flag by adding <code>ractf{}</code> to the value I found on the stack.
+</p>
+</span>
+<details>
+<summary>
+<span class="language-selector-ja">GDBの操作結果</span>
+<span class="language-selector-en">Commands and their responses on GDB</span>
+</summary>
+<div><a href="gdb_log.txt" class="code-link">gdb_log.txt</a></div>
+</details>
+
+<div class="flag" style="margin-top: 1em;">ractf{RA-1100-JHRMT}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">RACTF 2021</a>
+</p>
+</body>
+</html>

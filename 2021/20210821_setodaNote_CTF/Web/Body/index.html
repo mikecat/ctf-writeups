@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Body (setodaNote CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Body</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLが与えられた。
+</p><p>
+アクセスしてページのソースを表示すると、以下の部分があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page was given.
+</p><p>
+Accessing the URL and viewing the source of the page, I found this part:
+</p>
+</span>
+<code-block data-extension="html">
+&lt;p&gt;特に指定がない限りフラグは flag{&lt;!-- *** flag{Section_9} *** --&gt;} という形式をとります。&lt;/p&gt;
+</code-block>
+
+<p class="language-selector-ja">
+この部分にflagが含まれていた。
+</p>
+<p class="language-selector-en">
+This part contained the flag.
+</p>
+
+<div class="flag">flag{Section_9}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">setodaNote CTF</a>
+</p>
+</body>
+</html>

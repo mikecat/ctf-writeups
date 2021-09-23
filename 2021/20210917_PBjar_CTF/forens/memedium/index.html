@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>memedium (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>memedium</h1>
+<span class="language-selector-ja">
+<p>
+約256MBのファイル <code>mememachinememory.vmem</code> が与えられ、パスワードを求めるように要求された。
+</p><p>
+このファイルに<code>strings</code>コマンドを適用すると、APIの名前やファイル名など、Windowsで使われていそうな文字列が出てきた。<br>
+そこで、「windows memory image find password」でググると、以下のページが見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>mememachinememory.vmem</code> (about 256MB) was given, and we were asked to find a password.
+</p><p>
+Applying the <code>strings</code> command to this file and observing,
+I found strings that should be used in Windows such as names of APIs and files.<br>
+Seeing this, I googled "windows memory image find password" and found this page:
+</p>
+</span>
+<p><a href="https://www.andreafortuna.org/2017/11/15/how-to-retrieve-users-passwords-from-a-windows-memory-dump-using-volatility/">How to retrieve user’s passwords from a Windows memory dump using Volatility | Andrea Fortuna</a></p>
+
+<p class="language-selector-ja">
+このページに沿って操作すると、以下のハッシュのデータが得られた。
+</p>
+<p class="language-selector-en">
+I obtained this hash data by executing commands according to this page.
+</p>
+<p><a href="hashes.txt" class="code-link">hashes.txt</a></p>
+
+<p class="language-selector-ja">
+以下が具体的な操作の記録である。なお、ファイルのパスは省略している。
+</p>
+<p class="language-selector-en">
+This is the commands I executed and their results. (pathes of files are omitted)
+</p>
+<p><a href="log.txt" class="code-link" data-collapse="true">log.txt</a></p>
+
+<p class="language-selector-ja">
+得られたハッシュを<common-tool data-lang="ja">CrackStation</common-tool>に投げると、
+<code>31a5167ba5ce8351b0110a9d13636cd9</code> が <code>superman83</code> に対応するNTLMハッシュであることがわかり、flagが得られた。
+</p>
+<p class="language-selector-en">
+I sent the hashes obtained to <common-tool data-lang="en">CrackStation</common-tool>.
+As a result, it revealed that <code>31a5167ba5ce8351b0110a9d13636cd9</code> is a NTLM hash corresponding to <code>superman83</code> and I obtained the flag.
+</p>
+
+<div class="flag">flag{superman83}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

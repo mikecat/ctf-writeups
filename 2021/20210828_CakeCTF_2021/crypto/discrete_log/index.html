@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>discrete log (CakeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>discrete log</h1>
+<span class="language-selector-ja">
+<p>
+プログラム <code>task.py</code> と、その出力 <code>output.txt</code> が与えられた。
+</p><p>
+<code>task.py</code> は、以下の処理をするものだった。
+</p>
+<ol>
+<li>素数 <code>p</code> および2～<code>p</code> の乱数 <code >g, r</code> を生成する。</li>
+<li><code>p</code> と <code>g</code> を出力する。
+<li><code>flag.txt</code> 中の各バイト <code>m</code> について、<code>g</code> を <code>r*m</code> 乗して <code>p</code> で割った値を出力する。</li>
+</ol>
+<p>
+<code>flag.txt</code> の内容が <code>CakeCTF{</code> で始まっていると仮定すると、以下のことがわかる。
+</p>
+<ul>
+<li><code>g</code> の <code>r*70</code> 乗 (7バイト目に対応する) を <code>g</code> の <code>r*67</code> 乗 (1バイト目に対応する) で割ることで、<code>g</code> の <code>r*3</code> 乗が得られる。</li>
+<li><code>g</code> の <code>r*101</code> 乗 (4バイト目に対応する) を <code>g</code> の <code>r*97</code> 乗 (2バイト目に対応する) で割ることで、<code>g</code> の <code>r*4</code> 乗が得られる。</li>
+<li><code>g</code> の <code>r*4</code> 乗を <code>g</code> の <code>r*3</code> 乗で割ることで、<code>g</code> の <code>r</code> 乗が得られる。</li>
+<li><code>g</code> の <code>r</code> 乗を何乗すると出力中の値になるかを調べることで、<code>flag.txt</code> の各バイトの値がわかる。</li>
+</ul>
+<p>
+これに基づき、以下のプログラムでflagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A program <code>task.py</code> and its output <code>output.txt</code> were given.
+</p><p>
+What <code>task.py</code> does was:
+</p>
+<ol>
+<li>Generate a prime number <code>p</code> and random values <code>g, r</code> in the range from 2 to <code>p</code>.</li>
+<li>Output <code>p</code> and <code>g</code>.</li>
+<li>For each bytes <code>m</code> in <code>flag.txt</code>, output <code>g</code> to the <code>r*m</code>-th power modulo <code>p</code>.</li>
+</ol>
+<p>
+Assuming that the contents of <code>flag.txt</code> begins with <code>CakeCTF{</code>, we can say following things:
+</p>
+<ul>
+<li>We can know the value of <code>g</code> to the <code>r*4</code>-th power
+by dividing <code>g</code> to the <code>r*70</code>-th power (corresponding to the 7th byte)
+by <code>g</code> to the <code>r*67</code>-th power (corresponding to the 1st byte).</li>
+<li>We can know the value of <code>g</code> to the <code>r*3</code>-th power
+by dividing <code>g</code> to the <code>r*101</code>-th power (corresponding to the 4th byte)
+by <code>g</code> to the <code>r*97</code>-th power (corresponding to the 2nd byte).</li>
+<li>We can know the value of <code>g</code> to the <code>r</code>-th power
+by dividing <code>g</code> to the <code>r*4</code>-th power by <code>g</code> to the <code>r*3</code>-th power.</li>
+<li>We can know the values of each bytes of <code>flag.txt</code> by searching for <code>b</code> such that <code>g</code> to the <code>r</code>-th power to the <code>b</code>-th power is the value in the given output.</li>
+</ul>
+<p>
+I obtained the flag via following program based on this.
+</p>
+</span>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<div class="flag">CakeCTF{4h4_p14in73x7_5p4c3_i5_7000000_5m411}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">CakeCTF 2021</a>
+</p>
+</body>
+</html>

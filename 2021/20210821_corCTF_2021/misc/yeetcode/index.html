@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>yeetcode (corCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>yeetcode</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLと、サーバのファイル一式が与えられた。<br>
+このWebページは、Pythonのプログラムを送信すると、
+2個の引数の和を返す関数<code>f(a, b)</code>が10ケース中何ケースで正しく動作したかを表示するものであった。
+</p><p>
+与えられたファイル中の<code>task/yeet.py</code>を読むと、プログラムと同じディレクトリに<code>flag.txt</code>がある状態で実行され、
+各ケースの実行の間で状態はリセットされないことが読み取れた。<br>
+従って、今何ケース目なのかをカウントし、それに応じてわざと誤答を返すことで、1回のクエリで0～10の11通りの情報を読み取ることができる。
+</p><p>
+以下のプログラムを送信すると3ケースで正解になったので、<code>flag.txt</code>のサイズは33バイトであるとわかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page and the files for the server were given.<br>
+On the page, we can send a Python program and it displays the number of cases among 10 cases in which
+a function to return the sum of two arguments <code>f(a, b)</code> correctly worked.
+</p><p>
+Reading <code>task/yeet.py</code> in the given files, I found that the program is executed in an environment
+as if there is <code>flag.txt</code> in the same directory as the program,
+and that the status is not reset between execution for each cases.<br>
+This means that we can get 11 kinds of information (0-10) per query by counting the executed cases and intentionally returning wrong answer according to the count.
+</p><p>
+Sending this program resulted in correctly working in 3 cases. This means that the size of <code>flag.txt</code> is 33 bytes.
+</p>
+</span>
+<p><a href="flaglen.py" class="code-link">flaglen.py</a></p>
+
+<p class="language-selector-ja">
+さらに、以下のプログラムは0ケースで正解になったので、
+<code>flag.txt</code>の内容は<code>corctf{</code>で始まって<code>}</code>と改行で終わることがわかった。
+</p>
+<p class="language-selector-en">
+Also, this program correctly worked in 0 cases.
+This means that the contents of <code>flag.txt</code> begins with <code>corctf{</code>, and ends with <code>}</code> followed by a newline character.
+</p>
+<p><a href="headerfooter.py" class="code-link">headerfooter.py</a></p>
+
+<p class="language-selector-ja">
+これらの情報を利用し、以下のプログラムで<code>flag.txt</code>の残りの部分を読み取った。<br>
+ルールよりflagは0x20～0x7eの95通りの文字のみを含むので、2回のクエリで1文字を読み取ることができる。<br>
+<code>pos</code>の値により読み取る文字を設定し、<code>%</code>を<code>//</code>に変えることでもう一方の桁を読み取ることができる。
+</p>
+<p class="language-selector-en">
+Based on these information, I read the remaining part of <code>flag.txt</code> using the following program.<br>
+According to the rule, the flag contain only 95 kinds of characters (0x20 - 0x7e), so we can use 2 queries to read 1 character.<br>
+The character to read can be set by the value of <code>pos</code>.
+You should change <code>%</code> to <code>//</code> to read the other digit.
+</p>
+<p><a href="getflag.py" class="code-link">getflag.py</a></p>
+
+<p class="language-selector-ja">
+結果、以下のデータが読み取れた。
+</p>
+<p class="language-selector-en">
+As a result, I read following data:
+</p>
+<p><a href="data.txt" class="code-link" data-collapse="true">data.txt</a></p>
+
+<p class="language-selector-ja">
+これを以下のプログラムで文字列に変換した。
+</p>
+<p class="language-selector-en">
+I converted this result via this program:
+</p>
+<p><a href="decode.pl" class="code-link" data-collapse="true">decode.pl</a></p>
+
+<p class="language-selector-ja">
+得られた結果に<code>corctf{}</code>を付け足すことで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by adding <code>corctf{}</code> to the result.
+</p>
+
+<div class="flag">corctf{1m4g1n3_cp_g0lf_6a318dfe}</div>
+<hr>
+<p>
+<a href="../../" class="language-aware-link">corCTF 2021</a>
+</p>
+</body>
+</html>
