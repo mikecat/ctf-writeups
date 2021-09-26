@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Walkthrough (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Walkthrough</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報、サーバのプログラム (ELFファイル) <code>walkthrough</code>、そのソースコード <code>walkthrough.c</code>、テキストファイル <code>Dockerfile</code> が与えられた。
+</p><p>
+<code>walkthrough.c</code> を読むと、<code>main</code>関数から呼び出されて<code>gets</code>関数によりデータを読み込む<code>rop</code>関数と、
+呼び出されないが<code>flag.txt</code>の内容を出力する部分を持つ<code>fmtstr</code>関数があることがわかった。
+</p><p>
+<common-tool data-lang="ja">TDM-GCC</common-tool>の<code>objdump</code>による <code>walkthrough</code> の逆アセンブル結果を見ると、
+<code>rop</code>関数における<code>gets</code>関数で読み込んだデータは<code>-0x50(%rbp)</code>から書き込まれ、
+<code>-8(%rbp)</code>にcanaryがあり、リターンアドレスは<code>%rbp</code>の8バイト先にあることがわかった。
+</p><p>
+さらに、<code>fmtstr</code>関数内の<code>flag.txt</code>の内容を出力する部分は 0x401ce4 から始まることが読み取れた。<br>
+この部分では<code>-0x78(%rbp)</code>への値の読み書きが行われるので、<code>%rbp</code>を適切な値に設定しておかないといけない。<br>
+リターンアドレスの前の8バイトが関数から帰る際の<code>leave</code>命令によって<code>%rbp</code>に書き込まれるので、ここの値を適切に設定する。<br>
+今回は、関数のメモリ上のアドレスが格納される部分の少し先に<code>%rbp</code>を設定することにした。
+</p><p>
+<common-tool data-lang="ja">Tera Term</common-tool>でサーバに接続すると、canaryの値が出力された後入力を求められた。<br>
+出力されたcanaryの値を以下のファイルの<code>*canary*</code>の部分に書き込み、「ファイル送信」することで、flagが得られた。
+</p>	
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server, a program of the server (a ELF file) <code>walkthrough</code>, its source code <code>walkthrough.c</code>, and a text file <code>Dockerfile</code> were given.
+</p><p>
+Reading <code>walkthrough.c</code>, I found a function <code>rop</code> that is called from the function <code>main</code> and read some data via the function <code>gets</code>,
+and a functon <code>fmtstr</code> that is not called but has a part to print the contents of <code>flag.txt</code>.
+</p><p>
+Disassembling <code>walkthrough</code> via <code>objdump</code> in <common-tool data-lang="en">TDM-GCC</common-tool>,
+I found that data read via the function <code>gets</code> in the function <code>rop</code> is written from <code>-0x50(%rbp)</code>,
+and that there is a canary on <code>-8(%rbp)</code>, and that the return address is 8 bytes ahead from <code>%rbp</code>.
+</p><p>
+Also, I found that the part to output the contents of <code>flag.txt</code> in the function <code>fmtstr</code> begins from 0x401ce4.<br>
+This part reads and writes values to <code>-0x78(%rbp)</code>, so proper value has to be set to <code>%rbp</code>.<br>
+The 8-byte data before the return address will be written to <code>%rbp</code> via the <code>leave</code> instructon, so we should set data for this area properly.<br>
+I decided to set <code>%rbp</code> to a little bit ahead from the area to store the addresses of functions in the memory.
+</p><p>
+Connecting to the server via <common-tool data-lang="en">Tera Term</common-tool>, the value of canary was printed and some input was requested.<br>
+I sent this file via "Send file" after putting the printed value of canary to the <code>*canary*</code> part to obtain the flag.
+</p>
+</span>
+<p><a href="payload.bin" class="code-link" data-binary="true">payload.bin</a></p>
+
+<div class="flag">flag{4nd_s0_th3_3xpl01ts_b3g1n}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>

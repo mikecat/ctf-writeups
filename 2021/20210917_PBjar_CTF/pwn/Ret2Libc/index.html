@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ret2Libc (PBjar CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Ret2Libc</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報、サーバのプログラム(ELFファイル) <code>ret2libc</code>、そのソースコード <code>ret2libc.c</code>、
+ELFファイル <code>ld-2.31.so</code> および <code>libc-2.31.so</code> が与えられた。
+</p><p>
+<code>ret2libc.c</code> を読むと、<code>gets</code>関数で入力を読み込む処理がある関数<code>learn</code>があった。<br>
+そこで、<common-tool data-lang="ja">TDM-GCC</common-tool> の<code>objdump</code> による <code>ret2libc</code> の逆アセンブル結果を用いて、
+以下のデータを用いた ROP (Return-Oriented Programming) により、<code>puts</code>関数のメモリ上のアドレスを出力させ、<code>learn</code>関数をもう一度呼ばせることにした。<br>
+<code>gets</code>関数が読み込んだデータの書き込み先は<code>-0x20(%rbp)</code>であり、<code>%rbp</code>は関数の呼び出し後1回<code>push</code>した時の<code>%rsp</code>なので、
+リターンアドレスは読み込んだデータの書き込み先の先頭から0x28バイト後である。
+</p>
+<ul>
+<li>gadget <code>pop rdi; ret</code> のアドレス</li>
+<li><code>puts</code> 関数のメモリ上のアドレスが格納されるアドレス</li>
+<li>gadget <code>ret</code> のアドレス</li>
+<li><code>puts</code> 関数を実行させるアドレス</li>
+<li>gadget <code>ret</code> のアドレス</li>
+<li><code>learn</code> 関数の先頭アドレス</ul>
+</ul>
+<p>
+以下が実際にサーバに送信するデータである。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server, the server program (a ELF file) <code>ret2libc</code>, its source code <code>ret2libc.c</code>,
+and ELF files <code>ld-2.31.so</code> and <code>libc-2.31.so</code> were given.
+</p><p>
+Reading <code>ret2libc.c</code>, I found a function <code>learn</code> that reads some input via the function <code>gets</code>.<br>
+Seeing this, I decided to perform ROP (Return-Oriented Programming) using following sequence of data<br>
+to have it output the address of the function <code>puts</code> on the memory and call the function <code>learn</code> again
+using the result of disassembling of <code>ret2libc</code> via <code>objdump</code> in <common-tool data-lang="en">TDM-GCC</common-tool>.<br>
+The function <code>gets</code> here will write what it read from <code>-0x20(%rbp)</code> and <code>%rbp</code> is <code>%rsp</code> after one <code>push</code> from the beginning of the function,<br>
+so the return address is 0x28 bytes after the head of data written by the function <code>gets</code>.
+</p>
+<ul>
+<li>An address of a gadget <code>pop rdi; ret</code></li>
+<li>An address where the address of the function <code>puts</code> in the memory is stored</li>
+<li>An address of a gadget <code>ret</code></li>
+<li>An address to have it execute the function <code>puts</code></li>
+<li>An address of a gadget <code>ret</code></li>
+<li>An address of the head of the function <code>learn</code></li>
+</ul>
+<p>
+Here is the actual data to send to the server:
+</p>
+</span>
+<p><a href="payload_leak.bin" class="code-link" data-collapse="true" data-binary="true">payload_leak.bin</a></p>
+
+<span class="language-selector-ja">
+<p>
+この <code>payload_leak.bin</code> を<common-tool data-lang="ja">Tera Term</common-tool>で「ファイル送信」し、
+サーバの応答を<common-tool data-lang="ja">Wireshark</common-tool>で見ることで、<code>puts</code>関数のメモリ上のアドレスがわかる。
+</p><p>
+さらに、<code>readelf -s</code> コマンドを <code>libc-2.31.so</code> に適用し、
+<code>puts</code>関数と<code>system</code>関数のファイル中の位置を調べると、以下のようになった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+We can obtain the address of the function <code>puts</code> in the memory by sending this file <code>payload_leak.bin</code> via "Send file" in <common-tool data-lang="en">Tera Term</common-tool>
+and observing the response from the server via <common-tool data-lang="en">Wireshark</common-tool>.
+</p><p>
+Also, I applied <code>readelf -s</code> command to the file <code>libc-2.31.so</code> to obtain the place in the file of the functions <code>puts</code> and <code>system</code>.
+Here is the result:
+</p>
+</span>
+<code-block data-extension="txt">
+   430: 00000000000765f0   472 FUNC    WEAK   DEFAULT   14 puts@@GLIBC_2.2.5
+  1430: 0000000000048e50    45 FUNC    WEAK   DEFAULT   14 system@@GLIBC_2.2.5
+</code-block>
+<span class="language-selector-ja">
+<p>
+また、<code>libc-2.31.so</code> から文字列 <code>/bin/sh</code> をバイナリエディタで検索すると、
+0x18A152 バイト目 (0-origin) に見つかった。
+</p><p>
+これらに基づき、求めた<code>puts</code>関数のメモリ上のアドレスを引数とし、
+<code>system("/bin/sh");</code> を実行させるためのデータを生成するプログラム <code>payload_gen.pl</code> を作成した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Moreover, I searched for a string <code>/bin/sh</code> from the file <code>libc-2.31.so</code> via a binary editor,
+finding at the 0x18A152-nd byte. (the first byte is 0th)
+</p><p>
+Based on these, I created this program <code>payload_gen.pl</code> that takes the address of the function <code>puts</code> in the memory as an argument
+and generates data to have it execute <code>system("/bin/sh");</code>.
+</p>
+</span>
+<p><a href="payload_gen.pl" class="code-link" data-collapse="true">payload_gen.pl</a></p>
+
+<span class="language-selector-ja">
+<p>
+生成したデータを<common-tool data-lang="ja">Tera Term</common-tool>で「ファイル送信」することでシェルを起動でき、
+<code>ls</code> コマンドを実行すると <code>flag.txt</code> があることがわかった。
+</p><p>
+<code>cat flag.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I succeeded to launch the shell by sending generated data via "Send file" in <common-tool data-lang="en">Tera Term</common-tool>.
+I found an entry <code>flag.txt</code> by executing <code>ls</code> command.
+</p><p>
+I obtained the flag by executing <code>cat flag.txt</code> command.
+</p>
+</span>
+
+<div class="flag">flag{th3_wh0l3_us3l3r4nd_1s_my_pl4ygr0und}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">PBjar CTF</a>
+</p>
+</body>
+</html>
