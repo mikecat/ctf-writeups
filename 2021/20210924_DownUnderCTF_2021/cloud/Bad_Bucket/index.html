@@ -10,26 +10,26 @@
 <h1>Bad Bucket</h1>
 <span class="language-selector-ja">
 <p>
-パス部分が <code>/index.html</code> であるURLが与えられた。
+パス部分が <code>/index.html</code> で終わるURLが与えられた。
 </p><p>
-このURLから <code>index.html</code> を削って <code>/</code> にアクセスしてみると、以下の項目を含むXMLデータが現れた。
+このURLから <code>index.html</code> を削ってアクセスしてみると、以下の項目を含むXMLデータが現れた。
 </p>
 </span>
 <span class="language-selector-en">
 <p>
-An URL with a path <code>/index.html</code> was given.
+An URL whose path ends with <code>/index.html</code> was given.
 </p><p>
-I tried removing <code>index.html</code> from this URL and accessing to <code>/</code>, finding an XML data that contains this element:
+I tried accessing the URL with <code>index.html</code> removed, finding an XML data that contains this element:
 </p>
 </span>
 <code-block data-extension="xml">
 &lt;Key&gt;buckets/.notaflag&lt;/Key&gt;
 </code-block>
 <p class="language-selector-ja">
-これをもとに、同じホストのパス <code>/buckets/.notaflag</code> にアクセスしてみると、flagが表示された。
+これをもとに、<code>index.html</code> を <code>buckets/.notaflag</code> に置き換えたURLにアクセスしてみると、flagが表示された。
 </p>
 <p class="language-selector-en">
-Seeing this, I tried accessing the path <code>/buckets/.notaflag</code> on the same host and the flag was displayed.
+Seeing this, I tried accessing the URL with <code>index.html</code> replaced to <code>buckets/.notaflag</code>, seeing the flag displayed.
 </p>
 
 <div class="flag">DUCTF{if_you_are_beggining_your_cloud_journey_goodluck!}</div>
