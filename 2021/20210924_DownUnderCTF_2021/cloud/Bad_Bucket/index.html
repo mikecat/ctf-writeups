@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bad Bucket (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Bad Bucket</h1>
+<span class="language-selector-ja">
+<p>
+パス部分が <code>/index.html</code> であるURLが与えられた。
+</p><p>
+このURLから <code>index.html</code> を削って <code>/</code> にアクセスしてみると、以下の項目を含むXMLデータが現れた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL with a path <code>/index.html</code> was given.
+</p><p>
+I tried removing <code>index.html</code> from this URL and accessing to <code>/</code>, finding an XML data that contains this element:
+</p>
+</span>
+<code-block data-extension="xml">
+&lt;Key&gt;buckets/.notaflag&lt;/Key&gt;
+</code-block>
+<p class="language-selector-ja">
+これをもとに、同じホストのパス <code>/buckets/.notaflag</code> にアクセスしてみると、flagが表示された。
+</p>
+<p class="language-selector-en">
+Seeing this, I tried accessing the path <code>/buckets/.notaflag</code> on the same host and the flag was displayed.
+</p>
+
+<div class="flag">DUCTF{if_you_are_beggining_your_cloud_journey_goodluck!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

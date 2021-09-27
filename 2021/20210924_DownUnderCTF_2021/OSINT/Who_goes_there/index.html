@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Who goes there? (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Who goes there?</h1>
+<span class="language-selector-ja">
+<p>
+ドメイン名が与えられ、ドメインを登録した個人の the number を求められた。<br>
+また、flagの形式は <code>DUCTF{+61&lt;number&gt;}</code> であると示されていた。
+</p><p>
+与えられたドメイン名をここに入れて検索してみた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A domain name was given, and "the number" of the individual who registered the domain was asked.<br>
+Also it was specified that the flag format is <code>DUCTF{+61&lt;number&gt;}</code>.
+</p><p>
+I tried putting the domain name given here for searching:
+</p>
+</span>
+<p><a href="https://tech-unlimited.com/whois.html">WHOIS検索 | ドメインの所有者情報を簡単検索 | すぐに使える便利なWEBツール | Tech-Unlimited</a></p>
+
+<p class="language-selector-ja">
+すると、
+</p>
+<p class="language-selector-en">
+As a result, these 3 entries was the same string that begins with <code>+61</code>,
+and I found no other entries that begins with <code>+61</code>.
+</p>
+<ul>
+<li>Registrant Phone</li>
+<li>Admin Phone</li>
+<li>Tech Phone</li>
+</ul>
+<span class="language-selector-ja">
+<p>
+の3項目が<code>+61</code>から始まる同じ文字列であり、他に<code>+61</code>で始まる項目はなかった。
+</p><p>
+この文字列をflagの形式に当てはめることで、flagが得られた。
+</p>
+</span>
+<p class="language-selector-en">
+I obtained the flag by putting the string to the flag format.
+</p>
+
+<div class="flag">DUCTF{+61.420091337}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

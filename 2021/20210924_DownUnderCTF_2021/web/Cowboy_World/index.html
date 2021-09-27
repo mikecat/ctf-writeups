@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Cowboy World (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Cowboy World</h1>
+<span class="language-selector-ja">
+<p>
+URLが与えられた。<br>
+アクセスすると、Username と Password を入力できるログインフォームがあった。
+</p><p>
+同じホストの <code>/robots.txt</code> にアクセスしてみると、以下の部分があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL was given.<br>
+Accessing the URL, I found a login form to enter Username and Password.
+</p><p>
+I tried accessing <code>/robots.txt</code> on the same host, finding this part:
+</p>
+</span>
+<code-block data-extension="txt">
+User-Agent: regular_cowboys
+Disallow: /sad.eml
+</code-block>
+<p class="language-selector-ja">
+<code>/sad.eml</code> をダウンロードしてテキストエディタで開くと、以下の部分があった。
+</p>
+<p class="language-selector-en">
+I downloaded <code>/sad.eml</code> and opened with a text editor, finding this part:
+</p>
+<code-block data-extension="txt">
+Everyone says 'yeee hawwwww'
+
+but never 'hawwwww yeee'
+
+:'(
+
+thats why a 'sadcowboy' is only allowed to go into our website
+</code-block>
+<span class="language-selector-ja">
+<p>
+Username に <code>regular_cowboys</code>、Password に <code>a</code> を入れてログインを試みると、「Incorrect username or password」と表示された。<br>
+Username に <code>sadcowboy</code>、Password に <code>a</code>  を入れてログインを試みると、「Incorrect password」と表示された。<br>
+このことから、Username は <code>sadcowboy</code> を使うのが良さそうであると推測した。
+</p><p>
+Username を <code>sadcowboy</code> とし、Password を <code>yeee hawwwww</code> や <code>hawwwww yeee</code> としても、「Incorrect password」と表示された。<br>
+Username を <code>sadcowboy</code>、Password を <code>:'(</code> にすると、Internal Server Error が出た。
+</p><p>
+Username を <code>sadcowboy</code>、Password を <code>' or 1=1 --</code> にすると、flagが表示された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A login attempt with an Username <code>regular_cowboys</code> and a Password <code>a</code> resulted in "Incorrect username or password".<br>
+Using <code>sadcowboy</code> as the Username and <code>a</code> as the Password resulted in "Incorrect password".<br>
+This looked implying that we should use <code>sadcowboy</code> as the Username. 
+</p><p>
+Using <code>sadcowboy</code> as the Username and <code>yeee hawwwww</code> or <code>hawwwww yeee</code> as the Password also resulted in "Incorrect password".<br>
+Using <code>sadcowboy</code> as the Username and <code>:'(</code> as the Password yielded Internal Server Error.
+</p><p>
+Using <code>sadcowboy</code> as the Username and <code>' or 1=1 --</code> as the Password resulted in displaying the flag.
+</p>
+</span>
+
+<div class="flag">DUCTF{haww_yeeee_downunderctf?}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>
