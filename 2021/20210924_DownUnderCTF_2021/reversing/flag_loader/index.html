@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>flag loader (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>flag loader</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、ELFファイル <code>flag_loader</code> が与えられた。
+</p><p>
+<code>flag_loader</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、以下の処理をしていることが読み取れた。
+</p>
+<ol>
+<li>以下の3個の関数<code>check1, check2, check3</code>を順に実行する。</li>
+<li>この3個の関数の戻り値を32bitで乗算した結果を引数として <code>sleep</code> 関数を呼び出す。</li>
+<li><code>flag.txt</code> の内容を出力する。</li>
+</ol>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and a ELF file <code>flag_loader</code> were given.
+</p><p>
+Decompiling <code>flag_loader</code> via <common-tool data-lang="en">Ghidra</common-tool>, I found it doing these processes:
+</p>
+<ol>
+<li>Execute following three functions <code>check1, check2, check3</code> in this order.</li>
+<li>Call the function <code>sleep</code> with the 32-bit product of the return values of the three functions.</li>
+<li>Output the contents of the file <code>flag.txt</code>.</li>
+</ol>
+</span>
+<p><a href="check_functions.c" class="code-link" data-collapse="true">check_functions.c</a></p>
+
+<p class="language-selector-ja">
+以下のプログラムを用い、
+各関数で <code>die();</code> が呼ばれず、かつ<code>sleep</code>関数に渡す積が小さくなるような入力を<common-tool data-lang="ja">Z3</common-tool>で求め、
+それをサーバに入力することで、flagが得られた。<br>
+ビットベクトルはそのまま比較すると符号付き整数とみなされるので、<code>z3.BV2Int</code> を用い、符号なし整数として比較するようにした。
+</p>
+<p class="language-selector-en">
+I created this progran to obtain the input not to have the functions execute <code>die();</code> and make the product to pass to the function <code>sleep</code> small via <common-tool data-lang="en">Z3</common-tool>.<br>
+Bit vectors are considered as signed when directly compared, so I used <code>z3.BV2Int</code> to have it compare them as unsigned integers.<br>
+I obtained the flag by entering the obtained data to the server.
+</p>
+<p><a href="solver.py" class="code-link" data-collapse="true">solver.py</a></p>
+
+<span class="language-selector-ja">
+<p>
+このプログラムは、以下のように用いる。
+</p>
+<ol>
+<li>引数なしで実行し、<code>check1</code>関数に入力する文字列を求める。</li>
+<li><code>check1</code>関数に渡した文字列と、<code>check2</code>関数で出力された数値を引数として実行し、<code>check2</code>関数に入力する数値を求める。</li>
+<li><code>check1</code>関数に渡した文字列と、<code>check2</code>関数に入力した数値と、<code>check3</code>関数で出力された数値を引数として実行し、<code>check3</code>関数に入力する数値を求める。</li>
+</ol>
+</span>
+<span class="language-selector-en">
+<p>
+The usage of this program is:
+</p>
+<ol>
+<li>Run with no arguments to obtain a string to enter to the function <code>check1</code>.</li>
+<li>Run with the string entered to the function <code>check1</code> and the integer printed from the function <code>check2</code> to obtain integers to enter to the function <code>check2</code>.</li>
+<li>Run with the string entered to the function <code>check1</code>, the integers entered to the function <code>check2</code>, and the integer printed from the function <code>check3</code> to obtain integers to enter to the function <code>check3</code>.</li>
+</ol>
+</span>
+<details style="margin-bottom: 1em;">
+<summary>
+<span class="language-selector-ja">実行例</span>
+<span class="language-selector-en">An example of execution</span>
+</summary>
+<code-block data-extension="txt">
+YUKI.N&gt;solver.py
+sat
+~+3&lt;6
+1866035072 2428932224
+140795439 176647168 756433920 1610415176 1610675593
+
+YUKI.N&gt;solver.py "~+3&lt;6" 42841
+sat
+~+3&lt;6
+3387238233 907771904
+2485319530 2509601282 2539509760 2674387530 2676083786
+
+YUKI.N&gt;solver.py "~+3&lt;6" 3387238233 907771904 37438
+sat
+~+3&lt;6
+3387238233 907771904
+1327179816 3756883515 3855539323 3997909600 4242394368
+
+YUKI.N&gt;
+</code-block>
+</details>
+
+<div class="flag">DUCTF{y0u_sur3_kn0w_y0ur_int3gr4l_d4t4_typ3s!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

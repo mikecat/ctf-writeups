@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>no strings (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>no strings</h1>
+<span class="language-selector-ja">
+<p>
+ELFファイル <code>nostrings</code> が与えられた。
+</p><p>
+この <code>nostrings</code> をバイナリエディタで観察すると、flagのようなデータが1バイトおきに入っている以下の部分があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A ELF file <code>nostrings</code> was given.
+</p><p>
+Viewing this file <code>nostrings</code> with a binary editor, I found this part in which every other byte contains data like the flag:
+</p>
+</span>
+<code-block data-extension="txt">
+00002000  01 00 02 00 00 00 00 00 44 00 55 00 43 00 54 00  |........D.U.C.T.|
+00002010  46 00 7b 00 73 00 74 00 72 00 69 00 6e 00 67 00  |F.{.s.t.r.i.n.g.|
+00002020  65 00 6e 00 74 00 5f 00 73 00 74 00 72 00 69 00  |e.n.t._.s.t.r.i.|
+00002030  6e 00 67 00 73 00 5f 00 73 00 74 00 72 00 69 00  |n.g.s._.s.t.r.i.|
+00002040  6e 00 67 00 7d 00 66 6c 61 67 3f 20 00 77 72 6f  |n.g.}.flag? .wro|
+00002050  6e 67 21 00 63 6f 72 72 65 63 74 21 00 00 00 00  |ng!.correct!....|
+</code-block>
+
+<p class="language-selector-ja">
+以下のようにデータのサイズを指定して <code>strings</code> コマンドを実行することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained th flag using the <code>strings</code> command with specifying the data size like this:
+</p>
+<code-block data-extension="txt">
+strings --encoding=l nostrings > strings_out.txt
+</code-block>
+
+<div class="flag">DUCTF{stringent_strings_string}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

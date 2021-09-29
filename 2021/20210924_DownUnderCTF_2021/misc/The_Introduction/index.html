@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>The Introduction (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>The Introduction</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報が与えられた。
+</p><p>
+<common-tool data-lang="ja">Tera Term</common-tool>で接続すると、
+<code>wh47 15 y0ur n4m3 h4ck3r?</code> と出てきたので、適当に<code>a</code> と入力してEnterキーを押した。(送信の改行コードはLFに設定してある)<br>
+すると、長文が少しずつ出力された後、<code>50 4r3 y0u 4c7u4lly 4 h4ck3r?</code> と出てきた。<br>
+ここで<code>yes</code>と入力してEnterキーを押すと、flagが出力された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server was given.
+</p><p>
+Connecting using <common-tool data-lang="en">Tera Term</common-tool>, it printed <code>wh47 15 y0ur n4m3 h4ck3r?</code>.<br>
+Seeing this, I entered <code>a</code> as a random string and hit the Enter key. (the newline code to send is set to LF)<br>
+Then, some long sentences were printed slowly. After that, it printed <code>50 4r3 y0u 4c7u4lly 4 h4ck3r?</code>.<br>
+I entered <code>yes</code> and hit the Enter key. Then the flag was printed.
+</p>
+</span>
+
+<div class="flag">DUCTF{w3lc0m3_70_7h3_duc7f_7hund3rd0m3_h4ck3r}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>
