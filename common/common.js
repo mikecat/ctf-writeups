@@ -185,6 +185,9 @@ const commonToolList = {
 	},
 	"SageMath": {
 		"": "https://www.sagemath.org/"
+	},
+	"キーボードシミュレータ.NET": {
+		"": "https://www.inasoft.org/icountt.html#autokeybn"
 	}
 };
 

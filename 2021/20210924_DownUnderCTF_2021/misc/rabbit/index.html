@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>rabbit (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>rabbit</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>flag.txt</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">CyberChef</common-tool>で読み込むと、先頭に <code>BZ</code> という文字列が見えたので、
+Bzip2 Decompress をかけると、その結果の先頭もまた <code>BZ</code> という文字列になっていた。<br>
+Bzip2 Decompress を数回繰り返すと、先頭が <code>PK</code> になり、複数の圧縮形式が使われているようだった。
+</p><p>
+そこで、<common-tool data-lang="ja">7-Zip</common-tool>で展開をすることにした。<br>
+<code>flag.txt</code> を直接右クリックすると、なぜか7-Zipの「開く」メニューが出なかったので、
+同じディレクトリに空のアーカイブ <code>a.zip</code> を作成し、それの右クリックを経由して <code>flag.txt</code> を開いた。
+</p><p>
+7-Zipで <code>flag.txt</code> を開いた後、<common-tool data-lang="ja">キーボードシミュレータ.NET</common-tool>で「↓キー」と「Enterキー」を1000回繰り返して入力した。<br>
+すなわち、<code>[VK_DOWN][VK_RETURN]</code> を入力するキーとして指定し、「入力を～回くりかえす。」を <code>1000</code> に設定して入力を行った。<br>
+すると、ファイル <code>flag</code> が現れたので、取り出した。
+</p><p>
+取り出したファイル <code>flag</code> の中身は、Base64エンコードされたっぽい文字列であった。<br>
+CyberChefで From Base64 をかけると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>flag.txt</code> was given.
+</p><p>
+Putting the file to <common-tool data-lang="en">CyberChef</common-tool> as an input, I saw characters <code>BZ</code> in the head,
+so I applied "Bzip2 Decompress". The result also had characters <code>BZ</code> in the head.<br>
+Repeating "Bzip2 Decompress" several times, the head changed to <code>PK</code> and it seemed multiple compression formats are used.
+</p><p>
+Seeing this, I decided to use <common-tool data-lang="en">7-Zip</common-tool> for unarchiving.<br>
+When I directly right-clicked <code>flag.txt</code>, 7-Zip didn't provide the "Open" menu for some reason.<br>
+I created an empty archive <code>a.zip</code> in the same directory, right-clicked the archive to open with 7-Zip, and navigated to open <code>flag.txt</code> from there.
+</p><p>
+Opening <code>flag.txt</code> with 7-Zip, I used <common-tool data-lang="ja">キーボードシミュレータ.NET</common-tool> to simulating to press the down arrow key and the Enter key 1000 times.<br>
+In other words, I set it to input <code>[VK_DOWN][VK_RETURN]</code> and to repeat 1000 times.<br>
+After the input, a file <code>flag</code> appeared, so I took out the file.
+</p><p>
+The contents of the file <code>flag</code> looked like Base64-encoded data.<br>
+I obtained the flag by applying "From Base64" on CyberChef to the data.
+</p>
+</span>
+
+<div class="flag">DUCTF{babushkas_v0dka_was_h3r3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

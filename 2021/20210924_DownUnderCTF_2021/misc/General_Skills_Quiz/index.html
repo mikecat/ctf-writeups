@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>General Skills Quiz (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>General Skills Quiz</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報が与えられた。
+</p><p>
+接続すると、様々な問題が出てきたので、1個ずつ答えていった。<br>
+手動では頑張っても時間が足りなそうだったので、プログラムを書くことにした。<br>
+問題の順番は固定のようだったので、これまでにわかっている問題に対応するプログラムを実行し、
+未知の問題が出てきたら対応させてまた実行する、ということを繰り返した。
+</p><p>
+ほとんどの問題は素直にやるだけだったが、以下の問題は非自明だった。
+</p>
+<ul>
+<li>binary equivalent を答える問題では、2進数の前に <code>0b</code> を付けないと正解にならなかった。</li>
+<li>the best CTF competition in the universe を答える問題では、とりあえず今回の大会の名前を入れておけばいいかと予想したが、
+<code>DownUnderCTF</code> や <code>DownUnderCTF 2021</code> は正解にならなかった。</li>
+</ul>
+<p>
+最終的に、以下のプログラムでflagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server was given.
+</p><p>
+Connecting to the server, it presented various questions, and I answered each of them.<br>
+It didn't seem having enough time to manage to solve manually, so I decided to write some program.<br>
+The order of questions looked fixed, so I repeatedly executed a program for known questions, added support for a new question it revealed, and execute the program again.
+</p><p>
+Most questions could be solved by straightly doing what is said, but these questions were not obvious:
+</p>
+<ul>
+<li>The question to answer "binary equivalent" required to add <code>0b</code> before the binary string to get accepted.</li>
+<li>For the question to answer "the best CTF competition in the universe", I guessed that the name of this competition should work, but <code>DownUnderCTF</code> and <code>DownUnderCTF 2021</code> weren't accepted.</li>
+</ul>
+<p>
+In conclusion, I obtained the flag via this program:
+</p>
+</span>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<div class="flag">DUCTF{you_aced_the_quiz!_have_a_gold_star_champion}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

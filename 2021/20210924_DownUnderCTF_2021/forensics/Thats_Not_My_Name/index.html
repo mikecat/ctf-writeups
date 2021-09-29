@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>That's Not My Name (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>That's Not My Name</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>notmyname.pcapng</code> が与えられた。
+</p><p>
+このファイルに <code>strings -n 10</code> コマンドを適用すると、16進数っぽいデータが目立った。<br>
+この結果から <code>CTF{</code> のASCIIコードによる16進表現の <code>4354467b</code> で検索すると、以下の部分が見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>notmyname.pcapng</code> was given.
+</p><p>
+I applied the <code>strings -n 10</code> command to this file and found that there is many data that looks like hexadecimal strings.<br>
+I searched for <code>4354467b</code>, which is the hexadecimal representation of <code>CTF{</code> using ASCII code, from the result and found this part:
+</p>
+</span>
+<code-block data-extension="txt">
+&lt;09fe012309643e95030000001c8003000344554354467b6334745f673037
+5f793075725f6e346d337d
+</code-block>
+
+<p class="language-selector-ja">
+この部分に<common-tool data-lang="ja">CyberChef</common-tool>で From Hex を適用すると、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by applying "From Hex" on <common-tool data-lang="en">CyberChef</common-tool> to this part.
+</p>
+
+<div class="flag">DUCTF{c4t_g07_y0ur_n4m3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>
