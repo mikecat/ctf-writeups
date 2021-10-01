@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>deadcode (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>deadcode</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、ELFファイル <code>deadcode</code> が与えられた。
+</p><p>
+このファイルを<common-tool data-lang="ja">TDM-GCC</common-tool>の<code>objdump</code>で逆アセンブルすると、
+<code>main</code>関数内で<code>gets</code>関数を用いて入力を読み込んでいるのが見えた。<br>
+また、以下の<code>system("/bin/sh")</code>を呼び出すコードがあった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and a ELF file <code>deadcode</code> were given.
+</p><p>
+Disassembling the file via <code>objdump</code> in <common-tool data-lang="en">TDM-GCC</common-tool>,
+I found that the function <code>gets</code> is used to read some input in the function <code>main</code>.<br>
+Also, I found this code that calls <code>system("/bin/sh")</code>:
+</p>
+</span>
+<code-block data-extension="txt">
+  4011ef:	48 8d 3d d5 0e 00 00 	lea    0xed5(%rip),%rdi        # 4020cb &lt;_IO_stdin_used+0xcb&gt;
+  4011f6:	b8 00 00 00 00       	mov    $0x0,%eax
+  4011fb:	e8 50 fe ff ff       	callq  401050 &lt;system@plt&gt;
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+さらに、<code>gets</code>関数が読み込んだデータは<code>-0x20(%rbp)</code>から読み込まれ、リターンアドレスは<code>%rbp</code>の8バイト先なので、
+リターンアドレスは<code>gets</code>関数のデータの読み込み先から0x28バイト先にあることが読み取れた。
+</p><p>
+これらを踏まえ、<common-tool data-lang="ja">Tera Term</common-tool>でサーバに接続し、
+以下のデータを「ファイル送信」することで、シェルを起動できた。<br>
+シェルで <code>ls -al</code> コマンドを実行するとファイル <code>flag.txt</code>があることがわかり、
+<code>cat flag.txt</code> コマンドを実行することでflagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Moreover, I found that the return address is 0x28 bytes ahead from where the function <code>gets</code> saves data read
+because it saves from <code>-0x20(%rbp)</code> and the return address is 8 bytes ahead from <code>%rbp</code>.
+</p><p>
+Based on these, I succeeded to launch the shell by connecting to the server via <common-tool data-lang="en">Tera Term</common-tool>
+and sending this data via "Send file".<br>
+I found that a file <code>flag.txt</code> exists by executing a commnand <code>ls -al</code> in the shell,
+and obtained the flag via a command <code>cat flag.txt</code>.
+</p>
+</span>
+<p><a href="launch_shell.bin" class="code-link" data-binary="true">launch_shell.bin</a></p>
+
+<div class="flag">DUCTF{y0u_br0ught_m3_b4ck_t0_l1f3_mn423kcv}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>
