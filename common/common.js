@@ -188,6 +188,14 @@ const commonToolList = {
 	},
 	"キーボードシミュレータ.NET": {
 		"": "https://www.inasoft.org/icountt.html#autokeybn"
+	},
+	"サクラエディタ": {
+		"ja": "https://sakura-editor.github.io/",
+		"en": "https://sakura-editor.github.io/index.en.html"
+	},
+	"Sakura Editor": {
+		"ja": "https://sakura-editor.github.io/",
+		"en": "https://sakura-editor.github.io/index.en.html"
 	}
 };
 

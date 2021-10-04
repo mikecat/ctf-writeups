@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Break Me! (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Break Me!</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、サーバのプログラム <code>aes-ecb.py</code> が与えられた。<br>
+プログラムは、入力を読み取り、「flag、入力、暗号鍵」をこの順番で結合したデータを <code>AES.MODE_ECB</code> で暗号化し、結果を出力する、ということを繰り返すものだった。
+</p><p>
+<code>AES.MODE_ECB</code> は各ブロックを独立に暗号化する方式なので、以下のことがわかる。
+</p>
+<ul>
+<li>入力の1文字目を変えた時にどのブロックが変わるかを見ることで、flagだけのブロックが何ブロックあるかわかる。</li>
+<li>入力の何文字目を変えると変わるブロックが変わるかを見ることで、flagの長さをブロック長で割った余りがわかる。</li>
+<li>入力の後ろのデータ(鍵)のうち未知の部分の最初の1バイトをブロックの最後に入れて暗号化し、そのバイトを全探索することで、このバイトの値がわかる。</li>
+</ul>
+<p>
+これらに基づき、以下のプログラムで暗号鍵を取得できた。<br>
+5文字程度取得するごとになぜか通信が切れたので、これまでに取得したデータを指定して続きを取得出来るようにした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and a server program <code>aes-ecb.py</code> were given.<br>
+The program repeatedly reads some input, encrypts "the flag, input data, the key" concatenated in this order using <code>AES.MODE_ECB</code>, and prints the ciphertext.
+</p><p>
+<code>AES.MODE_ECB</code> encrypts each blocks independently, so these things can be said:
+</p>
+<ul>
+<li>We can know the number of blocks that contains only the flag by checking which block changes by changing the first character of the input.</li>
+<li>We can know the length of the flag modulo the block length by checking changing which character in the input changes another block.</li>
+<li>We can obtain the first unknown byte in the data after the input (the key) by putting the byte as the last byte of a block and searching for the byte by brute-forcing.</li>
+</ul>
+<p>
+Based on these facts, I succeeded to obtain the key using this program.<br>
+The connection closed after obtaining around 5 characters for some reason, so I enabled it to accept known data and obtain the data after that.
+</p>
+</span>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<p class="language-selector-ja">
+暗号鍵を取得できたのでflagを含むデータを復号できるはずだが、
+現在の<common-tool data-lang="ja">CyberChef</common-tool>では指定の形式のパディングが入ったデータを暗号化したものでないと復号できないため、そのままでは復号できない。<br>
+そこで、各ブロックを独立に暗号化していることを利用し、まず空文字列を暗号化したデータを作成した。
+</p>
+<p class="language-selector-en">
+Now the data that contains the flag can be decrypted with the obtained key.<br>
+However, current <common-tool data-lang="en">CyberChef</common-tool> only supports decrypting of ciphertext whose plaintext has a padding with the specified format, and therefore it cannot be directly used to decrypt in this case.<br>
+To overcome this, I encrypted an empty string to exploit the fact that each blocks are encrypted independently.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=AES_Encrypt(%7B'option':'Hex','string':'215f534543524554534f555243455f21'%7D,%7B'option':'Hex','string':''%7D,'ECB','Raw','Hex',%7B'option':'Hex','string':''%7D)"
+>AES Encrypt - CyberChef</a></p>
+
+<p class="language-selector-ja">
+復号したい暗号文の後ろに、この空文字列に対応する暗号文ブロックを結合して復号することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by decrypting the ciphertext to decrypt with the encrypted block of an empty string concatenated after that.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=AES_Decrypt(%7B'option':'Hex','string':'215f534543524554534f555243455f21'%7D,%7B'option':'Hex','string':''%7D,'ECB','Hex','Raw',%7B'option':'Hex','string':''%7D,%7B'option':'Hex','string':''%7D)&input=ZjBjMDJhZGU5MWFjZWZmMjkzNzJmZDFjZGUyOGVhNGM5ODZmZmYzZjU1ZjEwMDNiOTdkNGU0MzI0NTNiZDk4MjliYzVkNjc2MTFiMDI1YmRkOWZjOTU5OGQ4Njk2Yjk1CjY0Y2FlNDUwYmZlYWZhOGFlZDdmMzA2OGJmZWYzZmFj"
+>AES Decrypt - CyberChef</a></p>
+
+<div class="flag">DUCTF{ECB_M0DE_K3YP4D_D474_L34k}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

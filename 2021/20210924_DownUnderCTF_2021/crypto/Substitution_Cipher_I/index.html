@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Substitution Cipher I (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Substitution Cipher I</h1>
+<span class="language-selector-ja">
+<p>
+プログラム <code>substitution-cipher-i.sage</code> と、その出力 <code>output.txt</code> が与えられた。<br>
+プログラムは、<code>./flag.txt</code> の各文字を <code>f.substitute</code> を用いて変換し、その結果を出力するものだった。
+</p><p>
+変換元のデータを <code>b"DDDUCTF{}"</code> に差し替え、<code>f.substitute</code> の結果を16進数で出力するようにしてみたところ、
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A program <code>substitution-cipher-i.sage</code> and its output <code>output.txt</code> were given.<br>
+The program converts each characters in <code>./flag.txt</code> using <code>f.substitute</code> and outputs the result.
+</p><p>
+I tried changing the data to convert to <code>b"DDDUCTF{}"</code> and having it output the results of <code>f.substitute</code> in hexadecimal numbers.
+The result was:
+</p>
+</span>
+<code-block data-extension="txt">
+0xeba3 0xeba3 0xeba3 0x16feb 0xe4c5 0x16753 0xf9ad 0x301bd 0x31af3
+</code-block>
+<span class="language-selector-ja">
+<p>
+となった。このことから、同じ入力の文字は同じ出力データに変換されそうだということが読み取れた。<br>
+さらに、<code>output.txt</code> の各文字を<common-tool data-lang="ja">サクラエディタ</common-tool>で見ると、
+各文字のコード(<code>U+xxxx</code>)が出力の16進数と一致することがわかった。
+</p><p>
+そこで、0x20～0x7eの各入力について出力の値を求めて逆引き用のテーブルを作ることにした。<br>
+さらに、<code>output.txt</code> の各文字のコードをサクラエディタで読み取り、
+そこからテーブルを参照して入力の文字を求めることにした。
+</p><p>
+最終的に、以下のプログラムを<common-tool data-lang="ja">Sage Cell Server</common-tool>で実行することでflagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This implies that the same input character should be converted to the same output characters.<br>
+Also, checking each characters in <code>output.txt</code> on <common-tool data-lang="en">Sakura Editor</common-tool>,
+I found that the codes of each characters (<code>U+xxxx</code>) matches the output hexadecimal numbers.
+</p><p>
+I decided to obtain outputs for each inputs in the range 0x20 to 0x7f to create a table for inversion.<br>
+I also decided to read the codes for each characters in <code>output.txt</code> on Sakura Editor
+and refer the table to obtain the input characters.
+</p><p>
+In conclusion, I obtained the flag by executing this program on <common-tool data-lang="en">Sage Cell Server</common-tool>.
+</p>
+</span>
+<p><a href="solve.txt" class="code-link" data-extension="py">solve.txt</a></p>
+
+<div class="flag">DUCTF{sh0uld'v3_us3d_r0t_13}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>
