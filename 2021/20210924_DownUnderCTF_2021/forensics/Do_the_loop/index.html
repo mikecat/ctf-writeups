@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Do the loop! (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Do the loop!</h1>
+<span class="language-selector-ja">
+<p>
+音声ファイル <code>monorail.wav</code> が与えられた。
+</p><p>
+音声を聴いてみると、音楽に混ざってCW (モールス信号) のような音が入っていることに気がついた。<br>
+そこで、<common-tool data-lang="ja">VLC media player</common-tool>で速度を遅くして再生し、モールス信号が表す文字を書き取っていった。<br>
+さらに、<common-tool data-lang="ja">Audacity</common-tool>でスペクトルを表示すると、モールス信号のほとんどの部分がはっきりと現れた。<br>
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An audio file <code>monorail.wav</code> was given.
+</p><p>
+Listening to the file, I found that there is some sounds like CW (Morse code) is in some music.<br>
+Then, I wrote down the characters that the Morse code represents with listening in a slow speed on <common-tool data-lang="en">VLC media player</common-tool>.<br>
+Moreover, I tried viewing the spectrum in <common-tool data-lang="en">Audacity</common-tool>. It revealed the most part of the Morse code clearly.
+</p>
+</span>
+<p><a href="supekutoru.png"><img src="supekutoru_thumb.jpg" alt="the spectrum on Audacity"></a></p>
+
+<p class="language-selector-ja">
+これらをもとにflagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag based on them.
+</p>
+
+<div class="flag">icouldlistentothisonloopallday</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

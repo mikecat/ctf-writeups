@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>How to pronounce GIF (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>How to pronounce GIF</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>challenge.gif</code> が与えられた。<br>
+このファイルはアニメーションGIFで、二次元バーコードが少しずつ表示されているようだった。
+</p><p>
+そこで、まず以下のコマンドにより、画像をフレームごとに分解した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>challenge.gif</code> was given.<br>
+The file was an animated GIF and it looked like parts of 2D barcodes are presented little by little.
+</p><p>
+Seeing this, I firstly separated the image to the frames by this command:
+</p>
+</span>
+<code-block data-extension="txt">
+ffmpeg -i challenge.gif challenge_frames\%03d.png
+</code-block>
+<p class="language-selector-ja">
+その結果、フレーム番号の1の位ごとにそれぞれ違う二次元バーコードの部分になっていそうだった。<br>
+そこで、以下のプログラムを用い、フレーム番号の1の位ごとに画像を縦方向に結合することで、二次元バーコードを復元した。
+</p>
+<p class="language-selector-en">
+As a result, they looked be parts of different 2D barcodes, depending to the one's place of the frame number.<br>
+I reconstructed the 2D barcodes by concatenating the images vertically for each one's digit of the frame number using this program:
+</p>
+<p><a href="gattai.py" class="code-link" data-collapse="true">gattai.py</a></p>
+
+<p class="language-selector-ja">
+得られた画像群にそれぞれ<common-tool data-lang="ja">CyberChef</common-tool>の Parse QR Code をかけると、
+いくつかの画像についてはエラーとなり、エラーにならなかった画像からは以下のデータが得られた。
+</p>
+<p class="language-selector-en">
+I applied "Parse QR Code" in <common-tool data-lang="en">CyberChef</common-tool> to the resulting images.<br>
+Some images resulted in errors and these data are extracted from the rest:
+</p>
+<ul>
+<li>2: <code>https://bit.ly/3Afouex</code></li>
+<li>3: <code>f0ll0w 7h3 wh173 r4bb17</code></li>
+<li>4: <code>https://bitly.com/98K8eH</code></li>
+<li>7: <code>https://bit.ly/2YOdoPM</code></li>
+<li>8: <code>fMV9oYVhYMHJfbjB3P30=</code></li>
+</ul>
+
+<p class="language-selector-ja">
+さらに、CyberChefでは読めなかった画像を手元のスマホに入っていた<common-tool data-lang="ja">Lightning QR</common-tool>で読み取ると、以下のデータが得られた。
+</p>
+<p class="language-selector-en">
+Then, I read data from the images that CyberChef cound't read with <common-tool data-lang="en">Lightning QR</common-tool>, which is installed in my smartphone.
+Here are the results:
+</p>
+<ul>
+<li>0: <code>https://www.youtube.com/watch?v=N1AL2EMvVy0</code></li>
+<li>1: <code>The princess is in another castle</code></li>
+<li>5: <code style="display: inline-block; vertical-align: text-top;">(\(\<br>( -.-)<br>o_(")(")</code></li>
+<li>6: <code>RFVDVEZ7YU1</code></li>
+<li>9: <code style="display: inline-block; vertical-align: text-top;">( )( )<br>(O.O)<br>o_(")(")</code></li>
+</ul>
+
+<p class="language-selector-ja">
+6番の画像から得られたデータにCyberChefで From Base64 をかけると、<code>DUCTF{aM</code> となった。
+</p>
+<p class="language-selector-en">
+Applying "From Base64" on Cyberchef to the data from the image no. 6 resulted in <code>DUCTF{aM</code>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)&input=UkZWRFZFWjdZVTE"
+>From Base64 - CyberChef</a></p>
+
+<p class="language-selector-ja">
+さらに、6番の画像から得られたデータに8番の画像から得られたデータを繋げたものにCyberChefで From Base64 をかけると、flagが得られた。
+</p>
+<p class="language-selector-en">
+Then, I applied "From Base64" on CyberChef to the data from the image no. 6 with the data from the image no. 8 concatenated. The result was the flag.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)&input=UkZWRFZFWjdZVTEKZk1WOW9ZVmhZTUhKZmJqQjNQMzA9"
+>From Base64 - CyberChef</a></p>
+
+<div class="flag">DUCTF{aM_1_haXX0r_n0w?}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

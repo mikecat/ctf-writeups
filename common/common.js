@@ -196,6 +196,13 @@ const commonToolList = {
 	"Sakura Editor": {
 		"ja": "https://sakura-editor.github.io/",
 		"en": "https://sakura-editor.github.io/index.en.html"
+	},
+	"Lightning QR": {
+		"ja": "https://play.google.com/store/apps/details?id=com.application_4u.qrcode.barcode.scanner.reader.flashlight&hl=ja",
+		"en": "https://play.google.com/store/apps/details?id=com.application_4u.qrcode.barcode.scanner.reader.flashlight&hl=en"
+	},
+	"Audacity": {
+		"": "https://www.audacityteam.org/"
 	}
 };
 

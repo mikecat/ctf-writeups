@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Substitution Cipher II (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Substitution Cipher II</h1>
+<span class="language-selector-ja">
+<p>
+プログラム <code>substitution-cipher-ii.sage</code> とその出力 <code>output.txt</code> が与えられた。<br>
+プログラムは、以下の処理をするものだった。
+</p>
+<ol>
+<li>使う可能性がある文字を集めた文字列 <code>CHARSET</code> を用意する</li>
+<li><code>f = P.random_element(6)</code> を用意する</li>
+<li><code>./flag.txt</code> の内容を読み込み、<code>FLAG</code> とする</li>
+<li><code>FLAG</code>の各文字について、 <code>CHARSET</code> 内の文字の位置を用いて <code>f.substitute</code> で変換を行う</li>
+<li>変換結果の文字列を出力する</li>
+</ol>
+<p>
+まず、<common-tool data-lang="ja">Sage Cell Server</common-tool> において、<code>f</code> の内容を出力するなどの実験を行った。<br>
+その結果、<code>f</code> は <code>x</code> の6次式になり、計算結果は <code>CHARSET</code> の長さで割った余りになりそうなことがわかった。
+</p><p>
+これを踏まえ、<code>FLAG</code> は <code>DUCTF{</code> で始まって <code>}</code> で終わると仮定した上で、
+変換結果が条件を満たす <code>f</code> を<common-tool data-lang="ja">Z3</common-tool>で求めようとする以下のプログラムを書き、実行した。<br>
+しかし、しばらく待っても答えは出なかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A program <code>substitution-cipher-ii.sage</code> and its output <code>output.txt</code> were given.<br>
+What the program does is:
+</p>
+<ol>
+<li>Prepare a string that contains all characters that may be used <code>CHARSET</code>.</li>
+<li>Prepare <code>f = P.random_element(6)</code>.</li>
+<li>Read the contents of <code>./flag.txt</code> and store it to <code>FLAG</code>.</li>
+<li>Convert each characters in <code>FLAG</code> using the position of the character in <code>CHARSET</code> and <code>f.substitute</code>.</li>
+<li>Output the resulting string.</li>
+</ol>
+<p>
+Firstly I did some experiments including printing <code>f</code> on <common-tool data-lang="en">Sage Cell Server</common-tool>.<br>
+As a result, I found that <code>f</code> is a sixth degree polynomial of <code>x</code>, and that the result of calculation is the remainder divided by the length of <code>CHARSET</code>.
+</p><p>
+Based on these findings, and an assumption that <code>FLAG</code> begins with <code>DUCTF{</code> and ends with <code>}</code>,
+I created this program to obtain <code>f</code> using <common-tool data-lang="en">Z3</common-tool> that realizes the conversion, and executed that.<br>
+However, the program didn't give me an answer in a reasonable time.
+</p>
+</span>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<p class="language-selector-ja">
+ここで、<code>CHARSET</code>の長さは47であり、計算はこの長さで余りをとるので、
+6次式 <code>f</code> の各係数は0～46のみを考えればよく、
+考えられるパターン数は<code>47**7 = 506,623,120,463</code>通りである。<br>
+1秒あたり<code>10**8</code>パターン程度試せると仮定すると、1～2時間程度で全通り試せると見積もることができ、これは十分短いと考えられる。<br>
+そこで、以下のプログラムで <code>f</code> を全探索することにした。
+</p>
+<p class="language-selector-en">
+Considering that the length of <code>CHARSET</code> is 47, and that the calculation is done with dividing by this length and taking the remainder,
+we should think only values between 0 and 46 as each elements of the sixth degree polynomial <code>f</code>.<br>
+This means that the number of all possible putterns is <code>47**7 = 506,623,120,463</code>.<br>
+Assuming that we can try about <code>10**8</code> putterns per second, we can estimate that the brute-force searching will take about 1 or 2 hours, and this is short enough.<br>
+Therefore I decided to perform a brute-force search <code>f</code> using this program:
+</p>
+<p><a href="bruteforce.c" class="code-link" data-collapse="true">bruteforce.c</a></p>
+
+<p class="language-selector-ja">
+その結果、10分程度で探索が終わり、<code>f = 1 + 27*x + 28*x^2 + 9*x^3 + 40*x^4 + 15*x^5 + 41*x^6</code> の1通りが見つかった。<br>
+この係数を指定し、以下のプログラムで逆変換テーブルを作ってもとの <code>FLAG</code> の内容を求めようとした。
+</p>
+<p class="language-selector-en">
+As a result, the search completed in about 10 minutes and only one result <code>f = 1 + 27*x + 28*x^2 + 9*x^3 + 40*x^4 + 15*x^5 + 41*x^6</code> was found.<br>
+Then, I tried to obtain the value of <code>FLAG</code> with this coefficients using this program to create an inversion table:
+</p>
+<p><a href="solve2.py" class="code-link" data-collapse="true">solve2.py</a></p>
+
+<p class="language-selector-ja">
+係数は以下のように指定する。
+</p>
+<p class="language-selector-en">
+How to specify the coefficients is:
+</p>
+<code-block data-extension="txt">
+solve2.py 1 27 28 9 40 15 41
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+その結果、<code>FLAG</code> は <code>DUCTF{go0d_0l'_l4gr4fg3}</code> と求まったが、これはIncorrectだった。<br>
+ただし、いくつかの文字については逆変換テーブルの衝突が報告されており、特にこの結果に使われている文字については以下の可能性があった。
+</p>
+<ul>
+<li><code>U</code> のかわりに <code>!</code></li>
+<li><code>f</code> のかわりに <code>n</code> または <code>p</code></li>
+<li><code>3</code> のかわりに <code>8</code></li>
+</ul>
+<p>
+<code>f</code> を <code>n</code> に変えてみたところ、Correctとなり、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+The answer was that the <code>FLAG</code> is <code>DUCTF{go0d_0l'_l4gr4fg3}</code>, but this was judged as Incorrect.<br>
+Now note that some collisions in the inversion table were found. Here are the other possibilities about the characters used here:
+</p>
+<ul>
+<li><code>!</code> instead of <code>U</code></li>
+<li><code>n</code> or <code>p</code> instead of <code>f</code></li>
+<li><code>8</code> instead of <code>3</code></li>
+</ul>
+<p>
+I tried changing <code>f</code> to <code>n</code>. It was judges as Correct and I obtained the flag.
+</p>
+</span>
+
+<div class="flag">DUCTF{go0d_0l'_l4gr4ng3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>
