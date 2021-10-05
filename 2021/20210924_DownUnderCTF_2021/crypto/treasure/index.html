@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>treasure (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>treasure</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、サーバのプログラム <code>treasure.py</code> が与えられた。<br>
+このプログラムは、以下の処理をするものであった。
+</p>
+<ol>
+<li>秘密の値<code>REAL_COORDS</code>、および既知の値<code>FAKE_COORDS</code>と<code>p</code>を用意する。</li>
+<li>乱数<code>r1, r2</code>を用意する。</li>
+<li><code>shares[0] = r1*r2*REAL_COORDS mod p</code>の値を出力する。</li>
+<li>数値<code>s1</code>の入力を受け付け、<code>secret = s1^3 / (r1^3 * r2^3 * REAL_COORDS^2) mod p</code> の値を出力する。</li>
+<li><code>secret</code>がある条件を満たした場合は、終了する。</li>
+<li>もう一度数値<code>s1</code>の入力を受け付ける。</li>
+<li>新しい<code>s1</code>について、<code>s1^3 / (r1^3 * r2^3 * REAL_COORDS^2) mod p</code>の値が<code>FAKE_COORDS</code>でなければ終了する。</li>
+<li>数値の入力を受け付ける。読み込んだ数値が<code>REAL_COORDS</code>なら、flagを含むデータを出力する。</li>
+</ol>
+<p>
+最初の<code>s1</code>として<code>shares[0]</code>の値をそのまま入力すると、
+<code>REAL_COORDS</code>の値が出力され、終了した。<br>
+これを数回繰り返した結果、<code>REAL_COORDS</code>の値は固定のようだった。
+</p><p>
+そこで、<code>s1^3</code>に<code>FAKE_COORDS / REAL_COORDS (mod p)</code>の値を掛ければ、
+<code>s1^3 / (r1^3 * r2^3 * REAL_COORDS^2) mod p</code>の値を<code>FAKE_COORDS</code>にすることができる。<br>
+すなわち、<code>s1</code>に<code>FAKE_COORDS / REAL_COORDS (mod p)</code>の3乗根を掛ければよい。
+</p><p>
+剰余を取る場合の3乗根の求め方を調べたところ、以下のページが見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and a program for the server <code>treasure.py</code> were given.<br>
+What the program does is:
+</p>
+<ol>
+<li>Prepare a secret value <code>REAL_COORDS</code>, and public values <code>FAKE_COORDS</code> and <code>p</code>.</li>
+<li>Generate random numbers <code>r1, r2</code>.</li>
+<li>Output the value of <code>shares[0] = r1*r2*REAL_COORDS mod p</code>.</li>
+<li>Accept an input of a number <code>s1</code>, and output the value of <code>secret = s1^3 / (r1^3 * r2^3 * REAL_COORDS^2) mod p</code>.</li>
+<li>Exit if the value of <code>secret</code> satisfies a condition.</li>
+<li>Accept an input of a number <code>s1</code> again.</li>
+<li>Using the new value of <code>s1</code>, exit if the value of <code>s1^3 / (r1^3 * r2^3 * REAL_COORDS^2) mod p</code> is not <code>FAKE_COORDS</code>.</li>
+<li>Accept an input of a number. If the value entered is <code>REAL_COORDS</code>, output some data that contains the flag.</li>
+</ol>
+<p>
+Entering the value of <code>shares[0]</code> without modifying as the first <code>s1</code>, it printed the value of <code>REAL_COORDS</code> and exited.<br>
+Repeating this several times, I found the the value of <code>REAL_COORDS</code> looks fixed.
+</p><p>
+Now, we can make the value of <code>s1^3 / (r1^3 * r2^3 * REAL_COORDS^2) mod p</code> to be <code>FAKE_COORDS</code>
+by multiplying the value of <code>FAKE_COORDS / REAL_COORDS (mod p)</code> to <code>s1^3</code>.<br>
+In other words, we should multiply the cube root of <code>FAKE_COORDS / REAL_COORDS (mod p)</code> to <code>s1</code>.
+</p><p>
+I searched for how to calculate cube roots under modulo, and found this page:
+</p>
+</span>
+<p><a href="https://stackoverflow.com/questions/6752374/cube-root-modulo-p-how-do-i-do-this"
+>python - Cube root modulo P -- how do I do this? - Stack Overflow</a></p>
+
+<span class="language-selector-ja">
+<p>
+<common-tool data-lang="ja">factordb.com</common-tool>でチェックした結果、<code>p</code>の値は素数であった。<br>
+さらに、<code>p</code>を3で割ると2余ったので、このページより<code>a</code>の3乗根は<code>pow(a,(2*p - 1)/3, p)</code>となることがわかる。
+</p><p>
+最初の入力は、<code>0</code>を入力することで処理を続行させることができた。<br>
+2番目の入力は、出力された<code>shares[0]</code>に<code>FAKE_COORDS / REAL_COORDS (mod p)</code>の3乗根を掛け、<code>p</code>で割った余りを入力する。<br>
+最後に、<code>REAL_COORDS</code>の値をそのまま入力すると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Checking on <common-tool data-lang="en">factordb.com</common-tool>, I found that the <code>p</code> is a prime number.<br>
+I also found that <code>p</code> modulo 3 is 2, so the cube root of <code>a</code> becomes <code>pow(a,(2*p - 1)/3, p)</code>, according to the page.
+</p><p>
+I succeeded to have it proceed by entering <code>0</code> as the first input.<br>
+For the second input, I use "the cube root of <code>FAKE_COORDS / REAL_COORDS (mod p)</code>" times <code>shares[0]</code> modulo <code>p</code>.<br>
+Finally, I entered the value of <code>REAL_COORDS</code> and obtained the flag.
+</p>
+</span>
+
+<div class="flag">DUCTF{m4yb3_th3_r34L_tr34sur3_w4s_th3_fr13nDs_w3_m4d3_al0ng_Th3_W4y.......}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>
