@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>OTWhat 1 (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>OTWhat 1</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLが与えられた。<br>
+Webページは、URLとSignatureの入力を受け付けるものだった。<br>
+また、問題文より、<code>https://EVILCODE/</code> から始まるURLと対応する署名を入力して送信するとよさそうだった。
+</p><p>
+Webページのソースを見ると、公開鍵のデータがあった。<br>
+さらに、「署名を送信するとデバッグ情報が出る」というヒントをもとにとりあえず最初から入っていたURLとSignatureを送信してみると、ソースに以下が追加された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page was given.<br>
+The web page had a form to enter URL and Signature.<br>
+The challenge description implied that we should enter an URL beginning with <code>https://EVILCODE/</code> and corresponding signature.
+</p><p>
+The source of the page had the public key.<br>
+Also, seeing a hint "some debug information will appear after sending a signature", I sent the default URL and Signature.
+This resulted in this added to the source code:
+</p>
+</span>
+<code-block data-extension="txt">
+update.c:69:main(): strcmp(hash, &decrypted_signature[512 - 64]) = 0
+</code-block>
+<span class="language-selector-ja">
+<p>
+このことから、署名の検証は何らかのハッシュ値と「署名を復号」したデータの一部を<code>strcmp</code>関数で比較することで行っているらしいことが読み取れた。<br>
+文字列を比較する関数で署名を検証するというのは、RACTF 2021の<a href="../../../20210814_RACTF_2021/Pwn_Reversing/Hotel_Codeifornia/" class="language-aware-link">Hotel Codeifornia</a>でも行われており、
+比較するデータの早い位置に値0x00のバイトが現れるようにすればよさそうである。
+</p><p>
+まず、ここで使われている署名について調べるため、公開鍵のデータを<common-tool data-lang="ja">CyberChef</common-tool>でデコードした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This implied that the verification is done by comparing some hash value and a part of the "decrypted signature" via the function <code>strcmp</code>.<br>
+Comparing signature via a function to compare strings was also done in <a href="../../../20210814_RACTF_2021/Pwn_Reversing/Hotel_Codeifornia/" class="language-aware-link">Hotel Codeifornia</a> (RACTF 2021).<br>
+It will be good to have bytes with the value 0x00 appear near the head of data to compare.
+</p><p>
+Firstly, to investigate the signature used here, I decoded the public key via <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)To_Hex('Space',0)Parse_ASN.1_hex_string(0,32)&input=TUlJQ0lqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FnOEFNSUlDQ2dLQ0FnRUFuWTJpWUV6czZac2x4TWxrODB5bwpmY3JJOXVZV1hGT3Z2TElycENDQkVwZGJRaGFQWXRSNDVicll3dEZTOGxsOUZMc1BKUlVCMWlSbDBUbDNsQjVHCjhXM292VUU2OURKSG5ieFhqUElJVHEzZ05hdUMxdE55cSt5blo3TDl0TXZuemVXSWt3RVhTMjZjRlI1VERtdlEKNzdYNGoxRHJyRHl1SFBIY1MrSlMxWklrdFRaNEUwRU9GZlk1RlIyRk5kNWZmTGFjVTlvNDAwQ0srSFQ4bUwvawpORlUzam5wUmM0TlVqcldDVGt5dWx1bXFuNU9EdStJOWFKbWFPUm5BWUdDOG1iN2dseDlTSWlUVlQ4UlRvSHVwCm1NYUlKQzVZOTFCU0NtQUZOMTMyazkxNGxKSjAxMUtCMUlHUUVyVWUxNE5BMVhDMEJpZ01QSGZPMjlvQ01PbHcKMVFtaGcydWpnOElQcUVRRExCcU10cTZCWHpLcnZjcUhWK0IzR2JxWisxVFZDSkxEWDhQTnpVYkZRMVZSOVFIbApiMlVtZjl0aldtSlpJZnUraTZsdGZuYjFnRnZKZkhzMmRwbjhXVXNvNjR1dUdPVUZ3M0FuUHFNZ1NvR1Q1a01hClJJbWRWWVpmeDBUMkFkWTN2SEtmb05EQVZsQlRsSE45N2MwZmhNUnR6MmszcGJ2SHc5UFI5SkdDZWltRFhWMGEKZXMrMGliVGFHUEhlZ2ZqM1B6T0RPQmZEZEdkWitqU3ZjVEtBc3l6QkJPVEx4YVdDTU5Zb2F1cmVkOGNqbGVlNgpIeFhISHBqTmhGSGJ4TlluRU1iMDloRXN2MzhhdE9ZZWpkWGhVL2VRbFNQVEN4azAwc091cVVFaGpaYTN2RlNFCmtTalk0ZVRHSGNYYzlZdS9rdnBXVWlrQ0F3RUFBUT09"
+>From Base64, To Hex, Parse ASN.1 hex string - CyberChef</a></p>
+<span class="language-selector-ja">
+<p>
+その結果、<code>rsaEncryption</code>という文字列、1個の大きい整数、1個の小さい整数が現れた。<br>
+RSAらしいこと、署名は公開されている情報で検証できるはずであることを考えると、
+署名を「小さい整数」乗して「大きい整数」で割った余りが<code>decrypted_signature</code>になると予想できた。
+</p><p>
+また、<code>512 - 64</code>という添字から、計算結果は512バイトにエンコードされ、端から64バイト目から比較が開始されそうであることが読み取れた。
+</p><p>
+Signatureとして0x00 1バイトをBase64エンコードした<code>AA==</code>を送信してみると、
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+There were a string <code>rsaEncryption</code>, a large integer, and a small integer were in the result.<br>
+Considering that RSA looks used, and that signatures should be able to be verified using only public information,
+I guessed that the <code>decrypted_signature</code> is the signature to the (the small integer)-th power modulo (the large integer).
+</p><p>
+Also, the index <code>512 - 64</code> is implying that the calculation result is encoded to 512 bytes and the comparision begins from the 64th byte from the edge.
+</p><p>
+I tried sending <code>AA==</code>, which is Base64-encoded one byte of 0x00, as Signature, seeing this:
+</p>
+</span>
+<blockquote>
+Error: Incorrect signature length (expected 512 bytes).
+</blockquote>
+<p class="language-selector-ja">
+と出てきた。そこで、0x00を512バイト並べてBase64エンコードしたデータを、以下のようにCyberChefで作成した。
+</p>
+<p class="language-selector-en">
+Seeing this, I created data by generating 512 bytes of 0x00 and encoding in Base64 via CyberChef in this way:
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Pad_lines('Start',1024,'0')From_Hex('Auto')To_Base64('A-Za-z0-9%2B/%3D')"
+>Pad lines, From Hex, To Base64 - CyberChef</a></p>
+<p class="language-selector-ja">
+これをSignatureとして送信すると、<code>Error: Invalid signature</code>が2個出てきた。<br>
+以下のように最初のバイトのみ0x01にしたデータを送信すると、<code>Error: Invalid signature</code>が1個になった。
+</p>
+<p class="language-selector-en">
+Sending this as Signature, I saw two <code>Error: Invalid signature</code>.<br>
+Sending following data with replacing only the first byte to 0x01, only one <code>Error: Invalid signature</code> appeared.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Pad_lines('Start',1022,'0')Pad_lines('Start',2,'01')From_Hex('Auto')To_Base64('A-Za-z0-9%2B/%3D')"
+>Pad lines, Pad lines, From Hex, To Base64 - CyberChef</a></p>
+<p class="language-selector-ja">
+以下のように最後のバイトのみを0x01にしたデータを送信すると、また<code>Error: Invalid signature</code>が2個になった。
+</p>
+<p class="language-selector-en">
+Sending following data with replacing only the last byte to 0x01, two <code>Error: Invalid signature</code> appeared again.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Pad_lines('Start',1022,'0')From_Hex('Auto')To_Base64('A-Za-z0-9%2B/%3D')&input=MDE"
+>Pad lines, From Hex, To Base64 - CyberChef</a></p>
+<p class="language-selector-ja">
+以下のように最後のバイトを0x02にしたデータを送信すると、再び<code>Error: Invalid signature</code>は1個になった。
+</p>
+<p class="language-selector-en">
+Sending following data with replacing only the last byte to 0x02, <code>Error: Invalid signature</code> became only one again.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Pad_lines('Start',1022,'0')From_Hex('Auto')To_Base64('A-Za-z0-9%2B/%3D')&input=MDI"
+>Pad lines, From Hex, To Base64 - CyberChef</a></p>
+
+<span class="language-selector-ja">
+<p>
+これらの観察結果から、署名の数値は上位がバイト列で先、下位がバイト列で後に来る形式で表現されており、
+0と1は無効とみなされると推測できた。
+</p><p>
+そこで、計算結果のエンコードでは数値の上位と下位のどっちがバイト列で先に来るかわからないため、とりあえず計算結果の両側から64バイト目が0x00になる数値を以下のプログラムで探した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+From these findings, I guessed that the number used as the signature is encoded in a format
+in which the higher bytes comes to the head and the lower bytes comes to the tail,
+and that the numbers 0 and 1 are judged as invalid.
+</p><p>
+As I don't know which of the higher or lower bytes of the number comes first when encoding the calculation result,<br>
+I searched for a number such that both of the 64th byte from the head and from the tail becomes 0x00 in the calculation result using this program:
+</p>
+</span>
+<p><a href="search_sig.py" class="code-link" data-collapse="true">search_sig.py</a></p>
+
+<p class="language-selector-ja">
+その結果、<code>13426</code>が条件を満たすことがわかった。<br>
+この数値を以下のRecipeで署名に変換した。
+</p>
+<p class="language-selector-en">
+As a result, I found that the number <code>13426</code> satisfies the condition.<br>
+I converted this number to the signature using this Recipe:
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=To_Base(16)Pad_lines('Start',1024,'0')Reverse('Character')Find_/_Replace(%7B'option':'Regex','string':'%5E(.%7B1024%7D).*$'%7D,'$1',true,false,true,false)Reverse('Character')From_Hex('Auto')To_Base64('A-Za-z0-9%2B/%3D')&input=MTM0MjY"
+>To Base, 6 more - CyberChef</a></p>
+<p class="language-selector-ja">
+結果は以下のものになった。
+</p>
+<p class="language-selector-en">
+The result is:
+</p>
+<code-block data-extension="txt">
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANHI=
+</code-block>
+<span class="language-selector-ja">
+<p>
+なお、このRecipeは任意の整数を入力とし、それを今回の署名の形式に変換できる。この性質はまた後で用いる。
+</p><p>
+次に、何のハッシュ値が使われているかを調べる。<br>
+署名の検証で用いられていると推測される<code>512 - 64</code>という添字より、今回使われているハッシュは64バイトであると予想できる。<br>
+以下のサイトには、128桁(64バイト)のハッシュアルゴリズムとして、<code>sha3-512</code>、<code>sha512</code>、<code>whirlpool</code>の3種類が載っていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Note that this Recipe can recive any integer as an input and encode the integer as a signature used here.
+I'll use this feature later.
+</p><p>
+Then, I investigated what hash value is used.<br>
+From the index <code>512 - 64</code>, which looked used in the verification of the signature, I guessed that the hash value used here is 64 bytes long.<br>
+This page listed three hash algorithms <code>sha3-512</code>, <code>sha512</code>, and <code>whirlpool</code> that yields 128-digit (64-byte) hash values:
+</p>
+</span>
+<p><a href="https://qiita.com/KEINOS/items/c92268386d265042ea16#128-%E6%A1%81%E3%81%AE%E3%83%8F%E3%83%83%E3%82%B7%E3%83%A5%E5%80%A4"
+>hashアルゴリズムとハッシュ値の長さ一覧（＋ハッシュ関数の基本と応用） - Qiita</a></p>
+
+<p class="language-selector-ja">
+URLはデフォルトの <code>https://GOODCODE/</code> を用い、先ほどのRecipeを用いて数値2、3、4を署名の形式に変換して送信すると、
+Webページのソースコードの<code>strcmp(...) =</code>の後の数値はそれぞれ57、72、230となった。<br>
+さらに、以下のようにしてPythonのインタラクティブで署名2、3、4の復号結果の各バイトの差分を求めた。
+</p>
+<p class="language-selector-en">
+With the default URL <code>https://GOODCODE/</code>, I sent numbers 2, 3, and 4 with converting to the format of Signature using the Recipe.<br>
+As a result, the number after <code>strcmp(...) =</code> in the page source becom 57, 72, and 230, respectively.<br>
+Also, I calculated the differences in the bytes in the results of decoding signatures 2, 3, and 4 using the interactive mode of Python in this way:
+</p>
+<code-block data-extension="py">
+n = 0x009d8da2604cece99b25c4c964f34ca87dcac8f6e6165c53afbcb22ba4208112975b42168f62d478e5bad8c2d152f2597d14bb0f251501d62465d13977941e46f16de8bd413af432479dbc578cf2084eade035ab82d6d372abeca767b2fdb4cbe7cde5889301174b6e9c151e530e6bd0efb5f88f50ebac3cae1cf1dc4be252d59224b5367813410e15f639151d8535de5f7cb69c53da38d3408af874fc98bfe43455378e7a517383548eb5824e4cae96e9aa9f9383bbe23d68999a3919c06060bc99bee0971f522224d54fc453a07ba998c688242e58f750520a6005375df693dd78949274d75281d4819012b51ed78340d570b406280c3c77cedbda0230e970d509a1836ba383c20fa844032c1a8cb6ae815f32abbdca8757e07719ba99fb54d50892c35fc3cdcd46c5435551f501e56f65267fdb635a625921fbbe8ba96d7e76f5805bc97c7b367699fc594b28eb8bae18e505c370273ea3204a8193e6431a44899d55865fc744f601d637bc729fa0d0c056505394737dedcd1f84c46dcf6937a5bbc7c3d3d1f491827a29835d5d1a7acfb489b4da18f1de81f8f73f33833817c3746759fa34af713280b32cc104e4cbc5a58230d6286aeade77c72395e7ba1f15c71e98cd8451dbc4d62710c6f4f6112cbf7f1ab4e61e8dd5e153f7909523d30b1934d2c3aea941218d96b7bc54849128d8e1e4c61dc5dcf58bbf92fa565229
+e = 0x010001
+
+e2 = pow(2, e, n)
+e3 = pow(3, e, n)
+e4 = pow(4, e, n)
+
+x = [((e2 &gt;&gt; (i*8)) & 0xff) - ((e3 &gt;&gt; (i*8)) & 0xff) for i in range(512)]
+y = [((e2 &gt;&gt; (i*8)) & 0xff) - ((e4 &gt;&gt; (i*8)) & 0xff) for i in range(512)]
+</code-block>
+<span class="language-selector-ja">
+<p>
+すると、<code>x[63]</code>が<code>72 - 57</code>、<code>y[63]</code>が<code>230 - 57</code>と一致した。
+</p><p>
+さらに、<code>(e2 >> (63*8)) & 0xff</code>の値は<code>198</code>、<code>(e3 >> (63*8)) & 0xff</code>の値は<code>183</code>であった。<br>
+ということは、下位から64バイト目の値が小さい方が<code>strcmp</code>の返り値が大きくなっている。<br>
+よって、今回の<code>strcmp</code>が一致しなかったバイトの値の差を返すと仮定すると、
+比較されているハッシュ中のバイトの値は署名2や3の復号結果のバイトの値より大きく、<code>198 + 57 = 0xff</code>であることがわかる。
+</p><p>
+CyberChefで <code>https://GOODCODE/</code> のハッシュ値を求めると、
+SHA3 (Size: 512) の最初のバイトが0xffとなり、SHA-512やWhirlpoolでは最初や最後に0xffは現れなかった。<br>
+よって、今回の署名におけるハッシュには、SHA3-512が使われていると推測できる。
+</p><p>
+SHA3-512をプログラムから求める方法を探すと、以下のサイトを参考にPythonで求められそうであることがわかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+As a result, <code>x[63]</code> became equal to <code>72 - 57</code>, and <code>y[63]</code> became equal to <code>230 - 57</code>.
+</p><p>
+Also, the value of <code>(e2 >> (63*8)) & 0xff</code> was <code>198</code> and the value of <code>(e3 >> (63*8)) & 0xff</code> was <code>183</code>.<br>
+We can see that smaller value of the 64th byte from the lowest is yielding larger return value of <code>strcmp</code>.<br>
+Therefore, assuming that the function <code>strcmp</code> used here returns the difference of the mismatched byte,<br>
+the compared byte in the hash value is larger then the byte in the results of decoding signatures 2 and 3, and its value is <code>198 + 57 = 0xff</code>.
+</p><p>
+Obtaining hash values for <code>https://GOODCODE/</code> on CyberChef,
+the first byte of SHA3 (Size: 512) became 0xff, and 0xff weren't in the first nor last bytes of SHA-512 and Whirlpool.<br>
+Therefore, I guessed that SHA3-512 is used for the hash in this signature.
+</p><p>
+Searching for a way to calculate SHA3-512 from programs, I found that Python should be useful, according to this page:
+</p>
+</span>
+<p><a href="http://mitakadai.me/archives/220">PythonでSHA-3を使おう | 三鷹台でひきこもるプログラマの日記</a></p>
+
+<p class="language-selector-ja">
+<common-tool data-lang="ja">CS50 IDE</common-tool>上でvirtualenvに入り、
+<code>pip install pysha3</code> を実行した後以下のプログラムを実行することで、
+<code>https://EVILCODE/</code> から始まり、SHA3-512の先頭が0x00になる文字列を探した。
+</p>
+<p class="language-selector-en">
+I executed this program on <common-tool data-lang="en">CS50 IDE</common-tool> to search for a string that begins with <code>https://EVILCODE/</code> and the first byte of SHA3-512 becomes 0x00.<br>
+I activated virtualenv and executed a command <code>pip install pysha3</code> to prepare for executing the program.
+</p>
+<p><a href="search_url.py" class="code-link" data-collapse="true">search_url.py</a></p>
+
+<span class="language-selector-ja">
+<p>
+その結果、<code>https://EVILCODE/Cd</code> が条件を満たすことがわかった。
+</p><p>
+この文字列をURL、先ほど求めた署名をSignatureに入力して送信することで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+As a result, I found that <code>https://EVILCODE/Cd</code> satisfies the condition.
+</p><p>
+I obtained the flag by sending this string as URL and the signature found before as Signature.
+</p>
+</span>
+
+<div class="flag">DUCTF{https://wiibrew.org/wiki/Signing_bug#L0L_memcmp=strcmp}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>
