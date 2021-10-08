@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>babygame (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>babygame</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、ELFファイル <code>babygame</code> が与えられた。
+</p><p>
+<code>babygame</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、以下の処理をしているのが読み取れた。
+</p>
+<ol>
+<li><code>NAME</code>に0x20バイトまで<code>read</code>関数で読み込む。</li>
+<li><code>RANDBUF</code>に<code>"/dev/urandom"</code>のアドレスを設定する。</li>
+<li>ユーザに整数を入力させ、入力された整数に応じて以下の処理をする。
+<ul>
+<li>1 を読み込んだ場合 (<code>set_username()</code>)
+<ol>
+<li><code>NAME</code>に、<code>strlen(NAME)</code>バイトを<code>fread</code>関数で読み込む。</li>
+</ol></li>
+<li>2 を読み込んだ場合 (<code>print_username()</code>)
+<ol>
+<li><code>NAME</code>のデータを<code>puts</code>関数で出力する。</li>
+</ol></li>
+<li>0x539 (1337) を読み込んだ場合 (<code>game()</code>)
+<ol>
+<li><code>RANDBUF</code>が指すファイル名のファイルから4バイトの整数を読み込む。</li>
+<li>ユーザに整数を入力させる。</li>
+<li>ファイルから読み込んだ整数と、ユーザが入力した整数が一致した場合、<code>system("/bin/sh");</code>を実行する。</li>
+</ol></li>
+</ul></li>
+</ol>
+<p>
+さらに、<code>RANDBUF</code>は<code>NAME</code>の0x20バイト先に配置されていた。<br>
+従って、最初にナル文字を含まない0x20バイトのデータを入力すると、<code>NAME</code>に格納されている「文字列」が<code>RANDBUF</code>に繋がるので、<br>
+<code>print_username()</code>で<code>RANDBUF</code>に格納されているアドレスを出力させたり、
+<code>set_username()</code>で<code>RANDBUF</code>に格納されているアドレスを変更したりできるようになる。
+</p><p>
+<code>RANDBUF</code>には最初は<code>"/dev/urandom"</code>のアドレスが格納されている。<br>
+これを<code>"/bin/sh"</code>のアドレスに書き換えると、<code>game()</code>がファイルから読み込む値が固定になると考えられる。<br>
+<code>strings --radix=x babygame</code> コマンドで調べると、位置<code>2024</code>に文字列<code>/dev/urandom</code>があり、
+位置<code>20a3</code>に文字列<code>/bin/sh</code>があることがわかった。
+</p><p>
+サーバ上のファイル<code>/bin/sh</code>の内容はわからないが、仮にELFファイルであるとすれば、
+先頭の4バイトは<code>babygame</code>と同じ<code>7f 45 4c 46</code>であると予想できる。<br>
+これは、10進数にすると<code>1179403647</code>である。
+</p><p>
+この性質を用い、以下の手順でシェルを起動できた。
+</p>
+<ol>
+<li><common-tool data-lang="ja">Wireshark</common-tool>でサーバとの通信内容を見られるようにする。</li>
+<li>サーバに<common-tool data-lang="ja">Tera Term</common-tool>で接続する。送信改行コードをLFに設定しておく。(これはシェルで利用する)</li>
+<li><code>flag{tomorinao_wa_ayaneru_rasii}</code>をコピペして送信する。<br>
+<code>read</code>関数に読み込ませるため一気に送信すること、改行を入れてはいけないことに注意する。</li>
+<li><code>2</code>を送信する。改行は入れない。</li>
+<li>Wiresharkでサーバの応答を見ると、最初に送信した文字列と<code>puts</code>関数によって追加される改行の間にアドレスが入っている部分があるはずである。例えば、この部分である。<br>
+<a href="wireshark_res.png"><img src="wireshark_res_thumb.jpg" alt="screenshot of Wireshark"></a></li>
+<li>最初に送信した文字列の後に、アドレスの最初の0x24を0xa3に置き換えたデータを書き込んだファイルを用意する。今回の例の場合、以下のファイルである。<br>
+<a href="set_username_data.bin" class="code-link" data-binary="true">set_username_data.bin</a></li>
+<li><code>1</code>を送信する。改行は入れない。</li>
+<li>用意したファイルをドラッグ&amp;ドロップし、「ファイル送信」で送信する。</li>
+<li><code>1337</code>を送信する。全体をコピペで一気に送信し、改行は入れない。</li>
+<li><code>1179403647</code>を送信する。全体をコピペで一気に送信し、改行は入れない。</li>
+</ol>
+<p>
+シェルで<code>ls -al</code>コマンドを実行すると、ファイル <code>flag.txt</code> があることがわかった。<br>
+<code>cat flag.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and a ELF file <code>babygame</code> were given.
+</p><p>
+Decompiling <code>babygame</code> via <common-tool data-lang="en">Ghidra</common-tool>, I found it doing this process:
+</p>
+<ol>
+<li>Read at most 0x20 bytes via the function <code>read</code> to <code>NAME</code>.</li>
+<li>Store an address of <code>"/dev/urandom"</code> to <code>RANDBUF</code>.</li>
+<li>Have the user enter an integer and do following things based on the integer.
+<ul>
+<li>When it reads 1 (<code>set_username()</code>)
+<ol>
+<li>Read <code>strlen(NAME)</code> bytes via the function <code>fread</code> to <code>NAME</code>.</li>
+</ol></li>
+<li>When it reads 2 (<code>print_username()</code>)
+<ol>
+<li>Output the data in <code>NAME</code> via the function <code>puts</code>.</li>
+</ol></li>
+<li>When it reads 0x539 (1337) (<code>game()</code>)
+<ol>
+<li>Read an 4-byte integer from the file with the name pointed at by <code>RANDBUF</code>.</li>
+<li>Have the user enter an integer.</li>
+<li>Execute <code>system("/bin/sh");</code> if the integer from the file and the integer the user entered are the same.</li>
+</ol></li>
+</ul></li>
+</ol>
+<p>
+I also found that <code>RANDBUF</code> was placed 0x20 bytes ahead from <code>NAME</code>.<br>
+Therefore, when we put 0x20-byte data that doesn't contain any null characters at the first step, the "string" in <code>NAME</code> is connected to <code>RANDBUF</code>.<br>
+It enables to have <code>print_username()</code> print the address stored in <code>RANDBUF</code> and to have <code>set_username()</code> modify the address stored in <code>RANDBUF</code>.
+</p><p>
+After the initialization, the address of <code>"/dev/urandom"</code> is stored to <code>RANDBUF</code>.<br>
+Putting the address of <code>"/bin/sh"</code> there will make the value that <code>game()</code> reads from the file be fixed.<br>
+Using the command <code>strings --radix=x babygame</code>, I found the string <code>/dev/urandom</code> is at <code>2024</code>
+and the string <code>/bin/sh</code> is at <code>20a3</code>.
+</p><p>
+The contents of the file <code>/bin/sh</code> on the server is unknown,
+but assuming that it is a ELF file, the first 4 bytes should be <code>7f 45 4c 46</code>, which is the same as the file <code>babygame</code>.<br>
+This value is <code>1179403647</code> in decimal.
+</p><p>
+Using these facts, I succeeded to launch the shell by these steps:
+</p>
+<ol>
+<li>Prepare <common-tool data-lang="en">Wireshark</common-tool> to watch the communication with the server.</li>
+<li>Connect to the server via <common-tool data-lang="en">Tera Term</common-tool>. Set the newline code to send to LF (for using the shell).</li>
+<li>Send <code>flag{tomorinao_wa_ayaneru_rasii}</code> by copy-and-pasting.<br>
+Note that this has to be sent at once for feeding to the function <code>read</code>, and that you shouldn't put a newline character after that.</li>
+<li>Send <code>2</code>. Don't send newline characters.</li>
+<li>Seeing the response from the server via Wireshark, you will find an address between the string firstly sent and the newline added by the function <code>puts</code>. I mean this part, for example:<br>
+<a href="wireshark_res.png"><img src="wireshark_res_thumb.jpg" alt="screenshot of Wireshark"></a></li>
+<li>Create a file which has the string firstly sent and the address with the first 0x24 replaced with 0xa3. This is the file in this case:<br>
+<a href="set_username_data.bin" class="code-link" data-binary="true">set_username_data.bin</a></li>
+<li>Send <code>1</code>. Don't send newline characters.</li>
+<li>Drag &amp; drop the file prepared and send that via "Send file".</li>
+<li>Send <code>1337</code>. Send the whole part at once by copy-and-pasting, without putting newline characters.</li>
+<li>Send <code>1179403647</code>. Send the whole part at once by copy-and-pasting, without putting newline characters.</li>
+</ol>
+<p>
+Executing a command <code>ls -al</code> on the shell, I found that there is a file <code>flag.txt</code>.<br>
+I obtained the flag by executing a command <code>cat flag.txt</code>.
+</p>
+</span>
+
+<div class="flag">DUCTF{whats_in_a_name?_5aacfc58}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>

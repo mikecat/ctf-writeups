@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Oversight (DownUnderCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Oversight</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、ELFファイル <code>oversight</code> および <code>libc-2.27.so</code> が与えられた。
+</p><p>
+<code>oversight</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、以下の処理をしていることがわかった。
+</p>
+<ol>
+<li><code>wait</code>関数において、数値を読み込み、それを<code>printf</code>の何番目のデータを出力するかの指定に用いてデータを出力する。</li>
+<li><code>get_num_bytes</code>関数において、何バイト読み込むかを入力させる。(最大256バイト)</li>
+<li><code>echo</code>関数において、256バイトのローカル配列を用意する。</li>
+<li><code>echo_inner</code>関数において、ローカル配列に指定されたバイト数を<code>fread</code>関数で読み込み、読み込んだデータの後ろに1バイトの0x00を書き込む。</li>
+</ol>
+<p>
+ローカル配列は256バイトしか無いため、256バイト読み込む指定をすると、ローカル配列の1個次のバイトに0x00を書き込むことになる。<br>
+この位置には<code>echo</code>関数のプロローグで保存した<code>%rbp</code>の値があり、0x00の書き込みによってこの値が小さくなることがある。<br>
+すると、<code>get_num_bytes</code>関数のエピローグにおいて、この小さくなった<code>%rbp</code>の値を<code>%rsp</code>に書き込むため、スタックポインタが下位側にずれることがある。<br>
+その結果、スタックポインタがデータの読み込み先のローカル配列内の要素を指してくれることがあり、ROP (Return-Oriented Programming) に繋がる。
+</p><p>
+<common-tool data-lang="ja">CS50 IDE</common-tool>上のGDBで<code>oversight</code>を実行し、
+<code>wait</code>関数でデータを出力する<code>printf</code>関数を呼び出す直前のスタックの様子を調べると、以下のようになった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and ELF files <code>oversight</code> and <code>libc-2.27.so</code> were given.
+</p><p>
+Decompiling <code>oversight</code> via <common-tool data-lang="en">Ghidra</common-tool>, I found it doing this process:
+</p>
+<ol>
+<li>In the function <code>wait</code>, read an integer and ouptut some data using the integer to specify which data to output in the function <code>printf</code>.</li>
+<li>In the function <code>get_num_bytes</code>, read how many bytes to read. (256 bytes at maximum)</li>
+<li>In the function <code>echo</code>, allocate an 256-byte local array.</li>
+<li>In the function <code>echo_inner</code>, read the specified number of bytes to the local array, and write one-byte 0x00 after the data read.</li>
+</ol>
+<p>
+The local array has only 256 bytes, so when it is specified to read 256 bytes, it will write 0x00 to the byte next to the local array.<br>
+The value of <code>%rbp</code> is stored in the prologue of the function <code>echo</code> to the area. Writing 0x00 to the are may make the value smaller.<br>
+After that, the new value of <code>%rbp</code> is written to <code>%rsp</code> in the epilogue of the function <code>get_num_bytes</code>, and the stack pointer may be moved to an lower address.<br>
+This may make the stack pointer point at somewhere in the local array to read data and enable ROP (Return-Oriented Programming).
+</p><p>
+I executed <code>oversight</code> on <common-tool data-lang="en">CS50 IDE</common-tool> with GDB and observed the stack
+just before calling the <code>printf</code> function in the <code>wait</code> function to output some data.
+Here is the result:
+</p>
+</span>
+<code-block data-extension="txt">
+Breakpoint 2, 0x000055555555541e in wait ()
+(gdb) x/32gx $rsp
+0x7fffffffc1d0: 0x0000000000000d68      0x00000a3732e5ead1
+0x7fffffffc1e0: 0x67616d2072756f59      0x65626d756e206369
+0x7fffffffc1f0: 0x3225203a73692072      0x00000a786c6c2437
+0x7fffffffc200: 0x0000555555558070      0x00007ffff7fb84a0
+0x7fffffffc210: 0x0000000000000000      0x00007ffff7e5f013
+0x7fffffffc220: 0x0000000000000010      0x00007ffff7fb76a0
+0x7fffffffc230: 0x0000555555556075      0x00007ffff7e5271a
+0x7fffffffc240: 0x0000555555555430      0x00007fffffffc270
+0x7fffffffc250: 0x00005555555550e0      0x00005555555550e0
+0x7fffffffc260: 0x00007fffffffc270      0x00005555555550d5
+0x7fffffffc270: 0x0000000000000000      0x00007ffff7df20b3
+0x7fffffffc280: 0x00007ffff7ffc620      0x00007fffffffc368
+0x7fffffffc290: 0x0000000100000000      0x00005555555550b0
+0x7fffffffc2a0: 0x0000555555555430      0x7043ad119c25f561
+0x7fffffffc2b0: 0x00005555555550e0      0x00007fffffffc360
+0x7fffffffc2c0: 0x0000000000000000      0x0000000000000000
+(gdb) where
+#0  0x000055555555541e in wait ()
+#1  0x00005555555550d5 in main ()
+(gdb)
+</code-block>
+<span class="language-selector-ja">
+<p>
+<code>0x7fffffffc268</code> に<code>main</code>関数へ戻るリターンアドレスが配置されていることが読み取れる。<br>
+さらに、<code>main</code>関数では呼び出された後<code>%rbp</code>をプッシュする以外にスタックにデータを確保していないため、
+その2要素先の <code>0x7fffffffc278</code> にあるのが<code>main</code>関数から戻るリターンアドレスであることがわかる。<br>
+経験上<code>printf</code>関数はスタック上の最初のデータを6番目として扱うはずなので、ここは27番目になる。<br>
+よって、<code>wait</code>関数では<code>printf</code>関数に27番目のデータを出力させることで、<code>main</code>関数から戻るリターンアドレスがわかり、libcの位置を求めることができる。
+</p><p>
+また、<code>readelf -s</code> コマンドで調べた結果、今回の <code>libc-2.27.so</code> における <code>system</code>関数のオフセットは <code>0x4f550</code> であった。<br>
+さらに、<code>libc-2.27.so</code> からバイナリエディタで文字列 <code>/bin/sh</code> を検索したところ、<code>0x1b3e1a</code> バイト目 (0-origin) に見つかった。
+</p><p>
+さらに、関数呼び出し時のスタックのアライメントと<code>echo</code>関数のコードを考えると、
+今回の256バイトの配列は16進数の末尾が0のアドレスに配置されることがわかる。<br>
+スタックポインタが16の倍数の時に関数を呼び出した状態にするには、関数を呼び出すとスタックにリターンアドレスが積まれるので、
+スタックポインタの16進数の末尾が8の状態で関数の先頭に飛ぶようにすればよい。<br>
+したがって、ROPで<code>system("/bin/sh")</code>を呼び出す際、<code>system</code>関数のアドレスは、
+16進数の末尾が0のアドレス、すなわち最後から偶数番目の要素に配置するとよい。
+</p><p>
+これらを踏まえ、サーバに接続してシェルを起動する以下のプログラムを用意した。<br>
+0x00を書き込む前の保存された<code>%rbp</code>の値によってはスタックが十分移動せず、シェルの起動に失敗することがあるようなので、
+シェルの起動に成功するまで接続とデータの送受信をやり直すようにした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I found that there is a return address to return to the function <code>main</code> at <code>0x7fffffffc268</code>.<br>
+Also, I found that the return address to return from the function <code>main</code> is at <code>0x7fffffffc278</code>, which is 2 elements ahead,
+because there are no data allocated on the stack except for pushing <code>%rbp</code> in the function <code>main</code>.<br>
+The function <code>printf</code> should treat the first element on the stack as 6th, so this element is 27th.<br>
+Therefore, we can obtain the address to return from the function <code>main</code> by having the function <code>printf</code> output the 27th data in the function <code>wait</code>.
+This is useful to know where the libc is placed on the memory.
+</p><p>
+Investigating via the <code>readelf -s</code> command, I found that the offset of the function <code>system</code> in <code>libc-2.27.so</code> used in this challenge is <code>0x4f550</code>.<br>
+I also searched for a string <code>/bin/sh</code> from the file <code>libc-2.27.so</code> via a binary editor, and found on the <code>0x1b3e1a</code>-th byte (the first byte is 0th).
+</p><p>
+Considering the stack allignment on calling functions and the program for the function <code>echo</code>,
+the 256-byte array should be placed at an address whose last digit in hexadecimal is 0.<br>
+To execute functions as if it is called with a stack pointer which is multiple of 16,
+the function should be started with the last digit of the stack pointer in hexadecimal being 8,<br>
+considering that an return address is pushed on the stack when calling a function.<br>
+Therefore, to call <code>system("/bin/sh")</code> via ROP, we should place the address of the function <code>system</code> to an address whose last digit in hexadecimal is 0.
+In other words, it should be placed to a even-th element from the last.
+</p><p>
+Based on these findings, I created a program to connect to the server and launch the shell.<br>
+The stack may not move well and it may fail to launch the shell, depending on the value of <code>%rbp</code> before writing 0x00,
+so I had it repeat connection and communication until it succeeds in launching the shell.
+</p>
+</span>
+<p><a href="shell.pl" class="code-link" data-collapse="true">shell.pl</a></p>
+
+<p class="language-selector-ja">
+シェルで<code>ls -al</code>コマンドを実行すると、ファイル <code>flag.txt</code> があることがわかった。<br>
+<code>cat flag.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+<p class="language-selector-en">
+Executing a command <code>ls -al</code> on the shell, I found that there is a file <code>flag.txt</code>.<br>
+I obtained the flag by executing a command <code>cat flag.txt</code>.
+</p>
+
+<div class="flag">DUCTF{1_sm@LL_0ver5ight=0v3rFLOW}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DownUnderCTF 2021</a>
+</p>
+</body>
+</html>
