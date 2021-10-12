@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BTLE (pbctf 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>BTLE</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>btle.pcap</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">Wireshark</common-tool>で開くと、以下のような Prepare Write Request を含む行があり、
+何らかのデータが含まれていそうだった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>btle.pcap</code> was given.
+</p><p>
+Opening the file on <common-tool data-lang="en">Wireshark</common-tool>, I found lines with "Prepare Write Request",
+which looked containing some data, like this:
+</p>
+</span>
+<p><a href="prepare_write_request.png"><img src="prepare_write_request_thumb.jpg" alt="Prepare Write Request"></a></p>
+
+<p class="language-selector-ja">
+これはValueをOffsetの場所から書き込むという指示であると仮定し、以下のプログラムでこの指示を実行した。
+</p>
+<p class="language-selector-en">
+I assumed that these are instructions to write the "Value" from the position "Offset".
+I created this program to execute these instructions:
+</p>
+<p><a href="extract.pl" class="code-link" data-collapse="true">extract.pl</a></p>
+
+<p class="language-selector-ja">
+すると、最終的に以下の結果が得られた。
+</p>
+<p class="language-selector-en">
+Using this program, I obtained this result in the end:
+</p>
+<code-block data-extension="txt">
+#pctf{b1Ue_te3Th_is_ba4d_4_y0u_jUs7_4sk_HAr0lD_b1U3tO07h}
+</code-block>
+
+<p class="language-selector-ja">
+この結果の最初を <code>pbctf</code> にすることで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by replacing the first part of this result to <code>pbctf</code>.
+</p>
+
+<div class="flag">pbctf{b1Ue_te3Th_is_ba4d_4_y0u_jUs7_4sk_HAr0lD_b1U3tO07h}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">pbctf 2021</a>
+</p>
+</body>
+</html>
