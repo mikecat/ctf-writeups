@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Address Book (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Address Book</h1>
+<span class="language-selector-ja">
+<p>
+フォーラムのスレッドのURLが与えられ、スレッドで言及されているcustomerの名前を要求された。<br>
+また、<a href="../Body_Count/" class="language-aware-link">Body Count</a> のファイルを用いることが示されていた。
+</p><p>
+スレッドを参照すると、該当のcustomerは the Vienna branch of De Monne の近くに住んでいるようである。
+</p><p>
+<code>demonne.sql</code> から customers のデータ (103行目と104行目) を抜き出したファイルから <code>Vienna</code> を検索すると、6件見つかった。<br>
+この問題には 5 attempts までの制限があるので、この6件を全て試すことはできない。<br>
+さらに、the Vienna branch の位置はわかっておらず、「近い」の定義も不明であるため、
+住んでいるのが Vienna であっても the Vienna branch から遠い可能性や、Vienna でなくても  the Vienna branch から近い可能性も考えられる。<br>
+</p><p>
+ここでスレッドを見直すと、該当のcustomerがsheとして言及されていることに気がついた。<br>
+<code>Vienna</code> を含む6件のデータをチェックすると、以下の1件のみ <code>gender</code> (後ろから2番目) が <code>'F'</code> であり、
+残りの5件の <code>gender</code> は <code>'M'</code> であった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL for a thread of the forum was given, and the name of customer that is pointed in the thread was asked.<br>
+Also there was a guide saying to use the file used in <a href="../Body_Count/" class="language-aware-link">Body Count</a>.
+</p><p>
+Seeing the thread, I found that the customer lives near "the Vienna branch of De Monne".
+</p><p>
+Searching for <code>Vienna</code> from a customer data file (the 103rd and 104th lines of <code>demonne.sql</code>), I found 6 entries.<br>
+I cannot try all of the 6 entries because this challenge has a 5-attempt limit.<br>
+Also, the place of "the Vienna branch" and the definition of "near" is unknown.<br>
+This implies that where a customer lives may be far from "the Vienna branch" even if it is "Vienna"
+and where a customer lives may be near to "the Vienna branch" even if it is not "Vienna".
+</p><p>
+I checked the thread again and found that the customer is referred as "she".<br>
+Checking the 6 entries that contains <code>Vienna</code>, there was only one entry whose <code>gender</code> (the 2nd last property) is <code>'F'</code>,
+and <code>gender</code> of the other 5 entries were <code>'M'</code>.<br>
+This is the entry:
+</p>
+</span>
+<code-block data-extension="txt">
+(2574,'Allsopp','Collen','callsopp1zh@sbwire.com','90360 Red Cloud Crossing','Vienna','VA','US','22184','F','10/25/1973')
+</code-block>
+
+<p class="language-selector-ja">
+このデータの <code>first_name</code> (前から3番目) を最初に、<code>last_name</code> (前から2番目) を次に配置することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by placing <code>first_name</code> (the 3rd property) of this entry first and <code>last_name</code> (the 2nd property) of this entry after that.
+</p>
+
+<div class="flag">flag{Collen Allsopp}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

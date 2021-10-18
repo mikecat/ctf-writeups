@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Boom (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Boom</h1>
+<span class="language-selector-ja">
+<p>
+フォーラムのスレッドのURLが与えられ、ターゲット候補の数を要求された。<br>
+また、<a href="../Body_Count/" class="language-aware-link">Body Count</a> のファイルを用いることが示されていた。
+</p><p>
+スレッドを見ると、ターゲットは baby boomer である customer であることがわかった。<br>
+さらに、このスレッドからリンクされていたページをみることで、(ここでの) baby boomer は1946年～1964年に生まれた人のことらしいことがわかった。
+</p><p>
+そこで、以下のプログラムを用意し、<code>demonne.sql</code> の103行目と104行目の customers のデータを入力として与えることで、
+誕生年が1946以上1964以下であるデータを抽出した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL for a thread of the forum was given, and the number of the target candidates suggested in the thread was asked.<br>
+Also there was a guide saying to use the file used in <a href="../Body_Count/" class="language-aware-link">Body Count</a>.
+</p><p>
+Checking the thread, I found that the target is customers which are baby boomers.<br>
+I also found that "baby boomer" here means those who were born in from the year 1946 to the year 1964 from the page linked from the thread.
+</p><p>
+Based on this, I created this program to extract entries whose birth years are in the range between 1946 and 1964 (both inclusive)
+using the data of customers (the 103rd and 104th lines of <code>demonne.sql</code>) as the input.
+</p>
+</span>
+<p><a href="extract_baby_boomer.pl" class="code-link" data-collapse="true">extract_baby_boomer.pl</a></p>
+
+<p class="language-selector-ja">
+出力は2810行あったが、そのうち2458行目は入力データの行の境目に由来する空行だった。<br>
+このことに基づき、flagが得られた。
+</p>
+<p class="language-selector-en">
+The output had 2810 lines, but the 2458th line was an empty one came from the boundary of the input lines.<br>
+I obtained the flag based on this result.
+</p>
+
+<div class="flag">flag{2809}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

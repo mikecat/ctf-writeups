@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Body Count (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Body Count</h1>
+<span class="language-selector-ja">
+<p>
+テキストファイル <code>demonne.sql</code> が与えられ、customersの数を要求された。
+</p><p>
+ファイルを観察すると、103行目と104行目にcustomersのデータがあった。<br>
+<common-tool data-lang="ja">サクラエディタ</common-tool>の置換機能を用いてこの部分にある区切り <code>),(</code> の数を数えると、9998個あった。<br>
+区切りの後のデータ9998個に加え、最初の区切りの前にも1行に1個、合計2個のデータがあるので、合計でデータ数は10000であるとわかる。<br>
+これに基づいてflagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A text file <code>demonne.sql</code> was given and the number of customers was asked.
+</p><p>
+Observing the text file, I found data about customers in the 103rd and 104th lines.<br>
+Counting the delimiter <code>),(</code> in this part using replacing function on <common-tool data-lang="en">Sakura Editor</common-tool>, there were 9998 delimiters.<br>
+In addition to the 9998 entries after the delimiters, there is one entry before the first delimiters in the each two lines. Therefore, there are 10000 entries in total.<br>
+I obtained the flag based on this.
+</p>
+</span>
+
+<div class="flag">flag{10000}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

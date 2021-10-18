@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>All A-Loan (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>All A-Loan</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Body_Count/" class="language-aware-link">Body Count</a> で用いたファイルについて、
+employees in California により発行された Small Business loans のお金が一番多いのはどの city かと、その額を要求された。
+</p><p>
+これは、以下の手順で求めることができそうである。
+</p>
+<ul>
+<li>「in California」という条件を満たす employees の <code>employee_id</code> と <code>city</code> の対応表を抽出する。</li>
+<li>loans のデータから <code>loan_type_id</code> が <code>3</code> (これは <code>loan_types</code> のデータより <code>'Small Business'</code> に対応する) のものを抽出し、
+その <code>employee_id</code> に対応する <code>city</code> の合計に加える。</li>
+<li>求めた <code>city</code> ごとの額の合計を額の降順でソートし、出力する。</li>
+</ul>
+<p>
+まず、「in California」かどうかの判定方法を推測する。<br>
+employees のデータから <code>California</code> を検索したが、見つからなかった。<br>
+そこで、「California」でググると、略称が <code>US-CA</code> であるアメリカの州を表すようだった。
+</p>
+<p><a href="https://ja.wikipedia.org/wiki/%E3%82%AB%E3%83%AA%E3%83%95%E3%82%A9%E3%83%AB%E3%83%8B%E3%82%A2%E5%B7%9E">カリフォルニア州 - Wikipedia</a></p>
+<p>
+これを踏まえ、<code>state</code> が <code>'CA'</code> である employee の <code>employee_id</code> と <code>city</code> の対応表を抽出する以下のプログラムを作成した。<br>
+このプログラムの入力は、employees のデータ (<code>demonne.sql</code> の164行目) とする。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Regarding the file used in <a href="../Body_Count/" class="language-aware-link">Body Count</a>,
+we were asked to determine which city has the largest amount of money in "Small Business loans" that are issued by "employees in California" and the amount.
+</p><p>
+This can be achieved in this way:
+</p>
+<ul>
+<li>Create a conversion table between <code>employee_id</code> and <code>city</code> of employees that satisfy the condition "in California".</li>
+<li>From the data of loans, extract entries whose <code>loan_type_id</code> is <code>3</code>, which corresponds to <code>'Small Business'</code> in the <code>loan_types</code> data,
+and add the amount of money in the entry to the <code>city</code> corresponding to the <code>employee_id</code> of this entry.</li>
+<li>Output the sum of amount of money for each <code>city</code> with sorted in decending order of the amount.</li>
+</ul>
+<p>
+Firstly, I guessed how to judge if an employee is "in California".<br>
+I searched for <code>California</code> from the data of employees, finding nothing.<br>
+Then I googled "California" and found that it looks standing for a state in the United States, whose code is <code>US-CA</code>.
+</p>
+<p><a href="https://en.wikipedia.org/wiki/California">California - Wikipedia</a></p>
+<p>
+Based on this, I created this program to extract a conversion table between <code>employee_id</code> and <code>city</code> for employees whose <code>state</code> is <code>'CA'</code>.<br>
+This program takes the data of employees (the 164th line of <code>demonne.sql</code>) as an input.
+</p>
+</span>
+<p><a href="extract_california.pl" class="code-link" data-collapse="true">extract_california.pl</a></p>
+
+<p class="language-selector-ja">
+さらに、loans のデータのうち、<code>loan_type_id</code> が <code>3</code> であり、かつ <code>employee_id</code> が対応表にあるものの <code>balance</code> の値を、
+<code>employee_id</code> に対応する <code>city</code> ごとに合計し、合計の降順で出力する以下のプログラムを作成した。<br>
+このプログラムは、loans のデータ (<code>demonne.sql</code> の224行目) を標準入力から、対応表をコマンドライン引数で指定したファイルから読み込む。<br>
+また、この問題の問題文と、自分が解いた後に修正された <a href="../El_Paso/" class="language-aware-link">El Paso</a> の問題文に共通して outstanding という表現が使われていたことから、
+この問題でも El Paso と同じ <code>balance</code> の値を使うと良いと推測した。
+</p>
+<p class="language-selector-en">
+Then, I created this program to calculate the sum of values of <code>balance</code> of entries in the data of loans
+whose <code>loan_type_id</code> is <code>3</code> and <code>employee_id</code> is in the conversion table.<br>
+These values are added for each <code>city</code> corresponding to the <code>employee_id</code> and printed in decending order of the sum.<br>
+This program reads the data of loans (the 224th line of <code>demonne.sql</code>) from the standard input and the conversion table from the file specified in the command line arguments.<br>
+I guessed that I should use the value of <code>balance</code> for this challenge like I did in <a href="../El_Paso/" class="language-aware-link">El Paso</a>
+because both of the challenge description of this challenge and El Paso (modified after I solved that) had an expression "outstanding".
+</p>
+<p><a href="extract_loan_ranking.pl" class="code-link" data-collapse="true">extract_loan_ranking.pl</a></p>
+
+<p class="language-selector-ja">
+その結果、一番 <code>balance</code> の値の合計が多いのは <code>Oakland</code> であり、その合計は <code>90600.00</code> であった。<br>
+これを指定されたflagの形式に当てはめることで、flagが得られた。
+</p>
+<p class="language-selector-en">
+As a result, it revealed that <code>Oakland</code> has the largest sum of values of <code>balance</code>, and that the sum is <code>90600.00</code>.<br>
+I obtained the flag by putting these results to the specified format.
+</p>
+
+<div class="flag">flag{Oakland_$90,600.00}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

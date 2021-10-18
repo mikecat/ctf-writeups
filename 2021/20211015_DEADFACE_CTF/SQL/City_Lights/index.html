@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>City Lights (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>City Lights</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Body_Count/" class="language-aware-link">Body Count</a> で用いたファイルについて、
+employees が住む cities が何種類あるかを要求された。
+</p><p>
+このファイルを観察すると、employees のデータは164行目にあるようであり、1項目の後半は以下のようになっていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+We were asked to determine the number of unique cities in which the employees live from the file used in <a href="../Body_Count/" class="language-aware-link">Body Count</a>.
+</p><p>
+Observing the file, I found the data of employees in the 164th line. The latter part of one entry is like this:
+</p>
+</span>
+<code-block data-extension="txt">
+'63140 Redwing Plaza','Vancouver','WA','US','98664','F','9865435160')
+</code-block>
+<span class="language-selector-ja">
+<p>
+このうち、後ろから6番目の情報が <code>city</code> である。(このことは142行目～155行目から読み取れる)
+</p><p>
+これに基づき、この164行目を抜き出したデータを入力とし、<code>city</code> の値を抽出する以下のプログラムを作成した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Among the properties, the 6th last property is <code>city</code>. (This fact can be found from the 142nd to 155th lines)
+</p><p>
+Based on this, I created this program to receive the 164th line as an input and extract the values of <code>city</code>.
+</p>
+</span>
+<p><a href="extract.pl" class="code-link" data-collapse="true">extract.pl</a></p>
+
+<p class="language-selector-ja">
+このプログラムの出力を<common-tool data-lang="ja">サクラエディタ</common-tool>で昇順ソートし、連続した重複行の削除を行うと、444行になった。<br>
+これに基づいてflagが得られた。
+</p>
+<p class="language-selector-en">
+Using <common-tool data-lang="en">Sakura Editor</common-tool>, I sorted the output of the program in ascending order and removed consecutive duplicate lines. The result was 444 lines.<br>
+I obtained the flag from this result.
+</p>
+
+<div class="flag">flag{444}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

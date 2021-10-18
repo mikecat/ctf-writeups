@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>El Paso (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>El Paso</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Body_Count/" class="language-aware-link">Body Count</a> で用いたファイルについて、
+El Paso に住んでいる employees により発行された全ローンの the dollar value を要求された。
+</p><p>
+employees のデータから <code>El Paso</code> を検索すると、<code>city</code> の値に完全一致する形でのみ出てくる感じだった。
+</p><p>
+これを踏まえ、employees のデータ (<code>demonne.sql</code> の164行目) を入力とし、<code>'El Paso'</code> を含む項目の <code>employee_id</code> を抽出する以下のプログラムを作成した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Regarding the file used in <a href="../Body_Count/" class="language-aware-link">Body Count</a>,
+"the dollar value" of all loans issued by employees who live in "El Paso" was asked.
+</p><p>
+I tried searching for <code>El Paso</code> from the data of employees, finding that it looks like appearing only as the whole value of <code>city</code>.
+</p><p>
+Based on this, I created this program to read the data of employees (the 164th line of <code>demonne.sql</code>) as an input
+and to extract <code>employee_id</code> of entries which contain <code>'El Paso'</code>.
+</p>
+</span>
+<p><a href="extract_el_paso.pl" class="code-link" data-collapse="true">extract_el_paso.pl</a></p>
+
+<span class="language-selector-ja">
+<p>
+loans のデータには <code>amt</code>、<code>balance</code>、<code>interest</code> の3種類の数値データが入っている。<br>
+どれを使えば the dollar value を求められるかがわからないので、とりあえずこの3種類を抜き出すことにした。
+</p><p>
+loans のデータ (<code>demonne.sql</code> の224行目) を標準入力から、<code>extract_el_paso.pl</code> で抽出した <code>employee_id</code> のリストをコマンドライン引数で指定したファイルから読み込み、<br>
+<code>employee_id</code> がリストに含まれる項目の数値データを抽出する、以下のプログラムを作成した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+The data of loans includes three kinds of numeric data: <code>amt</code>, <code>balance</code>, and <code>interest</code>.<br>
+I didn't know which data should be used to obtain "the dollar value", so I decided to extract these three kinds of data as the first step.
+</p><p>
+I created this program to extract numeric data of entries whose <code>employee_id</code> is in the list extracted by <code>extract_el_paso.pl</code>.<br>
+This program reads the data of loans (the 224th line of <code>demonne.sql</code>) from the standard input and the extracted list from a file specified in the command line arguments.
+</p>
+</span>
+<p><a href="extract_loan.pl" class="code-link" data-collapse="true">extract_loan.pl</a></p>
+
+<span class="language-selector-ja">
+<p>
+このプログラムの出力を<common-tool data-lang="ja">LibreOffice</common-tool> Calcにコピペし、<code>SUM</code>関数を用いてそれぞれの数値データの合計を求めた。<br>
+その結果、 <code>amt</code> の合計は <code>940000</code>、<code>balance</code> の合計は <code>877401</code>、<code>interest</code> の合計は <code>199.9</code> となった。
+</p><p>
+<code>amt</code> の合計を指定されたflagの形式に当てはめた <code>flag{$940,000.00}</code> は、Incorrectとなった。<br>
+<code>balance</code> の合計を指定されたflagの形式に当てはめることで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I copy-and-pasted the output of this program to <common-tool data-lang="en">LibreOffice</common-tool> Calc, and used the function <code>SUM</code> to obtain the sum of each numeric data.<br>
+As a result, the sum of <code>amt</code> was <code>940000</code>, the sum of <code>balance</code> was <code>877401</code>, and the sum of <code>interest</code> was <code>199.9</code>.
+</p><p>
+I tried <code>flag{$940,000.00}</code>, which is the sum of <code>amt</code> formatted as specified, and it was judged as Incorrect.<br>
+I obtained the flag by formatting the sum of <code>balance</code> as specified.
+</p>
+</span>
+
+<div class="flag">flag{$877,401.00}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

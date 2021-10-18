@@ -203,6 +203,10 @@ const commonToolList = {
 	},
 	"Audacity": {
 		"": "https://www.audacityteam.org/"
+	},
+	"LibreOffice": {
+		"ja": "https://ja.libreoffice.org/",
+		"en": "https://www.libreoffice.org/"
 	}
 };
 
