@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>To Be Xor Not to Be (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>To Be Xor Not to Be</h1>
+<p class="language-selector-ja">
+以下の文字列が与えられた。
+</p>
+<p class="language-selector-en">
+This string was given:
+</p>
+<code-block data-extension="txt">
+.$)/3&lt;'e-)&lt;e':e&'&lt;e&lt;'e-)&lt;5
+</code-block>
+
+<p class="language-selector-ja">
+<common-tool data-lang="ja">CyberChef</common-tool>で XOR Brute Force をかけると、Key = 48 でflagが得られた。
+</p>
+<p class="language-selector-en">
+Applying "XOR Brute Force" on <common-tool data-lang="en">, the flag appeared at Key = 48.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=XOR_Brute_Force(1,100,0,'Standard',false,true,false,'')&input=LiQpLzM8J2UtKTxlJzplJic8ZTwnZS0pPDU"
+>XOR Brute Force - CyberChef</a></p>
+
+<div class="flag">flag{to-eat-or-not-to-eat}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

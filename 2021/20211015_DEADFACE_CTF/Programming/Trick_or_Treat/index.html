@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Trick or Treat (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Trick or Treat</h1>
+<span class="language-selector-ja">
+<p>
+ゲームのファイル一式が与えられた。<br>
+virtualenvを有効化し、<code>pip install pygame</code> を実行した後で <code>game.py</code> を実行すると、
+矢印キーで自機を操作して降ってくるものをよけるゲームが開始された。
+</p><p>
+<code>game.py</code> を読むと、以下の怪しい部分が見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A set of files for a game was given.<br>
+Activating virtualenv, executing <code>pip install pygame</code> and then executing <code>game.py</code>,
+a game where the player control a character using the arrow keys and avoid hitting to what comes from the upper part started.
+</p><p>
+Reading <code>game.py</code>, I found this interesting part:
+</p>
+</span>
+<code-block data-extension="py">
+            if gf &gt; (5 * 20):
+                gf = (25 * 4)
+                game.pause_text = gs()
+                pause = True
+</code-block>
+
+<p class="language-selector-ja">
+この部分のうち <code>gf &gt; (5 * 20)</code> を <code>gf &gt; 1</code> に書き換えて実行し、2体よけると、標準出力にflagが出力された。
+</p>
+<p class="language-selector-en">
+I changed <code>gf &gt; (5 * 20)</code> in this part to <code>gf &gt; 1</code> and started the game.
+Then, after dodging 2 characters, the flag was printed to the standard output.
+</p>
+
+<div class="flag">flag{CaNT_ch34t_d34th}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

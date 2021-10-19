@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Scary Bunny (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Scary Bunny</h1>
+<span class="language-selector-ja">
+<p>
+画像ファイル <code>bunny.jpg</code> が与えられた。
+</p><p>
+以下のように <common-tool data-lang="ja">Stegseek</common-tool> と <common-tool data-lang="ja">rockyou.txt</common-tool> を用いて解析を行うと、flagが書かれたファイルが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An image file <code>bunny.jpg</code> was given.
+</p><p>
+Investigating using <common-tool data-lang="en">Stegseek</common-tool> and <common-tool data-lang="en">rockyou.txt</common-tool> like this, I got a file that contains the flag.
+</p>
+</span>
+<code-block data-extension="txt">
+user@user-VirtualBox:~$ stegseek --seed bunny.jpg 
+StegSeek 0.6 - https://github.com/RickdeJager/StegSeek
+
+[i] Found (possible) seed: "3b75655e"             
+	Plain size: 58.0 Byte(s) (compressed)
+	Encryption Algorithm: rijndael-128
+	Encryption Mode:      cbc
+
+user@user-VirtualBox:~$ stegseek --crack bunny.jpg rockyou.txt 
+StegSeek 0.6 - https://github.com/RickdeJager/StegSeek
+
+[i] Found passphrase: ""
+[i] Original filename: "steganopayload730241.txt".
+[i] Extracting to "bunny.jpg.out".
+
+user@user-VirtualBox:~$
+</code-block>
+
+<div class="flag">flag{Carr0t}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

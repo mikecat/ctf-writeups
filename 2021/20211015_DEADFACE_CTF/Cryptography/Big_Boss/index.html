@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Big Boss (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Big Boss</h1>
+<span class="language-selector-ja">
+<p>
+画像ファイル <code>crypto04.png</code> が与えられ、<code>flag{FirstName_LastName}</code> の形式のターゲットの個人の名前を要求された。
+</p><p>
+画像を見ると、ノートのようなものに文字が書かれているようだった。<br>
+最初の部分を書き出すと
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An image file <code>crypto04.png</code> was given and the name of the target individual was asked in the format: <code>flag{FirstName_LastName}</code>.
+</p><p>
+Looking at the image, I found that there are some characters written to something like a notebook.<br>
+Writing down the first part of the characters, it was:
+</p>
+</span>
+<blockquote>
+Hvs bslh asshwbu kwzz ps hcrom oh bccb.
+</blockquote>
+<p class="language-selector-ja">
+となり、これに<common-tool data-lang="ja">CyberChef</common-tool>のROT13 (Amount: 12) をかけると
+</p>
+<p class="language-selector-en">
+And applying "ROT13" (Amount: 12) on <common-tool data-lang="en">CyberChef</common-tool> to the text resulted in this:
+</p>
+<blockquote>
+The next meeting will be today at noon.
+</blockquote>
+<span class="language-selector-ja">
+<p>
+となった。
+</p><p>
+残りの部分も書き出し、同様にROT13 (Amount: 12) をかけると、以下のようになった。
+</p>
+</span>
+<p class="language-selector-en">
+Then, I wrote down the rest part and applied "ROT13" (Amount: 12). This is the result:
+</p>
+<blockquote>
+The next meeting will be today at noon. Need to find ouz<br>
+Jimmie's wors schedule so we know when is best to phish<br>
+him. The campaihn needs to loos like it came from<br>
+ihs boss, Marcus Byner. He works as an Advanced<br>
+Solutions Supervisor-don't forget to include<br>
+that in the email.
+</blockquote>
+<p class="language-selector-ja">
+この中から人名っぽい部分を抜き出し、整形することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by taking the part that looks like a name of a person from this text and formatting.
+</p>
+
+<div class="flag">flag{Marcus_Byner}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

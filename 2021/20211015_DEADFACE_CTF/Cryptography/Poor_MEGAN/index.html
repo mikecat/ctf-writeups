@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Poor MEGAN! (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Poor MEGAN!</h1>
+<p class="language-selector-ja">
+以下の文字列が与えられた。
+</p>
+<p class="language-selector-en">
+This string was given:
+</p>
+<code-block data-extension="txt">
+j2rXjx9dkhW9eLKsnMR9cLDVjh/9dwz1QfGXm+b9=wKslL1Zpb45
+</code-block>
+<span class="language-selector-ja">
+<p>
+一見Base64のように見えるが、通常は最後にしか来ないはずの <code>=</code> が途中に入っている。
+</p></p>
+順番がシャッフルされているのかと思い、以下のプログラムで解析を行ったが、どの4文字を組み合わせても <code>g{</code> を含む結果が得られず、違うようだった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This looks like Base64 at first glance, but a character <code>=</code>, which normally should appear only at the end, is in the middle.
+</p><p>
+I thought that the order of characters may be shuffled, and analyzed using this program.
+As a result, no combination of 4 characters yielded <code>g{</code> and I found this hypothesis should be wrong.
+</p>
+</span>
+<p><a href="permutation.pl" class="code-link" data-collapse="true">permutation.pl</a></p>
+
+<p class="language-selector-ja">
+試行錯誤の結果、<common-tool data-lang="ja">CyberChef</common-tool>の From Base64 で、
+Alphabet を Megan35 に設定してデコードを行うことで、flagが得られた。
+</p>
+<p class="language-selector-en">
+After some trial-and-error, I obtained the flag by decoding using "From Base64" on <common-tool data-lang="en">CyberChef</common-tool>,
+setting the Alphabet to "Megan35".
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('3GHIJKLMNOPQRSTUb%3DcdefghijklmnopWXYZ/12%2B406789VaqrstuvwxyzABCDEF5',true)&input=ajJyWGp4OWRraFc5ZUxLc25NUjljTERWamgvOWR3ejFRZkdYbStiOT13S3NsTDFacGI0NQ"
+>From Base64 - CyberChef</a></p>
+
+<div class="flag">flag{Six-Parts-Honey-One-Part-Garlic}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

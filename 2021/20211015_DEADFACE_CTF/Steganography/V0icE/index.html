@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>V0icE (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>V0icE</h1>
+<span class="language-selector-ja">
+<p>
+音声ファイル <code>midnight.wav</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">Audacity</common-tool> でスペクトログラムを表示すると、flagが表示された。<br>
+スケールを Mel 、窓関数サイズを 1024 に設定すると、見やすくなった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An audio file <code>midnight.wav</code> was given.
+</p><p>
+Seeing the spectrogram on <common-tool data-lang="en">Audacity</common-tool>, I found the flag displayed.<br>
+It looked well when I set the Scale to "Mel" and the Window size to "1024".
+</p>
+</span>
+<p><a href="spectrogram.png"><img src="spectrogram_thumb.jpg" alt="the spectrogram"></a></p>
+
+<div class="flag">flag{1257}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

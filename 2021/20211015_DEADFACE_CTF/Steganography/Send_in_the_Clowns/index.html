@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Send in the Clowns (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Send in the Clowns</h1>
+<span class="language-selector-ja">
+<p>
+画像ファイル <code>steg02.jpg</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">ImageMagick</common-tool>の <code>identify -verbose</code> コマンドをかけると、以下の部分があり、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An image file <code>steg02.jpg</code> was given.
+</p><p>
+Using the <code>identify -verbose</code> command from <common-tool data-lang="en">ImageMagick</common-tool>, I found this part and obtained the flag.
+</p>
+</span>
+<code-block data-extension="txt">
+  Properties:
+    comment: flag{s3nd_in_the_kl0wns}
+</code-block>
+
+<div class="flag">flag{s3nd_in_the_kl0wns}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

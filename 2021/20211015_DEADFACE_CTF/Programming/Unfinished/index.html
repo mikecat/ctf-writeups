@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Unfinished (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Unfinished</h1>
+<p class="language-selector-ja">
+以下の文字列が与えられた。
+</p>
+<p class="language-selector-en">
+This string was given:
+</p>
+<code-block data-extension="py">
+#!/usr/bin/env python3
+from binascii import unhexlify as u
+
+def get_flag():
+    flag = '666c61677b30682d6c6f6f6b2d612d466c61477d'
+    return u(flag).decode('utf-8')
+
+
+print(f'The flag is: ')
+</code-block>
+
+<p class="language-selector-ja">
+このなかの16進文字列の部分に<common-tool data-lang="ja">CyberChef</common-tool>の From Hex をかけることで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by applying "From Hex" on <common-tool data-lang="en">CyberChef</common-tool> to the hexadecimal string in this.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')&input=NjY2YzYxNjc3YjMwNjgyZDZjNmY2ZjZiMmQ2MTJkNDY2YzYxNDc3ZA"
+>From Hex - CyberChef</a></p>
+
+<div class="flag">flag{0h-look-a-FlaG}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

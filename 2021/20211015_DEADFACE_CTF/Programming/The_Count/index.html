@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>The Count (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>The Count</h1>
+<p class="language-selector-ja">
+TCPサーバの接続情報が与えられた。<br>
+<common-tool data-lang="ja">Tera Term</common-tool>で接続してみると、以下の出力がされた。
+</p>
+<p class="language-selector-en">
+Information to connect to a TCP server was given.<br>
+Connecting via <common-tool data-lang="en">Tera Term</common-tool>, this output was produced:
+</p>
+<code-block data-extension="txt">
+DEADFACE gatekeeper: Let us see how good your programming skills are.
+If a = 1, b = 2, c = 3, etc.. Tell me what the sum of this word is:
+
+ You have 5 seconds to give me an answer.
+
+Your word is: save
+</code-block>
+
+<p class="language-selector-ja">
+制限時間が短く、手動では難しそうなので、プログラムを書くことにした。<br>
+aからzまでのアルファベットがそれぞれ順に1から26までの数値に対応すると仮定した上で、
+「Your word」に使われている文字に対応する数値の合計を送信するプログラムを書き、実行したが、
+以下がランダムに数行出力されて接続が切れるばかりだった。
+</p>
+<p class="language-selector-en">
+The time limit looked too short to do it manually, so I decided to write some program.<br>
+I assumed that the alphabets from a to z correspond to numbers from 1 to 26, respectively,
+and wrote a program to calculate the sum of numbers corresponding to each characters in "Your word".<br>
+However, executing that just resulted in a few random lines from these being printed, and then being disconnected.
+</p>
+<ul>
+<li>Stop wasting my time.</li>
+<li>Connection Closed.</li>
+<li>Too slow!! Word has been reset!</li>
+</ul>
+<span class="language-selector-ja">
+<p>
+1から26の数値に対応するのではなく1から3を繰り返すと仮定したり、
+数値の足し算ではなく文字列の結合をしたりを試してみたが、結果は同様であった。
+</p><p>
+しばらくすると、サーバの最初の出力が以下のように変わった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I tried repeating numbers from 1 to 3 instead of using numbers from 1 to 26.
+I also tried to use string concatenation instead of adding numbers.<br>
+Unfortunately they didn't change the result. 
+</p><p>
+After a while, what the server firstly prints changed to things like this:
+</p>
+</span>
+<code-block data-extension="txt">
+DEADFACE gatekeeper: Let us see how good your programming skills are.
+If a = 0, b = 1, c = 2, etc.. Tell me what the sum of this word is:
+
+ You have 5 seconds to give me an answer.
+
+Your word is: cakes
+</code-block>
+
+<p class="language-selector-ja">
+aからzのアルファベットがそれぞれ順に0から25の数値に対応すると仮定するように修正した以下のプログラムを実行すると、flagが得られた。
+</p>
+<p class="language-selector-en">
+Assuming that the alphabets from a to z correspond to numbers from 0 to 25, I modified my program and executed that.<br>
+As a result, I obtained the flag. This is the program:
+</p>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<div class="flag">flag{d1c037808d23acd0dc0e3b897f344571ddce4b294e742b434888b3d9f69d9944}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

@@ -207,6 +207,9 @@ const commonToolList = {
 	"LibreOffice": {
 		"ja": "https://ja.libreoffice.org/",
 		"en": "https://www.libreoffice.org/"
+	},
+	"ImageMagick": {
+		"": "https://imagemagick.org/"
 	}
 };
 
