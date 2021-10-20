@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ghost writer (pbctf 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Ghost writer</h1>
+<span class="language-selector-ja">
+<p>
+音声ファイル <code>output.wav</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">Audacity</common-tool>で観察すると、キーを押す音が無音で区切られて入っているようだった。<br>
+まず、このページを参考に、音声データを無音で分割して1個ずつのファイルにした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An audio file <code>output.wav</code> was given.
+</p><p>
+Checking with <common-tool data-lang="en">Audacity</common-tool>, there were key-pressing sounds separated by slience.<br>
+I referred this page to split the audio data by slience and save the sounds in separate files:
+</p>
+</span>
+<p><a href="https://stabucky.com/wp/archives/4444">Audacityで無音部分で分割する方法 | You Look Too Cool</a></p>
+
+<span class="language-selector-ja">
+<p>
+まず、「解析 → Silence Finder......」を用いて無音部分にラベルをつけた。<br>
+最小無音間隔 [秒] は 0.2 、無音終端直前のラベル位置 [秒] は 0.05 とした。
+</p><p>
+次に、「ファイル → 書き出し → 複数ファイルの書き出し」でファイルを書き出した。<br>
+書き出すファイル1個ずつについてメタデータを要求するダイアログが開いたので、デフォルトのままEnterキーで閉じていった。<br>
+このとき、Enterキーを押す間隔が短すぎると、ダイアログが開く前に入力が入ってしまい、新しい書き出しが開始されてしまうので注意。
+</p><p>
+この結果、276個のファイルが得られた。これは275個のキーを押す音のファイルと1個の(最後の)無音のファイルであり、
+問題文の「275回キーを押したのが記録されている」という記述と一致している。
+</p><p>
+さて、音声ファイルから情報を読み取るといえば、RACTF 2021 の <a href="../../../20210814_RACTF_2021/Steganography/Im_a_Shouty_Man/" class="language-aware-link">I'm a Shouty Man</a> である。<br>
+この問題のwriteupを探すと、以下が見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Firstly, I put labels to sliences using "Analyze → Silence Finder......".<br>
+I set "Minimum duration of silence [seconds]" to 0.2 and "Label placement [seconds before silence ends]" to 0.05.
+</p><p>
+Then, I exported the files using "File → Export → Export Multiple...".<br>
+It showed dialogs to enter metadata for each files to write, so I pressed the Enter key to close the dialogs with the default settings.<br>
+Note that too short period to press the Enter key results in pressing Enter before the dialog appears and starting new exporting.
+</p><p>
+As a result, 276 files are exported. This includes 275 files with key-pressing sounds and 1 file with (the last) silence.
+This matches with the challenge description saying "there are 275 key presses recorded".
+</p><p>
+Speaking of extracting information from an audio file, I remembered <a href="../../../20210814_RACTF_2021/Steganography/Im_a_Shouty_Man/" class="language-aware-link">I'm a Shouty Man</a> in RACTF 2021.<br>
+I searched for a writeup for this challenge and found this:
+</p>
+</span>
+<p><a href="https://medium.com/@Nicholaz99/ractf-2021-writeup-647554511dc5#61f5">RACTF 2021 — Writeup. Writeup for RACTF 2021 by Nicholas and… | by Nicholas | Medium</a></p>
+
+<p class="language-selector-ja">
+これを参考に、得られた音声ファイルそれぞれの距離を求める以下のプログラムを作成し、実行した。<br>
+実行には11分くらいかかった。
+</p>
+<p class="language-selector-en">
+Referring to this, I created this program to calculate distances between each divided audio files and executed.<br>
+The execution took about 11 minutes.
+</p>
+<p><a href="get_dist.py" class="code-link" data-collapse="true">get_dist.py</a></p>
+
+<p class="language-selector-ja">
+次に、以下のプログラムを用い、距離が短いペアを同じグループに入れるという方法でクラスタリングを行った。<br>
+「a～zと空白の27キーのみが使われている」という条件があるので、27グループになるように閾値を調整したところ、
+閾値 660 でグループ数が27になった。
+</p>
+<p class="language-selector-en">
+Then, using this program, I performed clustering by putting pairs whose distance is short to the same group.<br>
+Seeing the condition "only 27 keys of a-z and space is used", I adjusted the threshold to yield 27 groups.
+As a result, setting the threshold to 660 yielded 27 groups.
+</p>
+<p><a href="dist_cluster.py" class="code-link" data-collapse="true">dist_cluster.py</a></p>
+
+<p class="language-selector-ja">
+結果は以下のようになった。
+</p>
+<p class="language-selector-en">
+The result was:
+</p>
+<code-block data-extension="txt">
+abcdefgdbfedhcijkdlkdmdhnoibadklacdabcdpjkdqokfrsgdtccscedabnljibdabcdnfokdulndabcdqonpadaovcdokdfdwccrdfkedabcdqsfidopdthxaqdltckdynfxcdvcxbfkozfsdscghlfnepdfncdsljedxslpcdynfxcdfkedabcdhonepdwcncdpokiokidokdoapdwfnvabdabcncdwfpdkldwfgdaldfkaozotfacdwbfadwfpdfhljadaldbft7ck
+</code-block>
+
+<p class="language-selector-ja">
+ここで、4番目の音が大きくて特徴的であり、数音ごとに入っていることから、これが空白に相当すると予想し、
+4番目の文字である <code>d</code> を空白に、そしてアルファベットからはみ出していた <code>7</code> をかわりに <code>d</code> に置換した。
+すると、以下のようになった。
+</p>
+<p class="language-selector-en">
+By the way, I guessed the 4th sound, which is loud and characteristic, corresponds to the space key.<br>
+I replaced the 4th character <code>d</code> to the space character, and the non-alphabet character <code>7</code> to <code>d</code>. The result is:
+</p>
+<blockquote>
+abc efg bfe hcijk lk m hnoiba klac abc pjk qokfrsg tccsce abnljib abc nfok uln abc qonpa aovc ok f wccr fke abc qsfi op thxaq ltck ynfxc vcxbfkozfs scghlfnep fnc slje xslpc ynfxc fke abc honep wcnc pokioki ok oap wfnvab abcnc wfp kl wfg al fkaozotfac wbfa wfp fhlja al bftdck
+</blockquote>
+
+<p class="language-selector-ja">
+これを<common-tool data-lang="ja">Substitution Solver</common-tool>で解読すると、以下のようになった。
+</p>
+<p class="language-selector-en">
+Decrypting this via <common-tool data-lang="en">Substitution Solver</common-tool> resulted in this:
+</p>
+<blockquote>
+the day had begun on q bright note the sun finaxly meeled through the rain jor the first tike in a weex and the flag is mbctf omen prace kechanival leyboards are loud close prace and the birds were singing in its warkth there was no way to antivimate what was about to hamzen
+</blockquote>
+
+<p class="language-selector-ja">
+この中に、以下の部分がある。
+</p>
+<p class="language-selector-en">
+This result has this part:
+</p>
+<blockquote>
+the flag is mbctf omen prace kechanival leyboards are loud close prace
+</blockquote>
+
+<p class="language-selector-ja">
+これを補正することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by correcting this.
+</p>
+
+<div class="flag">pbctf{mechanical_keyboards_are_loud}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">pbctf 2021</a>
+</p>
+</body>
+</html>

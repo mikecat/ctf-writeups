@@ -210,6 +210,9 @@ const commonToolList = {
 	},
 	"ImageMagick": {
 		"": "https://imagemagick.org/"
+	},
+	"Substitution Solver": {
+		"": "https://www.guballa.de/substitution-solver"
 	}
 };
 
