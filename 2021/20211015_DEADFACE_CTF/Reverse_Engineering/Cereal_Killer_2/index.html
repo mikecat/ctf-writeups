@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Cereal Killer 2 (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Cereal Killer 2</h1>
+<span class="language-selector-ja">
+<p>
+約6KBのファイル <code>re02.exe</code> が与えられた。
+</p><p>
+exeにしては小さいと思い、<code>file</code> コマンドを用いると、以下の結果が得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>re02.exe</code>, which is about 6KB, was given.
+</p><p>
+Thinking that this is too small for exe file, I used the <code>file</code> command, obtaining this result:
+</p>
+</span>
+<code-block data-extension="txt">
+YUKI.N&gt;file re02.exe
+re02.exe; PE32 executable for MS Windows (console) Intel 80386 32-bit Mono/.Net assembly
+</code-block>
+
+<p class="language-selector-ja">
+その結果、.Netが用いられているようなので、<common-tool data-lang="ja">dnSpy</common-tool>を用いて逆コンパイルした。<br>
+すると、<code>re02 / re02.exe / - / SymmetricEncryptor</code>に、以下の<code>Main</code>関数および<code>EncryptString</code>関数などがあった。
+</p>
+<p class="language-selector-en">
+It revealed that .Net is used, so I decompiled the file using <common-tool data-lang="en">dnSpy</common-tool>.<br>
+As a result, I found these <code>Main</code> function and <code>EncryptString</code> function in <code>re02 / re02.exe / - / SymmetricEncryptor</code>:
+</p>
+<p><a href="functions.cs" class="code-link" data-collapse="true">functions.cs</a></p>
+
+<p class="language-selector-ja">
+<code>EncryptString</code>関数で用いられている配列 <code>array</code> の内容を<common-tool data-lang="ja">CyberChef</common-tool>の以下のRecipeで16進数に変換すると、
+<code>05123d2c7d22f75a9b95678edbc705e7</code> となった。
+</p>
+<p class="language-selector-en">
+I converted the array <code>array</code>, which is used in the function <code>EncryptString</code>, to hexadecimal using this Recipe on <common-tool data-lang="en">CyberChef</common-tool>.
+The result was <code>05123d2c7d22f75a9b95678edbc705e7</code>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Decimal('Comma',false)To_Hex('None',0)&input=CQk1LAoJCTE4LAoJCTYxLAoJCTQ0LAoJCTEyNSwKCQkzNCwKCQkyNDcsCgkJOTAsCgkJMTU1LAoJCTE0OSwKCQkxMDMsCgkJMTQyLAoJCTIxOSwKCQkxOTksCgkJNSwKCQkyMzE"
+>From Decimal, To Hex - CyberChef</a></p>
+
+<span class="language-selector-ja">
+<p>
+<code>EncryptString</code>関数のコードから、AESで暗号化していそうなこと、
+<a href="https://docs.microsoft.com/ja-jp/dotnet/api/system.security.cryptography.symmetricalgorithm.createencryptor?view=net-5.0#System_Security_Cryptography_SymmetricAlgorithm_CreateEncryptor_System_Byte___System_Byte___"
+><code>aes.CreateEncryptor</code></a>の引数の鍵とIV両方に <code>array</code> を指定していることは読み取れたが、<br>
+AESの暗号利用モードはわからなかった。
+</p><p>
+とりあえずCyberChefのデフォルトのCBCモードで<code>Main</code>関数で出力している内容の復号を試みると、
+復号に成功し、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I found that AES is used for encryption, and that <code>array</code> is used for both of the key and IV for the function
+<a href="https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.symmetricalgorithm.createencryptor?view=net-5.0#System_Security_Cryptography_SymmetricAlgorithm_CreateEncryptor_System_Byte___System_Byte___"><code>aes.CreateEncryptor</code></a>.<br>
+However, I coundn't found which mode of operation is used for AES.
+</p><p>
+I tried to decrypt using the CBC mode, which is default on CyberChef, what is printed in the <code>Main</code> function.
+It succeeded and I obtained the flag.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)AES_Decrypt(%7B'option':'Hex','string':'05123d2c7d22f75a9b95678edbc705e7'%7D,%7B'option':'Hex','string':'05123d2c7d22f75a9b95678edbc705e7'%7D,'CBC','Raw','Raw',%7B'option':'Hex','string':''%7D,%7B'option':'Hex','string':''%7D)&input=aGxTNE1iT21BK2tRWDcxeFh3UHM3Q3NDV3A5alF4Q1BhL29NazJvMmJacitqZ3dlRDRiOHU4MHo1TFZvQnFDNw"
+>From Base64, AES Decrypt - CyberChef</a></p>
+
+<div class="flag">flag{frank3n-berry-goodness-NOM-NOM-NOM}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

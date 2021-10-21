@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Cereal Killer (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Cereal Killer</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>deadface_re01.exe</code> およびELFファイル <code>deadface_re01.bin</code> が与えられた。
+</p><p>
+<code>deadface_re01.bin</code> を<common-tool data-lang="ja">Ghidra</common-tool> で逆コンパイルすると、以下の <code>main</code> 関数があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>deadface_re01.exe</code> and a ELF file <code>deadface_re01.bin</code> were given.
+</p><p>
+Decompiling <code>deadface_re01.bin</code> via <common-tool data-lang="en">Ghidra</common-tool>, I found this function <code>main</code>:
+</p>
+</span>
+<p><a href="main.c" class="code-link" data-collapse="true">main.c</a></p>
+
+<span class="language-selector-ja">
+<p>
+この関数は、埋め込まれたデータに <code>0x5a</code> をxorしてデータを生成した後、入力を読み込み、
+読みこんだデータが指定のものだったら生成したデータを出力する、というものであることが読み取れた。
+</p><p>
+<common-tool data-lang="ja">CyberChef</common-tool> で <code>deadface_re01.bin</code> 全体に XOR (Key: <code>5a</code> (HEX)) をかけ、<code>flag</code> を探すことで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I found that this function firstly creates some data by exclusive-oring <code>0x5a</code> with embed data,
+and then read some data and print the created data if what it read is what is specified.
+</p><p>
+I obtained the flag by applying "XOR" (Key: <code>5a</code> (HEX)) on <common-tool data-lang="ja">CyberChef</common-tool> to the whole file <code>deadface_re01.bin</code> and searching for <code>flag</code>.
+</p>
+</span>
+
+<div class="flag">flag{c0unt-ch0cula-cereal-FTW}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

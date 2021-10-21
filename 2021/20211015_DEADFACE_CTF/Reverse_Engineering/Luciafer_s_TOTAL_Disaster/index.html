@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Luciafer's TOTAL Disaster (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Luciafer's TOTAL Disaster</h1>
+<p class="language-selector-ja">
+ファイル <code>zealotcrypt-01.exe</code> と、以下の問題文が与えられた。
+</p>
+<p class="language-selector-en">
+A file <code>zealotcrypt-01.exe</code> and this challenge description were given:
+</p>
+<blockquote>
+Do some basic analysis on her malware and see what information you can come up with. There are some great, easy to use tools that can help a burgeoning malware analyst.
+</blockquote>
+
+<span class="language-selector-ja">
+<p>
+<code>shasum</code> コマンドで <code>zealotcrypt-01.exe</code> のSHA-1値を求めると、
+<code>568f22ac56fc6f1d0a509b9cc004eee00573a690</code> となった。
+</p><p>
+このハッシュ値を<common-tool data-lang="ja">VirusTotal</common-tool>に入れて検索すると、以下のページが見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I obtained the SHA-1 value of <code>zealotcrypt-01.exe</code> via the <code>shasum</code> command.
+The result was <code>568f22ac56fc6f1d0a509b9cc004eee00573a690</code>.
+</p><p>
+I put this hash value to <common-tool data-lang="ja">VirusTotal</common-tool> and searched for that, finding this page:
+</p>
+</span>
+<p><a href="https://www.virustotal.com/gui/file/ff6e2dc049b7bc9d98113b75e8766b6d5083bce8b425b9354d6ba989ac4d0a2c">VirusTotal - File - ff6e2dc049b7bc9d98113b75e8766b6d5083bce8b425b9354d6ba989ac4d0a2c</a></p>
+
+<p class="language-selector-ja">
+このページのCommunityタブを見ると、flagが書かれていた。
+</p>
+<p class="language-selector-en">
+I checked the Community tab on the page and the flag was there.
+</p>
+
+<div class="flag">flag{together-we-can-defeat-Lytton-Labs!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

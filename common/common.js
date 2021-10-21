@@ -213,6 +213,9 @@ const commonToolList = {
 	},
 	"Substitution Solver": {
 		"": "https://www.guballa.de/substitution-solver"
+	},
+	"VirusTotal": {
+		"": "https://www.virustotal.com/"
 	}
 };
 

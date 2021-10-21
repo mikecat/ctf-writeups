@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TheZeal0t's Fingerprints Are All Over This! (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>TheZeal0t's Fingerprints Are All Over This!</h1>
+<p class="language-selector-ja">
+以下の問題文と、ファイル <code>zealotcrypt-02.bin</code> および <code>zealotcrypt-02-decrypt.bin</code> が与えられた。
+</p>
+<p class="language-selector-en">
+This challenge description, and two files <code>zealotcrypt-02.bin</code> and <code>zealotcrypt-02-decrypt.bin</code> were given.
+</p>
+<blockquote>
+<p>
+Calculate the SHA256 sum of TheZeal0t's cryptoware program, and its decryptor program. Enter the two hashes as the flag, separated by a pipe symbol, with the cryptoware's hash first, followed by the decryptor program's hash. Example:
+</p><p>
+<code>flag{435524cc4113668d3f1e1e761d1717ba1bcf8b86b6dfaab9d048338e4e00a764|5d213aa47efd7e255c8304f56f148f87488a4bd9488f631ac4ed87f02c85cdce}</code>
+</p>
+</blockquote>
+
+<p class="language-selector-ja">
+まず、以下のように <code>shasum</code> コマンドを用いて与えられた2個のファイルのSHA-256値を求めた。
+</p>
+<p class="language-selector-en">
+Firstly, I used the <code>shasum</code> command to obtain the SHA-256 values of the two given files like this:
+</p>
+<code-block data-extension="txt">
+YUKI.N&gt;shasum -a 256 zealotcrypt-02.bin zealotcrypt-02-decrypt.bin
+5a54fb61f7b1a9b1b7405602388add7e3323890bc74952a62803ffb1a535338b *zealotcrypt-02.bin
+969102c7feb6003624c4caf0e00fa9a60d96bc503ef0beb71ed4af68ba1fc047 *zealotcrypt-02-decrypt.bin
+</code-block>
+
+<p class="language-selector-ja">
+<code>flag{</code>、<code>zealotcrypt-02.bin</code>のSHA-256値、<code>|</code>、<code>zealotcrypt-02-decrypt.bin</code>のSHA-256値、<code>}</code> を順に繋げた以下の文字列を試したが、Incorrectとなった。
+</p>
+<p class="language-selector-en">
+I submitted a string created by concatenating <code>flag{</code>, the SHA-256 value of <code>zealotcrypt-02.bin</code>, <code>|</code>, the SHA-256 value of <code>zealotcrypt-02-decrypt.bin</code>, and <code>}</code>, being judged as Incorrect.
+</p>
+<code-block data-extenison="txt">
+flag{5a54fb61f7b1a9b1b7405602388add7e3323890bc74952a62803ffb1a535338b|969102c7feb6003624c4caf0e00fa9a60d96bc503ef0beb71ed4af68ba1fc047}
+</code-block>
+
+<p class="language-selector-ja">
+念の為2個のハッシュ値を入れ替えた以下の文字列も試したが、Incorrectとなった。
+</p>
+<p class="language-selector-en">
+Then, I tried this string with the two hash values swapped just in case, being judged as Incorrect.
+</p>
+<code-block data-extension="txt">
+flag{969102c7feb6003624c4caf0e00fa9a60d96bc503ef0beb71ed4af68ba1fc047|5a54fb61f7b1a9b1b7405602388add7e3323890bc74952a62803ffb1a535338b}
+</code-block>
+
+<p class="language-selector-ja">
+SHA-256のかわりに<common-tool data-lang="ja">CyberChef</common-tool>の SHA3 (Size: 256) を用いた以下の文字列も試したが、Incorrectとなった。
+</p>
+<p class="language-selector-en">
+I also tried this string using SHA3 (Size: 256) on <common-tool data-lang="en">CyberChef</common-tool> instead of SHA-256, being judged as Incorrect.
+</p>
+<code-block data-extension="txt">
+flag{620503d3eafe3adcc2fd81989127342b793377c81930fb3d1fce9681e446379f|5a99c3fa53241f3241224e072d846a0d58274fd3d7e2bb53f3670f5fd17db30b}
+</code-block>
+
+<p class="language-selector-ja">
+その後しばらくするとこの問題は解けたことになっており、flagの特定はできなかった。
+</p>
+<p class="language-selector-en">
+This challenge was marked as solved after a while and I couldn't determine the correct flag.
+</p>
+
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

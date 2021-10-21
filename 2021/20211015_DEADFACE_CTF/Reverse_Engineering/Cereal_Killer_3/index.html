@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Cereal Killer 3 (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Cereal Killer 3</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>deadface_re03.exe</code> およびELFファイル <code>deadface_re03.bin</code> が与えられた。
+</p><p>
+<code>deadface_re03.bin</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、以下の<code>main</code>関数があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>deadface_re03.exe</code> and a ELF file <code>deadface_re03.bin</code> were given.
+</p><p>
+Decompiling <code>deadface_re03.bin</code> via <common-tool data-lang="en">Ghidra</common-tool>, I found this function <code>main</code>:
+</p>
+</span>
+<p><a href="main.c" class="code-link" data-collapse="true">main.c</a></p>
+
+<span class="language-selector-ja">
+<p>
+この関数は、以下の処理をしていることが読み取れた。
+</p>
+<ol>
+<li>何らかのデータを生成する。</li>
+<li>入力を読み取る。</li>
+<li>入力を生成したデータと比較し、一致すれば別の生成したデータを出力する。</li>
+</ol>
+<p>
+データを生成し終わってから入力を読み取っていることから、入力の内容はデータの生成に影響を与えないことがわかる。<br>
+そこで、プログラムを書き換え、何を入力しても生成したデータを出力するようにすることにした。<br>
+具体的には、Ghidra上の表示で <code>115a5</code>、ファイル中の<code>0x15a5</code>バイト目 (0-origin) の
+<code>75 14</code> (<code>JNZ LAB_000115bb</code>) を <code>90 90</code> に書き換えた。
+</p><p>
+書き換えたプログラムを<common-tool data-lang="ja">CS50 IDE</common-tool>にアップロードして実行し、
+適当な入力を与えると、flagが出力された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I found this function doing this process:
+</p>
+<ol>
+<li>Generate some data.</li>
+<li>Read some input.</li>
+<li>Compare what it read to the generated data, and output another generated data if they are equal.</li>
+</ol>
+<p>
+The reading of input is done only after generating data, so what it read won't affect the generation of data.<br>
+Seeing this, I decided to modify the program to have it output what it generated regardless of what it read.<br>
+Specifically, I modified <code>75 14</code> (<code>JNZ LAB_000115bb</code>), which is on <code>115a5</code> in Ghidra and from the <code>0x15a5</code>-th byte (the first byte is 0th) of the file, to <code>90 90</code>.
+</p><p>
+I uploaded the modified program <common-tool data-lang="en">CS50 IDE</common-tool> and executed.
+It printed the flag after I gave some input.
+</p>
+</span>
+
+<div class="flag">flag{B00-B00-B00-Bury-IZ-DA-BOMB}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>
