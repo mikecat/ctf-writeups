@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Seed Me (pbctf 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Seed Me</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、
+プログラム <code>Main.java</code> およびテキストファイル <code>Dockerfile</code> と <code>flag.txt</code> が与えられた。<br>
+<code>Main.java</code> は、以下の処理をするものだった。
+</p>
+<ol>
+<li>数値の入力を受け付ける。</li>
+<li>入力された数値をシードとして、<code>Random</code> オブジェクトを生成する。</li>
+<li>以下を16回繰り返す。
+<ol>
+<li><code>nextFloat</code> メソッドを用いて、乱数を <code>03777</code> 回 (2047回) 生成する。</li>
+<li><code>nextFloat</code> メソッドを用いて乱数を生成し、その値が <code>7.331f*.1337f</code> 以上かをチェックする。</li>
+</ol></li>
+<li>16回全てでチェックの結果がyesなら、<code>flag.txt</code> の内容を出力する。
+</ol>
+<p>
+<a href="https://docs.oracle.com/javase/jp/8/docs/api/java/util/Random.html#nextFloat--"><code>nextFloat</code> メソッド</a>は、<code>next(24) / ((float)(1 &lt;&lt; 24))</code> を返す。<br>
+<a href="https://docs.oracle.com/javase/jp/8/docs/api/java/util/Random.html#next-int-"><code>next</code> メソッド</a>は、<code>seed</code> を <code>(seed * 0x5DEECE66DL + 0xBL) &amp; ((1L &lt;&lt; 48) - 1)</code> に更新し、<code>seed</code> の上位ビットを返す。<br>
+このことから、<code>nextFloat</code> メソッドの返り値が <code>7.331f*.1337f</code> 以上となるためには、更新後の <code>seed</code> の値が <code>16444268 &lt;&lt; 24</code> 以上になればいいことがわかる。<br>
+そして、16回のチェックを通るためには、最初のチェック時およびその後15回のチェック時においてこの条件を満たすことが必要となる。<br>
+そこで、条件を満たす <code>seed</code> の値のうち、その後15回のチェック時においても条件を満たすものを全探索することにした。
+</p><p>
+ここで、最初の <code>seed</code> の値を <code>a</code>、<code>b = 0x5DEECE66, c = 0xB</code> として、最初の数回の乱数生成の様子を見てみると、以下のようになる。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server,
+a program <code>Main.java</code>, and text files <code>Dockerfile</code> and <code>flag.txt</code> were given.<br>
+What <code>Main.java</code> does is:
+</p>
+<ol>
+<li>Accept an input of a number.</li>
+<li>Create an object of <code>Random</code> using the entered value as the seed.</li>
+<li>Repeat this 16 times:
+<ol>
+<li>Generate random numbers via <code>nextFloat</code> method <code>03777</code> (2047) times.</li>
+<li>Generate a random number via <code>nextFloat</code> method and check if the value is <code>7.331f*.1337f</code> or more.</li>
+</ol></li>
+<li>Output the contents of <code>flag.txt</code> if all of the 16 checks resulted in "yes".</li>
+</ol>
+<p>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Random.html#nextFloat--">The <code>nextFloat</code> method</a> returns <code>next(24) / ((float)(1 &lt;&lt; 24))</code>.<br>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Random.html#next-int-">The <code>next</code> method</a> updates the value of <code>seed</code> to <code>(seed * 0x5DEECE66DL + 0xBL) &amp; ((1L &lt;&lt; 48) - 1)</code> and returns the upper bits of <code>seed</code>.<br>
+Therefore, we can say that the value of <code>seed</code> should be <code>16444268 &lt;&lt; 24</code> or greater to make the return value of <code>nextFloat</code> not less than <code>7.331f*.1337f</code>.<br>
+Moreover, to pass all of the 16 checks, this condition has to be satisfied in the first check and the 15 checks after that.<br>
+Based on this, I decided to perform a brute-force search for the value of <code>seed</code> that satisfies the condition and satisfies the condition at the upcoming 15 checks.
+</p><p>
+By the way, calling the initial value of <code>seed</code> as <code>a</code> and defining <code>b = 0x5DEECE66, c = 0xB</code>, this is how the random number is generated in the first few rounds:
+</p>
+</span>
+<code-block data-extension="txt">
+0: a
+1: a * b + c
+2: (a * b + c) * b + c = a * b^2 + c * b + c
+3: ((a * b + c) * b + c) * b + c = a * b^3 + c * b^2 + c * b + c
+</code-block>
+
+<p class="language-selector-ja">
+したがって、<code>n</code>回後の <code>seed</code> の値は <code>a*b^n + c * b^(n-1) + ... + c * b + c</code> となる。<br>
+ここで、<code>b^n</code> および <code>c * b^(n-1) + ... + c * b + c</code> の値は<code>n</code> (乱数を何個生成するか) のみに依存し、 <code>a</code> にはよらない。<br>
+以下のプログラムを用い、<code>n = 2048</code> におけるこれらの値を求めた。
+</p>
+<p class="language-selector-en">
+This implies that the value of <code>seed</code> after <code>n</code> rounds will be <code>a*b^n + c * b^(n-1) + ... + c * b + c</code>.<br>
+Note that the value of <code>b^n</code> and <code>c * b^(n-1) + ... + c * b + c</code> depend only on <code>n</code> (the number of random numbers to generate) and don't depend on <code>a</code>.<br>
+I used this program to obtain the value at <code>n = 2048</code>:
+</p>
+<p><a href="calc_the_seq.py" class="code-link" data-collapse="true">calc_the_seq.py</a></p>
+
+<span class="language-selector-ja">
+<p>
+その結果、2048回の乱数生成による <code>seed</code> の変化を、<code>seed * 0xba17a0bd2001 + 0xe5b38f05c800</code> という1回の計算で求めることができることがわかった。
+</p><p>
+これを用い、以下のプログラムで条件を満たす <code>seed</code> の全探索を行った。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+As a result, I found that the change in <code>seed</code> in the 2048 rounds of random number generation can be calculated by this single calculation: <code>seed * 0xba17a0bd2001 + 0xe5b38f05c800</code>.
+</p><p>
+Using this formula, I created this program to brute-force search for <code>seed</code> that satisfies the condition.
+</p>
+</span>
+<p><a href="bruteforce_ocl.c" class="code-link" data-collapse="true">bruteforce_ocl.c</a></p>
+
+<p class="language-selector-ja">
+このプログラムはOpenCLを用いており、ビルド時は以下の初期化プログラムと組み合わせる。
+</p>
+<p class="language-selector-en">
+OpenCL is used for this program and this program should be linked with this initialization program to build:
+</p>
+<p><a href="https://github.com/mikecat/ocl-test/blob/master/common.c">ocl-test/common.c at master · mikecat/ocl-test · GitHub</a></p>
+
+<span class="language-selector-ja">
+<p>
+その結果、10分ほどで条件を満たす最初の <code>seed</code> の値 <code>275901075310942</code> が得られた。
+</p><p>
+次に、この値から乱数を逆算し、入力するべき値を求める。<br>
+<a href="https://docs.oracle.com/javase/jp/8/docs/api/java/util/Random.html#Random-long-">シードを指定した<code>Random</code>クラスのコンストラクタ</a>は <code>setSeed</code> メソッドを呼び出し、
+<a href="https://docs.oracle.com/javase/jp/8/docs/api/java/util/Random.html#setSeed-long-"><code>setSeed</code> メソッド</a>は引数に <code>0x5DEECE66D</code> をxorした値を <code>seed</code> に設定する。<br>
+従って、入力するべき値は、これまで求めた値を利用して以下のプログラムで求めることができる。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+As a result, it took about 10 minutes before emitting the first satisfying value of <code>seed</code>: <code>275901075310942</code>.
+</p><p>
+What to do next is reversing the random number generation from this value to obtaine the value to input.<br>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Random.html#Random-long-">The constructor of <code>Random</code> with specifying seed</a> calls the <code>setSeed</code> method.
+Then, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Random.html#setSeed-long-">the <code>setSeed</code> method</a> sets the value of <code>seed</code> to the argument with exclusive-ored with <code>0x5DEECE66D</code>.<br>
+Therefore, the value to input can be obtained using this program with values obtained before:
+</p>
+</span>
+<p><a href="get_input.py" class="code-link" data-collapse="true">get_input.py</a></p>
+
+<span class="language-selector-ja">
+<p>
+結果、<code>272526698751795</code> を入力すればいいことがわかった。
+</p><p>
+この値を入力するためにサーバに接続すると、以下が出力された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+The program told me that what to enter is <code>272526698751795</code>.
+</p><p>
+Connecting to the server to enter this value, this was printed:
+</p>
+</span>
+<code-block data-extension="txt">
+== proof-of-work: enabled ==
+please solve a pow first
+You can run the solver with:
+    python3 &lt;(curl -sSL https://goo.gle/kctf-pow) solve s.ADQ6.AACP774m5ETUXNMvN9rAV11m
+===================
+
+Solution?
+</code-block>
+
+<p class="language-selector-ja">
+出力されたURLから <code>curl</code> でダウンロードすると、別のURLが書かれたHTMLデータが得られた。<br>
+このURLから <code>curl</code> でダウンロードすると、プログラム <code>pow.py</code> が得られた。<br>
+このプログラムを用い、<code>pow.py solve s.ADQ6.AACP774m5ETUXNMvN9rAV11m</code> を実行すると、約2分後出力が得られた。<br>
+この出力のうち <code>Solution:</code> の後の部分をサーバに送信すると、<code>Main.java</code> の実行が開始されたようだった。<br>
+ここで、先ほど求めた値 <code>272526698751795</code> を入力すると、flagが得られた。
+</p>
+<p class="language-selector-en">
+Downloading data from the URL in the output via <code>curl</code> yielded HTML data that contains another URL.<br>
+Downloading data from the new URL via <code>curl</code> yielded a program <code>pow.py</code>.<br>
+I executed <code>pow.py solve s.ADQ6.AACP774m5ETUXNMvN9rAV11m</code> using this program. It emitted some output after about 2 minutes.<br>
+I sent the part after <code>Solution:</code> of this output to the server. Then, <code>Main.java</code> looked launched.<br>
+I entered the value <code>272526698751795</code>, which I calculated before, and obtained the flag.
+</p>
+
+<div class="flag">pbctf{intended_is_LLL_with_branch_and_bound_9ad09becbc4c7685}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">pbctf 2021</a>
+</p>
+</body>
+</html>

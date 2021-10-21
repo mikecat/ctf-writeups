@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Alkaloid Stream (pbctf 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Alkaloid Stream</h1>
+<span class="language-selector-ja">
+<p>
+プログラム <code>gen.py</code> とその出力 <code>output.txt</code> が与えられた。<br>
+<code>gen.py</code> は、以下の処理をするものだった。
+</p>
+<ol>
+<li>数列 <code>key</code> を生成する。</li>
+<li><code>key</code> のそれぞれの要素について、その次の要素から最大<code>key</code>の要素数の3分の1の要素のxorをとることで、数列 <code>fake</code> を生成する。</li>
+<li><code>key</code> と <code>fake</code> の対応する要素をペアにした列を生成する。どっちをペアの先にするかは乱数で決める。</li>
+<li>生成した列をシャッフルする。</li>
+<li><code>fake</code>を先にしていたら1、<code>key</code>を先にしていたら0というビット列を用意し、<code>flag</code>のビット列とxorする。</li>
+<li>xorした結果とシャッフルした列を出力する。</li>
+</ol>
+<p>
+<code>fake</code> の生成のしかたより、シャッフル前の <code>fake</code> の最後の要素は0であり、
+0を含むペアがあれば、そのペアのもう一方の要素は <code>key</code> の最後の要素である。<br>
+さらに、<code>fake</code> の最後から2番目の要素は <code>key</code> の最後の要素となり、
+それを含むペアのもう一方は <code>key</code> の2番目の要素である。<br>
+したがって、ペアになっている <code>key</code> の要素を利用し、<code>fake</code> の要素を後ろから求めていくことができる。<br>
+さらに、ペアのどっちが <code>key</code> かもわかるので、これを利用して <code>flag</code> にxorした値を求めることもできる。
+</p><p>
+これらの性質を利用し、以下のプログラムでflagを求めた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A program <code>gen.py</code> and its output <code>output.txt</code> were given.<br>
+What <code>gen.py</code> does is:
+</p>
+<ol>
+<li>Generate a sequence of numbers <code>key</code>.</li>
+<li>Generate a sequence of numbers <code>fake</code> by calculating exclusive-or of elements of <code>key</code> from the next position. The number of elements to exclusive-or is at most one third of the number of elements in <code>key</code>.</li>
+<li>Generate an array with pairs of corresponding elements of <code>key</code> and <code>fake</code>. Which to put to the first element of the pair is chosen randomly.</li>
+<li>Shuffle the array.</li>
+<li>Create a sequence of bits by putting 1 when an element of <code>fake</code> is coming first and putting 0 otherwise. Calculate exclusive-or of the sequence and a sequence of bits from <code>flag</code>.</li>
+<li>Output the result of exclusive-or and the shuffled array.</li>
+</ol>
+<p>
+Regarding how to generate <code>fake</code>, we can tell that the last element of <code>fale</code> before shuffling is 0,
+and that another element of the pair that contains 0 is the last element of <code>key</code>.<br>
+Also, the second last element of <code>fake</code> should be the last element of <code>key</code>,
+and another element of the pair that contains the element should be the second last element of <code>key</code>.<br>
+In this way, using the paired element of <code>key</code>, we can obtain the elements of <code>fake</code> from the end.<br>
+We also can tell which element of the pairs are from <code>key</code>, so we can use this to obtain the sequence exclusive-ored to <code>flag</code>.
+</p><p>
+Using this characteristics, I obtained the flag using this program:
+</p>
+</span>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<div class="flag">pbctf{super_duper_easy_brute_forcing_actually_this_one_was_made_by_mistake}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">pbctf 2021</a>
+</p>
+</body>
+</html>
