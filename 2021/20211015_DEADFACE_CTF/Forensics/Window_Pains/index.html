@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Window Pains (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Window Pains</h1>
+<p class="language-selector-ja">
+ファイル <code>physmemraw</code> が与えられ、以下を要求された。
+</p>
+<p class="language-selector-en">
+A file <code>physmemraw</code> was given and these things were asked:
+</p>
+<ul>
+<li>Windows Major Operating System Version</li>
+<li>bit version</li>
+<li>image date/time (UTC)</li>
+</ul>
+
+<span class="language-selector-ja">
+<p>
+<common-tool data-lang="ja">Volatility</common-tool> 2.6 で <code>imageinfo</code> を実行したが、Profileの候補は何も出てこなかった。
+</p><p>
+Volatility 3 v1.0.0 を用意し、<code>README.md</code> に例として書かれていた <code>windows.info</code> を実行すると、以下の出力が得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I ran <code>imageinfo</code> with <common-tool data-lang="en">Volatility</common-tool> 2.6, but no candidates of Profile were suggested.
+</p><p>
+I prepared Volatility 3 v1.0.0 and ran <code>windows.info</code>, which was introduced as an example in <code>README.md</code>, obtaining this output:
+</p>
+</span>
+<p><a href="volatility3_windows_info_res.txt" class="code-link" data-collapse="true">volatility3_windows_info_res.txt</a></p>
+
+<p class="language-selector-en">
+Referring
+</p>
+<p><a href="https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions">List of Microsoft Windows versions - Wikipedia</a></p>
+<span class="language-selector-ja">
+<p>
+を参照すると、バージョン 19041 は「Windows 10 version 2004」や「Windows Server, version 2004」に対応しているようである。
+</p><p>
+また、
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I found that the version 19041 corresonds to "Windows 10 version 2004" and "Windows Server, version 2004".
+</p><p>
+Also, referring
+</p>
+</span>
+<p><a href="https://docs.microsoft.com/en-us/windows/win32/sysinfo/operating-system-version">Operating System Version - Win32 apps | Microsoft Docs</a></p>
+<span class="language-selector-ja">
+<p>
+を参照すると、バージョン 10.0 は「Windows 10」「Windows Server 2019」「Windows Server 2016」に対応しているようである。<br>
+そこで、OSのバージョンはこれらに共通している「Windows 10」であると推測した。
+</p><p>
+<code>Is64Bit</code> が <code>True</code> になっていることから、ビット数は 64 であると推測できる。
+</p><p>
+時刻に関係しそうなのは、以下の2項目があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I found that the version 10.0 corresponds to "Windows 10", "Windows Server 2019", and "Windows Server 2016".<br>
+Seeing this, I guessed that the OS version is "Windows 10", which is common in the two pages.
+</p><p>
+I guessed that the number of bits is 64 because <code>Is64Bit</code> is <code>True</code>.
+</p><p>
+I found these 2 items that look related to time:
+</p>
+</span>
+<code-block data-extension="txt">
+SystemTime      2021-09-07 14:57:44
+PE TimeDateStamp        Sat Apr  7 12:04:17 2068
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+2068年というのは不自然であり、データの取得に失敗したのだと考えられる。
+</p><p>
+<code>SystemTime</code> は自然な時刻であるが、タイムゾーンがわからない。<br>
+とりあえずそのまま入れると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+The year 2068 looks weird and I thought it means it failed to retrieve the data well.
+</p><p>
+The value of <code>SystemTime</code> looks natural, but the timezone is unknown.<br>
+I obtained the flag by using the time as-is.
+</p>
+</span>
+
+<div class="flag">flag{Windows10_64_20210907145744}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

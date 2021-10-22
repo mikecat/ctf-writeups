@@ -216,6 +216,13 @@ const commonToolList = {
 	},
 	"VirusTotal": {
 		"": "https://www.virustotal.com/"
+	},
+	"Volatility 3": {
+		"": "https://github.com/volatilityfoundation/volatility3"
+	},
+	"AWS": {
+		"ja": "https://aws.amazon.com/jp/",
+		"en": "https://aws.amazon.com/"
 	}
 };
 

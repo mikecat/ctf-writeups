@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Window Pains 3 (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Window Pains 3</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Window_Pains/" class="language-aware-link">Window Pains</a> で使ったファイルについて、
+悪意のあるプロセスの名前を要求された。
+</p><p>
+<common-tool data-lang="ja">Volatility</common-tool> 3 を用い、<code>vol.py -h</code> の出力から使えそうなものを探すと、以下のものがあった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Regarding the file used in <a href="../Window_Pains/" class="language-aware-link">Window Pains</a>, the name of the malicious process was asked.
+</p><p>
+Using <common-tool data-lang="en">Volatility</common-tool> 3, I searched for something that looks useful from the output of <code>vol.py -h</code>. As a result, I found this:
+</p>
+</span>
+<code-block data-extension="txt">
+    windows.malfind.Malfind
+                        Lists process memory ranges that potentially contain injected code.
+</code-block>
+
+<p class="language-selector-ja">
+この <code>windows.malfind.Malfind</code> の結果から <code>grep</code> で <code>exe</code> を含む行を抽出すると、以下の結果が得られた。
+</p>
+<p class="language-selector-en">
+I used <code>grep</code> to extract lines that contains <code>exe</code> from the result of <code>windows.malfind.Malfind</code>. This is the result:
+</p>
+<p><a href="malfind_grep_exe.txt" class="code-link" data-collapse="true">malfind_grep_exe.txt</a></p>
+
+<p class="language-selector-ja">
+この結果には5種類のプロセスが含まれ、ここから以下の5種類がflagの候補として挙がった。
+</p>
+<p class="language-selector-en">
+This result contained 5 kinds of processes, and these turned into these 5 candidates of the flag.
+</p>
+<ul>
+<li><code>flag{MsMpEng.exe_1620}</code></li>
+<li><code>flag{SearchApp.exe_5780}</code></li>
+<li><code>flag{powershell.exe_1796}</code></li>
+<li><code>flag{powershell.exe_10284}</code></li>
+<li><code>flag{userinit.exe_8180}</code></li>
+</ul>
+
+<p class="language-selector-ja">
+この問題のattempt数の制限はちょうど5回までだったので、これらの候補を順に試したところ、最後の候補がCorrectとなった。
+</p>
+<p class="language-selector-en">
+The limit of the number of attempts for this challenge was 5 times, and this number is just as many as the number of candidates.<br>
+I tried these candidates one-by-one, and the last one was judged as Correct.
+</p>
+
+<div class="flag">flag{userinit.exe_8180}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

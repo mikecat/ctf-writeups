@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Blood Bash 2 (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Blood Bash 2</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Blood_Bash/" class="language-aware-link">Blood Bash</a>と同じサーバの情報が与えられ、
+De Monne Financial に関係する any files を探すことを要求された。
+</p><p>
+サーバに<common-tool data-lang="ja">Tera Term</common-tool>でSSH接続し、<code>ls -l</code>コマンドを実行すると、
+ファイル <code>De Monne Customer Portal.pdf</code> があることがわかった。<br>
+ファイル名が「De Monne」を含むので、これは「De Monne Financial」に関係する可能性があると考えられる。
+</p><p>
+Blood Bash においてSCPはエラーになったので、同様に <code>base64</code> コマンドと <common-tool data-lang="ja">CyberChef</common-tool> を利用してファイルをダウンロードした。<br>
+すると、以下の画像が貼られたPDFファイルが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+The same information of the server as <a href="../Blood_Bash/" class="language-aware-link">Blood Bash</a> was given,
+and asked to search for "any files relating to De Monne Financial".
+</p><p>
+Connecting to the SSH server via <common-tool data-lang="en">Tera Term</common-tool> and executing <code>ls -l</code> command,
+I found a file <code>De Monne Customer Portal.pdf</code>.<br>
+The name of this file contains "De Monne", so this file looks related to "De Monne Financial".
+</p><p>
+Using SCP resulted in error while solving Blood Bash, so I downloaded the file using the <code>base64</code> command and <common-tool data-lang="en">CyberChef</common-tool> like I did in the challenge.<br>
+As a result, I obtained a PDF file with this image:
+</p>
+</span>
+<p><a href="pdf_img.jpg"><img src="pdf_img.jpg" alt="image from PDF"></a></p>
+
+<span class="language-selector-ja">
+<p>
+これに基づき、<code>flag{deM0nn3_dat4_4_us}</code> や <code>flag{deMOnn3_dat4_4_us}</code> を試したが、Incorrectになった。
+</p><p>
+サーバに戻り、<code>ls -aR</code> コマンドを実行すると、<code>Documents</code> ディレクトリ内に <code>.demonne_info.txt</code> があることがわかった。<br>
+同様にこのファイルの内容を <code>base64</code> コマンドとCyberChefを用いて取り出すと、flagが書かれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Reading this, I tried submitting <code>flag{deM0nn3_dat4_4_us}</code> and <code>flag{deMOnn3_dat4_4_us}</code>, being judged as Incorrect.
+</p><p>
+I returned to examine the server and executed <code>ls -aR</code> command. As a result, I found an entry <code>.demonne_info.txt</code> in the directory <code>Documents</code>.<br>
+I took out the contents of this file using <code>base64</code> command and CyberChef. The flag was in the file.
+</p>
+</span>
+
+<div class="flag">flag{a856b162978fe563537c6890cb184c48fc2a018a}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

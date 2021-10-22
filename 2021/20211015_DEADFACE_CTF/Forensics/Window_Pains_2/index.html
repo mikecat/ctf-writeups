@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Window Pains 2 (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Window Pains 2</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Window_Pains/" class="language-aware-link">Window Pains</a> で使ったファイルについて、
+犠牲者のコンピュータ名を要求された。
+</p><p>
+<common-tool data-lang="ja">Volatility</common-tool> 3 の <code>windows.envars.Envars</code> を実行すると、以下の行を含む結果が得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Regarding the file used in <a href="../Window_Pains/" class="language-aware-link">Window Pains</a>, the victim's computer name was asked.
+</p><p>
+I ran <code>windows.envars.Envars</code> in <common-tool data-lang="en">Volatility</common-tool> 3. The result contained this line:
+</p>
+</span>
+<code-block data-extension="txt">
+568     wininit.exe     0x2760e6015c0   COMPUTERNAME    DESKTOP-IT8QNRI
+</code-block>
+
+<p class="language-selector-ja">
+これに基づき、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag based on this.
+</p>
+
+<div class="flag">flag{DESKTOP-IT8QNRI}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

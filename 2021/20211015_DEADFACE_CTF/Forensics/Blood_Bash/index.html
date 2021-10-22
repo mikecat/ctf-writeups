@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Blood Bash (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Blood Bash</h1>
+<span class="language-selector-ja">
+<p>
+ユーザ名・パスワード・ドメイン名・ポート番号が与えられ、<code>flag1.txt</code> の内容を要求された。
+</p><p>
+ポート番号が22であることから与えられているのはSSHサーバの情報であると推測し、<common-tool data-lang="ja">Tera Term</common-tool>で接続した。<br>
+ログイン後、<code>ls -R</code> コマンドを実行すると、<code>Documents</code> ディレクトリ内に <code>flag1.txt</code> があることがわかった。
+</p><p>
+SCPでこのファイルをダウンロードしようとすると、「the input device is not a TTY」というエラーになって失敗した。<br>
+そこで、このファイルを <code>base64</code> コマンドで処理し、出力を<common-tool data-lang="ja">CyberChef</common-tool> の From Base64 で処理することで、ファイルをダウンロードした。
+</p><p>
+ダウンロードしたファイルにflagが書かれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An Username, Password, domain name, and port number were given and the contents of <code>flag1.txt</code> was asked.
+</p><p>
+I guessed that what are given is information about a SSH server because the port number is 22, and connected to the server via <common-tool data-lang="en">Tera Term</common-tool>.<br>
+After logging in, I executed <code>ls -R</code> command and found <code>flag1.txt</code> in the <code>Documents</code> directory.
+</p><p>
+I tried to download the file via SCP, but it failed with an error "the input device is not a TTY".<br>
+Then, I processed the file with <code>base64</code> command and decoded the output with "From Base64" on <common-tool data-lang="en">CyberChef</common-tool> to download the file.
+</p><p>
+The flag was in the downloaded file.
+</p>
+</span>
+
+<div class="flag">flag{cd134eb8fbd794d4065dcd7cfa7efa6f3ff111fe}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>
