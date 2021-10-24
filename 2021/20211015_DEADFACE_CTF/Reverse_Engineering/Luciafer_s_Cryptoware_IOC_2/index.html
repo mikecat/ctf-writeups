@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Luciafer's Cryptoware IOC 2 (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Luciafer's Cryptoware IOC 2</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>fkduohv-d-jhvfklfnwhu-wr-gdun-dqjho-01.oodev</code> が与えられ、ファイル名の復号結果を要求された。
+</p><p>
+Luciafer's Cryptoware ということから、<a href="../Decrypting_Lytton_Labs_Cryptoware_1/" class="language-aware-link">Decrypting Lytton Labs Cryptoware 1</a> で与えられた実行可能ファイルの<common-tool data-lang="ja">Ghidra</common-tool>による逆コンパイル結果を参照すると、<br>
+<code>main.main</code> 関数において、<code>main.findFilesWithExt</code> 関数で拡張子 <code>.llabs</code> のファイルを探した後、<code>main.rotateText</code> 関数を呼び出しているようだった。<br>
+<code>main.rotateText</code> 関数を見ると以下の行があり、ROT13のような処理をしていると推測できた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>fkduohv-d-jhvfklfnwhu-wr-gdun-dqjho-01.oodev</code> was given, and the decrypted name of file was asked.
+</p><p>
+Since the challenge description said "Luciafer's Cryptoware", I referred the executable file used in <a href="../Decrypting_Lytton_Labs_Cryptoware_1/" class="language-aware-link">Decrypting Lytton Labs Cryptoware 1</a>, decompiled via <common-tool data-lang="en">Ghidra</common-tool>.<br>
+I found the function <code>main.main</code> searching for files with extension <code>.llabs</code> using the function <code>main.findFilesWithExt</code>, and calling the function <code>main.rotateText</code> after that.<br>
+Looking at the function <code>main.rotateText</code>, I found this line and I guessed that the function is doing something like ROT13.
+</p>
+</span>
+<code-block data-extension="c">
+uVar3 = (int)((uint)(byte)(cVar2 - 0x27) + param_3 % 0x1a) % 0x1a;
+</code-block>
+
+<p class="language-selector-ja">
+<common-tool data-lang="ja">CyberChef</common-tool>でファイル名にROT13をかけると、Amount: 23 で拡張子が <code>.llabs</code> となった。<br>
+この時の変換結果に基づき、flagが得られた。
+</p>
+<p class="language-selector-en">
+I applied "ROT13" to the name of the file on <common-tool data-lang="en">CyberChef</common-tool>. As a result, the extension became <code>.llabs</code> when I set the Amount to 23.<br>
+I obtained the flag from the conversion result in this setting.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=ROT13(true,true,false,23)&amp;input=ZmtkdW9odi1kLWpodmZrbGZud2h1LXdyLWdkdW4tZHFqaG8tMDEub29kZXY"
+>ROT13 - CyberChef</a></p>
+
+<div class="flag">flag{charles-a-geschickter-to-dark-angel-01.llabs}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

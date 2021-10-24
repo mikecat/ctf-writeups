@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Decrypting Lytton Labs Cryptoware 1 (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Decrypting Lytton Labs Cryptoware 1</h1>
+<span class="language-selector-ja">
+<p>
+暗号化されたファイル <code>fkduohv-d-jhvfklfnwhu-wr-gdun-dqjho-01.oodev</code> と、実行可能ファイル <code>zealotcrypt-01.exe</code> が与えられた。
+</p><p>
+この実行可能ファイルを<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、<code>main.main</code>関数において、
+<code>main.findFilesWithExt</code>関数で拡張子 <code>.llabs</code> のファイルを探し、<code>main.encryptRc4</code>関数で暗号化をしているようだった。<br>
+RC4は鍵から生成されたデータを平文にxorする暗号化形式なので、もし共通の鍵を用いてRC4で暗号化しているならば、もう1回暗号化すれば複号できるはずである。
+</p><p>
+そこで、まず実行した際の安全性を高めるため、<code>os.Remove</code>を呼び出している部分をNOPで埋めた。<br>
+すなわち、Ghidraの表示で<code>005df723</code>、ファイル中の位置で<code>0x1DEB23</code>バイト目 (0-origin) からの <code>E8 98 C3 EC FF</code> を、<code>90</code> 5個に書き換えた。<br>
+さらに、暗号化されたファイルを <code>data.llabs</code> という名前で同じディレクトリに置いて実行すると、復号結果のファイル <code>gdwd.oodev</code> が得られた。<br>
+この復号結果にflagが書かれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An encrypted file <code>fkduohv-d-jhvfklfnwhu-wr-gdun-dqjho-01.oodev</code> and an executable file <code>zealotcrypt-01.exe</code> were given.
+</p><p>
+Decompiling the executable file via <common-tool data-lang="en">Ghidra</common-tool>,
+I found the function <code>main.main</code> searching for files with the extension <code>.llabs</code> using the function <code>main.findFilesWithExt</code>,
+and encrypting the files via the function <code>main.encryptRc4</code>.<br>
+RC4 encrypts data by exclusive-oring data generated from the key to the plaintext, so another encryption will decrypt the data if the encryption is RC4 with a common key.
+</p><p>
+Firstly, I filled the part to call the function <code>os.Remove</code> with NOP to decrease the risk of executing the file.<br>
+In other words, I replaced <code>E8 98 C3 EC FF</code>, which is on <code>005df723</code> on Ghidra or <code>0x1DEB23</code>-rd byte of the file (the first byte is 0th), with five <code>90</code>s.<br>
+Then, I placed the encrypted data as a file <code>data.llabs</code> in the same directory as the executable and executed the patched executable.<br>
+As a result, a file <code>gdwd.oodev</code> that has the decrypted data appeared, and the flag was in the file.
+</p>
+</span>
+
+<div class="flag">flag{RC4-IS-REVERSIBLE-BUT-AES-IS-NOT-GO-BACK-GO-BACK!!!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

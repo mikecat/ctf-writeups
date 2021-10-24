@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Decrypting Lytton Labs Cryptoware 2 (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Decrypting Lytton Labs Cryptoware 2</h1>
+<span class="language-selector-ja">
+<p>
+以下のファイルが与えられた。
+</p>
+<ul>
+<li>暗号化されたデータ <code>gdun-dqjho-wr-fkduohv-d-jhvklfnwhu.oodev</code></li>
+<li>暗号化プログラム <code>zealotcrypt-02.bin</code></li>
+<li>複号プログラム <code>zealotcrypt-02-decrypt.bin</code></li>
+</ul>
+<p>
+複号プログラムを<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、
+1個のコマンドライン引数を受け取り、拡張子 <code>.oodev</code> のファイルを <code>main.findFilesWithExt</code> 関数で探して複号することが読み取れた。<br>
+安全のため <code>os.Remove</code> の呼び出し (Ghidra上の表示で<code>08150b2b</code>、ファイルの<code>0x108B2B</code>バイト目 (0-origin) からの5バイト <code>e8 40 7e f8 ff</code>) をNOP (<code>90</code>) で埋め、
+<common-tool data-lang="ja">CS50 IDE</common-tool>で実行すると、引数は32文字でないといけないようだった。
+</p><p>
+次に、暗号化プログラムをGhidraで逆コンパイルすると、
+拡張子 <code>.llabs</code> のファイルを <code>main.findFilesWithExt</code> 関数で探し、<code>main.encryptAes</code> 関数で暗号化しているのが読み取れた。<br>
+そこで、これも<code>os.Remove</code> の呼び出し (Ghidra上の表示で<code>0822ea83</code>、ファイルの<code>0x1E6A83</code>バイト目 (0-origin) からの5バイト <code>e8 98 5b ec ff</code>) をNOP (<code>90</code>) で埋め、
+CS50 IDE上で実行してみることにした。
+</p><p>
+暗号化対象の空のファイル <code>hoge.llabs</code> を用意した上で、改造した暗号化プログラムをCS50 IDE上のGDBで実行し、
+<code>main.encryptAes</code> 関数を呼び出す直前の <code>0x0822ea35</code> にブレークポイントを置いて観察した。<br>
+すると、以下のように、<code>%esp + 0x0c</code> に書かれているアドレスに何かのデータがあることを発見した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+These files were given:
+</p>
+<ul>
+<li>Encrypted data  <code>gdun-dqjho-wr-fkduohv-d-jhvklfnwhu.oodev</code></li>
+<li>An encryptor program <code>zealotcrypt-02.bin</code></li>
+<li>A decryptor program <code>zealotcrypt-02-decrypt.bin</code></li>
+</ul>
+<p>
+Decompiling the decryptor via <common-tool data-lang="en">Ghidra</common-tool>,
+I found that it takes one command-line argument, searches for files with the extension <code>.oodev</code> using the function <code>main.findFilesWithExt</code>, and decrypts the files.<br>
+I filled the part to call the function <code>os.Remove</code> (the 5 bytes <code>e8 40 7e f8 ff</code> from <code>08150b2b</code> on Ghidra, or <code>0x1E6A83</code>-rd byte of the file (the first byte is 0th)) with NOP (<code>90</code>) for safety,<br>
+and executed the decryptor on <common-tool data-lang="en">CS50 IDE</common-tool>. As a result, I found that the argument should be 32 characters.
+</p><p>
+Then, I decompiled the encryptor via Ghidra.
+I found that it searches for files with the extension <code>.llabs</code> using the function <code>main.findFilesWithExt</code>, and encrypts the files using the function <code>main.encryptAes</code>.<br>
+I decided to fill the part to call the function <code>os.Remove</code> (the 5 bytes <code>e8 98 5b ec ff</code> from <code>0822ea83</code> on Ghidra, or <code>0x1E6A83</code>-rd byte of the file (the first byte is 0th)) with NOP (<code>90</code>) for safety,<br>
+and to try executing that on CS50 IDE.
+</p><p>
+I put an empty file to encrypt <code>hoge.llabs</code> and executed the patched encryptor with GDB on CS50 IDE.<br>
+I put a breakpoint to <code>0x0822ea35</code> (just before calling the function <code>main.encryptAes</code>) and investigated.<br>
+As a result, I found that there is some data from the address written in <code>%esp + 0x0c</code> like this:
+</p>
+</span>
+<p><a href="encrypter_gdb.txt" class="code-link" data-collapse="true">encrypter_gdb.txt</a></p>
+
+<p class="language-selector-ja">
+ここで発見したデータを16進数で表した <code>d8f5c876b36f019254a7307c1eb0fe09</code> を引数として改造した複号プログラムを用いると、
+与えられたデータを複号することができ、復号結果がflagを含んでいた。
+</p>
+<p class="language-selector-en">
+I used the data found here expressed in hexadecimal <code>d8f5c876b36f019254a7307c1eb0fe09</code> as the argument to execute the patched decryptor.<br>
+It succeeded to decrypt the data given, and the result of decryption contained the flag.
+</p>
+
+<div class="flag">flag{PEANUT-BUTTER-Crunch-Mixed-With-Cocoa-Puffs-Beats-All-Those-Cereals!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

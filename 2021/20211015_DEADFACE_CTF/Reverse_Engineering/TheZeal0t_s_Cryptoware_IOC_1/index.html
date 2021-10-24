@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TheZeal0t's Cryptoware IOC 1 (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>TheZeal0t's Cryptoware IOC 1</h1>
+<span class="language-selector-ja">
+<p>
+ELFファイル <code>zealotcrypt-02.bin</code> が与えられ、"Indicator of Compromise" (IOC) を要求された。
+</p><p>
+このファイルを<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルして見ると、
+<code>main</code>関数で<code>DAT_0828abce</code>の内容をデコードした後、<code>0x5a</code>をxorし、<code>main.fetchKey();</code>を呼び出しているようだった。<br>
+<code>DAT_0828abce</code>の内容は以下のものであった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An ELF file <code>zealotcrypt-02.bin</code> was given, and "Indicator of Compromise" (IOC) was asked.
+</p><p>
+Decompiling the file via <common-tool data-lang="en">Ghidra</common-tool>,
+I found the function <code>main</code> decoding contents in <code>DAT_0828abce</code>, performing exclusive-or with <code>0x5a</code>, and calling <code>main.fetchKey();</code>.<br>
+The contents in <code>DAT_0828abce</code> was:
+</p>
+</span>
+<code-block data-extension="txt">
+322e2e2a607575333429333e33352f29743e3f3b3e3c3b393f74333575203f3b36352e3928232a2e773b3f2977313f23742e222e
+</code-block>
+
+<p class="language-selector-ja">
+これを<common-tool data-lang="ja">CyberChefでデコードし、<code>5a</code>とのXORをとった。
+</p>
+<p class="language-selector-en">
+I decoded this using <common-tool data-lang="en">CyberChef</common-tool> and applied "XOR" with <code>5a</code>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')XOR(%7B'option':'Hex','string':'5a'%7D,'Standard',false)&amp;input=MzIyZTJlMmE2MDc1NzUzMzM0MjkzMzNlMzMzNTJmMjk3NDNlM2YzYjNlM2MzYjM5M2Y3NDMzMzU3NTIwM2YzYjM2MzUyZTM5MjgyMzJhMmU3NzNiM2YyOTc3MzEzZjIzNzQyZTIyMmU"
+>From Hex, XOR - CyberChef</a></p>
+
+<p class="language-selector-ja">
+結果は以下のものになった。
+</p>
+<p class="language-selector-en">
+This is the result:
+</p>
+<code-block data-extension="txt">
+http://insidious.deadface.io/zealotcrypt-aes-key.txt
+</code-block>
+
+<p class="language-selector-ja">
+このURLにアクセスすると <code>scoobiedoobiedoo</code> と書かれたファイルが得られたが、 <code>flag{scoobiedoobiedoo}</code> はIncorrectになった。<br>
+このURLをそのまま<code>flag{}</code>で囲むことで、flagが得られた。
+</p>
+<p class="language-selector-en">
+Accessing the URL yielded a file saying <code>scoobiedoobiedoo</code>, but <code>flag{scoobiedoobiedoo}</code> was judged as Incorrect.<br>
+I obtained the flag by adding <code>flag{}</code> to this URL itself.
+</p>
+
+<div class="flag">flag{http://insidious.deadface.io/zealotcrypt-aes-key.txt}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>
