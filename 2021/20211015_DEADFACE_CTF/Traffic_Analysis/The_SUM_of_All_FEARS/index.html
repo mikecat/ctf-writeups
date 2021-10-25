@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>The SUM of All FEARS (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>The SUM of All FEARS</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a> で用いたファイルについて、
+同じ名前で拡張子が <code>.exe</code> と <code>.bin</code> のファイルのMD5を要求された。
+</p><p>
+<code>pcap-challenge-final.pcapng</code> に <code>strings</code> コマンドを適用した結果から <code>.exe</code> を検索すると、以下の部分が見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Regarding the file used in <a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a>,
+MD5 of files that shares the name and the extensions are <code>.exe</code> and <code>.bin</code> were asked.
+</p><p>
+I searched for <code>.exe</code> from the output of the <code>strings</code> command for the file <code>pcap-challenge-final.pcapng</code>, and found this part:
+</p>
+</span>
+<code-block data-extension="txt">
+08-07-21  09:07PM                31776 lytton-crypt.bin
+08-07-21  09:07PM               105984 lytton-crypt.exe
+08-22-21  05:45PM                  194 secret_decoder.bin
+07-31-21  10:27PM                63827 zlib.dll
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+この結果より、<code>lytton-crypt.bin</code> と <code>lytton-crypt.exe</code> は条件を満たしそうである。
+</p><p>
+続いて、<code>lytton-crypt.exe</code> で検索すると、以下の部分が見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+From this result, the files <code>lytton-crypt.bin</code> and <code>lytton-crypt.exe</code> should satisfy the condition.
+</p><p>
+Then, I searched for <code>lytton-crypt.exe</code> and found this part:
+</p>
+</span>
+<code-block data-extension="txt">
+Z227 Entering Passive Mode (192,168,100,103,193,243).
+1{&lt;J
+G1|&lt;J
+6&lt;}?_\
+J|&lt;B
+RETR /TOOLS/lytton-crypt.exe
+Z125 Data connection already open; Transfer starting.
+</code-block>
+
+<p>
+<span class="language-selector-ja">これはFTPっぽいと思い、</span>
+<span class="language-selector-en">Founding this looks like FTP, I referred</span>
+<a href="https://datatracker.ietf.org/doc/html/rfc959">FILE TRANSFER PROTOCOL (FTP)</a>
+<span class="language-selector-ja">を参照すると、以下の記述が見つかった。</span>
+<span class="language-selector-en">and found this part:</span>
+</p>
+<blockquote style="font-family: monospace;">
+<p>A port command would be:</p>
+<p>PORT h1,h2,h3,h4,p1,p2</p>
+<p>where h1 is the high order 8 bits of the internet host
+address.</p>
+</blockquote>
+
+<span class="language-selector-ja">
+<p>
+これを参考に、<code>192,168,100,103,193,243</code> はIPアドレス <code>192.168.100.103</code>、ポート番号 <code>193 * 256 + 243 = 49651</code> を表すと推測した。
+</p><p>
+そして、<common-tool data-lang="ja">Wireshark</common-tool>で <code>pcap-challenge-final.pcapng</code> を開き、
+<code>ip.addr == 192.168.100.103 &amp;&amp; tcp.port==49651</code> でフィルタをかけた。<br>
+さらに、表示された適当なパケットで「追跡 → TCPストリーム」を行い、「としてデータを表示」を「Raw(無加工)形式」にした上で、「…として保存」で保存した。<br>
+すると、105,984バイトのデータが得られ、最初の情報と一致した。
+</p><p>
+次に、<code>strings</code>コマンドの結果から <code>lytton-crypt.bin</code> で検索すると、以下の部分が見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Based on this, I guessed that <code>192,168,100,103,193,243</code> stands for an IP address <code>192.168.100.103</code> and a port number <code>193 * 256 + 243 = 49651</code>.
+</p><p>
+Then, I opened <code>pcap-challenge-final.pcapng</code> on <common-tool data-lang="en">Wireshark</common-tool> and applied a filter <code>ip.addr == 192.168.100.103 &amp;&amp; tcp.port==49651</code>.<br>
+Then, I used "Follow → TCP stream" on some displayed packet, set "Show data as" to "Raw", and saved the data via "Save as…".<br>
+As a result, 105,984-byte data was saved. This size matches with the information I firstly obtained.
+</p><p>
+Then, I searched for <code>lytton-crypt.bin</code> from the output of the <code>strings</code> command, and found this part:
+</p>
+</span>
+<code-block data-extension="txt">
+V227 Entering Passive Mode (192,168,100,103,193,241).
+5&lt;&lt;J
+{=&lt;J
+RETR /TOOLS/lytton-crypt.bin
+@mC&lt;x
+V125 Data connection already open; Transfer starting.
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+同様に、Wiresharkでフィルタ <code>ip.addr == 192.168.100.103 &amp;&amp; tcp.port==49649</code> をかけ、データを保存した。<br>
+すると31,776バイトのデータが得られ、これも最初の情報と一致した。
+</p><p>
+得られたデータのMD5をそれぞれ <code>md5sum</code> コマンドで求め、指定の形式に当てはめることで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+In the same way, I applied a filter <code>ip.addr == 192.168.100.103 &amp;&amp; tcp.port==49649</code> on Wireshark and saved the data.<br>
+As a result, 31,776-byte data was saved and this size also matches with the imformation.
+</p><p>
+I obtained the flag by using <code>md5sum</code> command to obtain MD5 of saved data and formatting them as specified.
+</p>
+</span>
+
+<div class="flag">flag{9cb9b11484369b95ce35904c691a5b28|4da8e81ee5b08777871e347a6b296953}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

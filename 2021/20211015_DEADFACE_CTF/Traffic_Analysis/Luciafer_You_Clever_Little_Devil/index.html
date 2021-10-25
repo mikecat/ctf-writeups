@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Luciafer, You Clever Little Devil! (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Luciafer, You Clever Little Devil!</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a> で用いたファイルについて、
+アクセスが許可されたことを示すパケットの番号を要求された。
+</p><p>
+<a href="../Release_the_Crackin/" class="language-aware-link">Release the Crackin'!</a> での解析結果より、
+パスワードは <code>darkangel</code> であるとわかっている。<br>
+<common-tool data-lang="ja">Wireshark</common-tool>で <code>pcap-challenge-final.pcapng</code> を開き、
+<code>darkangel</code> でパケットを検索すると、No. 159602 が見つかり、その下の No. 159603 は <code>Response: 230 User logged in.</code> となっていた。<br>
+しかし、<code>flag{159603}</code> はIncorrectとなった。
+</p><p>
+検索を続けると、No. 159764 でも <code>darkangel</code> が見つかった。<br>
+その下の <code>Response: 230 User logged in.</code> となっているパケットの No. より、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Regarding the file used in <a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a>,
+The packet number of a packet that indicates that the access is granted was asked.
+</p><p>
+From the analysis in the challenge <a href="../Release_the_Crackin/" class="language-aware-link">Release the Crackin'!</a>, it is known that the password is <code>darkangel</code>.<br>
+I opened the file <code>pcap-challenge-final.pcapng</code> on <common-tool data-lang="en">Wireshark</common-tool> and searched for a packet with the query <code>darkangel</code>.<br>
+As a result, the packet No. 159602 was found and the following packet No. 159603 had <code>Response: 230 User logged in.</code>.<br>
+However, <code>flag{159603}</code> was judges as Incorrect.
+</p><p>
+Continuing searching, I found that the packet No. 159764 also contains <code>darkangel</code>.<br>
+I obtained the flag from the packet number of the packet which has <code>Response: 230 User logged in.</code> under the packet.
+</p>
+</span>
+
+<div class="flag">flag{159765}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

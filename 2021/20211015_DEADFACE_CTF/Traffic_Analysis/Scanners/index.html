@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Scanners (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Scanners</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a> で用いたファイルについて、
+ポートスキャンの結果開いているポートの番号 (16384以上のものを除く) を要求された。
+</p><p>
+<a href="../The_SUM_of_All_FEARS/" class="language-aware-link">The SUM of All FEARS</a> での解析結果より、攻撃対象は <code>192.168.100.103</code> であると推測した。
+</p><p>
+<code>pcap-challenge-final.pcapng</code> を<common-tool data-lang="ja">Wireshark</common-tool>で開き、
+<code>ip.addr == 192.168.100.103 && tcp.port &lt; 16384</code> でフィルタをかけてみると、<br>
+攻撃者の <code>[SYN]</code> のパケットとサーバの <code>[SYN, ACK]</code> のパケットが同じ色で表示され、見にくいことに気がついた。
+</p><p>
+そこで、サーバの応答のみを表示するため、フィルタを <code>ip.src == 192.168.100.103 && tcp.srcport &lt; 16384</code> とした。<br>
+すると、大量の <code>[RST, ACK]</code> のパケットに混ざって少量の <code>[SYN, ACK]</code> のパケットがある様子が見えた。
+</p><p>
+適当な <code>[RST, ACK]</code> の行を選択し、「Transmission Control Protocol → Flags → Reset: Set」を右クリックし、
+「フィルタとして適用 → ...かつ選択内容と不一致」を選択した。<br>
+すると、No. が4桁のパケットが数件と、No. が6桁のパケットが多数表示された。
+</p><p>
+表示された No. が4桁のパケットの送信元のポート番号より、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Regarding the file used in <a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a>,
+the numbers of open ports (from port scanning, less than 16384) was asked.
+</p><p>
+From the analysis in <a href="../The_SUM_of_All_FEARS/" class="language-aware-link">The SUM of All FEARS</a>, I guessed that the target is <code>192.168.100.103</code>.
+</p><p>
+I opened the file <code>pcap-challenge-final.pcapng</code> in <common-tool data-lang="ja">Wireshark</common-tool>,
+and applied a filter <code>ip.addr == 192.168.100.103 && tcp.port &lt; 16384</code>.<br>
+As a result, I found it difficult to read because the attacker's <code>[SYN]</code> and the server's <code>[SYN, ACK]</code> are displayed in the same color.
+</p><p>
+Then, I set the filter to <code>ip.src == 192.168.100.103 && tcp.srcport &lt; 16384</code> to have it display only the server's responses.<br>
+As a result, I found some <code>[SYN, ACK]</code> packets among a lot of <code>[RST, ACK]</code> packets.
+</p><p>
+I selected a line with <code>[RST, ACK]</code>, and right-clicked "Transmission Control Protocol → Flags → Reset: Set".
+Then, I selected "Apply as Filter → ...and not Selected".<br>
+As a result, it displayed a few packets with 4-digit No. and many packets with 6-digit No.
+</p><p>
+I obtained the flag from the source port numbers of the packets with 4-digit No. displayed.
+</p>
+</span>
+
+<div class="flag">flag{21,135,139,445,3389}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

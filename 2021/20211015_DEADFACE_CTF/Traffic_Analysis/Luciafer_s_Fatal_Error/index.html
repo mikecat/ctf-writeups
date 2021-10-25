@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Luciafer's Fatal Error (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Luciafer's Fatal Error</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a> で用いたファイルについて、
+実行しないべきだったプログラムのmd5sumを要求された。
+</p><p>
+<a href="../The_SUM_of_All_FEARS/" class="language-aware-link">The SUM of All FEARS</a> における解析結果では、ファイル <code>secret_decoder.bin</code> の存在も示唆されていた。<br>
+<code>pcap-challenge-final.pcapng</code> に <code>strings</code> コマンドを適用した結果から <code>secret_decoder.bin</code> を検索すると、以下の部分が見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Regarding the file used in <a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a>,
+the md5sum of the program that shouldn't have been executed was asked.
+</p><p>
+The analysis in the challenge <a href="../The_SUM_of_All_FEARS/" class="language-aware-link">The SUM of All FEARS</a> is suggesting that there is a file <code>secret_decoder.bin</code>.<br>
+I searched for <code>secret_decoder.bin</code> from the output of the <code>strings</code> command for the file <code>pcap-challenge-final.pcapng</code>, and found this part:
+</p>
+</span>
+<code-block data-extension="txt">
+^227 Entering Passive Mode (192,168,100,103,193,244).
+&lt;5Z@
+RETR /TOOLS/secret_decoder.bin
+j5[@
+^125 Data connection already open; Transfer starting.
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+The SUM of All FEARS で行ったのと同様に、<common-tool data-lang="ja">Wireshark</common-tool>でフィルタ <code>ip.addr == 192.168.100.103 &amp;&amp; tcp.port==49652</code> を適用し、データを保存した。<br>
+保存されたデータは194バイトのELFファイルだった。
+</p><p>
+このELFファイルを <code>readelf -a</code> コマンドで解析すると、エントリポイントは <code>0x400078</code> であることがわかった。<br>
+さらに、<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpを用い、以下のコマンドで逆アセンブルを行った。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I applied a filter <code>ip.addr == 192.168.100.103 &amp;&amp; tcp.port==49652</code> on <common-tool data-lang="en">Wireshark</common-tool> and saved the data like what I did in "The SUM of All FEARS".<br>
+As a result, a 194-byte ELF file was saved.
+</p><p>
+Applying <code>readelf -a</code> command to this ELF file revealed that the entry point is <code>0x400078</code>.<br>
+Also I disassembled the file via objdump in <common-tool data-lang="en">TDM-GCC</common-tool> using this command:
+</p>
+</span>
+<code-block data-extension="txt">
+objdump -m i386 -M x86-64 -b binary -D secret_decoder.bin &gt; secret_decoder_dump.txt
+</code-block>
+
+<p class="language-selector-ja">
+結果のうち、アドレス<code>78</code>以降の部分は以下のようになった。
+</p>
+<p class="language-selector-en">
+The result from the address <code>78</code> was:
+</p>
+<p><a href="secret_decoder_dump_part.txt" class="code-link" data-collapse="true">secret_decoder_dump_part.txt</a></p>
+
+<p class="language-selector-ja">
+これをC言語風に書き下すと、以下のようになった。
+</p>
+<p class="language-selector-en">
+I transcripted this like C. This is the result:
+</p>
+<p><a href="secret_decoder_kakikudasi.c" class="code-link" data-collapse="true">secret_decoder_kakikudasi.c</a></p>
+
+<span class="language-selector-ja">
+<p>
+何をしているのかはよくわからなかったが、<code>/bin/sh</code> を含んでおり、とにかく怪しそうである。
+</p><p>
+このファイルのMD5より、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+It was unclear for me what this is doing, but this contains <code>/bin/sh</code> and looks suspicious anyway.
+</p><p>
+I obtained the flag from the MD5 of this file.
+</p>
+</span>
+
+<div class="flag">flag{42e419a6391ca79dc44d7dcef1efc83b}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

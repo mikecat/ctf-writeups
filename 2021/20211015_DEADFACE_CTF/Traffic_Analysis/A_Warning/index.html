@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>A Warning (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>A Warning</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a> で用いたファイルについて、
+Luciafer に送られたメッセージを要求された。
+</p><p>
+<code>pcap-challenge-final.pcapng</code> に <code>strings</code> コマンドを適用した結果から、
+問題文にあった <code>Stay away from Lytton Labs... you have been warned.</code> を検索すると、以下の行が見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Regarding the file used in <a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a>,
+the message sent to Luciafer was asked.
+</p><p>
+I searched for <code>Stay away from Lytton Labs... you have been warned.</code>, which was in the challenge descryption, from the output of the <code>strings</code> command for the file <code>pcap-challenge-final.pcapng</code>, and found this part:
+</p>
+</span>
+<code-block data-extension="txt">
+echo "Stay away from Lytton Labs... you have been warned.  Dark Angel" &gt; /da.txt
+</code-block>
+
+<p class="language-selector-ja">
+さらに、この行から上に見ていくと、以下の行が見つかった。
+</p>
+<p class="language-selector-en">
+Then, I scrolled up from this line and found this line:
+</p>
+<code-block data-extension="txt">
+2021-08-22 17:57:03 (225 MB/s) - 'da-warning-message.jpg' saved [578908/578908]
+</code-block>
+
+<p class="language-selector-ja">
+さらに、ここから上に <code>message</code> を検索すると、以下の行が見つかった。
+</p>
+<p class="language-selector-en">
+Then, I searched for <code>message</code> upwards from here, finding this line:
+</p>
+<code-block data-extension="txt">
+wget -O da-warning-message.jpg http://192.168.100.105/da-warning-message.jpg
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+そこで、<common-tool data-lang="ja">Wireshark</common-tool>で <code>pcap-challenge-final.pcapng</code> を開き、
+フィルタ <code>ip.addr == 192.168.100.105 &amp;&amp; tcp.port == 80</code> を適用した。<br>
+そして、表示された <code>GET /da-warning-message.jpg HTTP/1.1</code> の行を右クリックし、「追跡 → HTTPストリーム」を選択した。<br>
+さらに、「としてデータを表示」を「Raw(無加工)形式」にし、「…として保存」でデータを保存した。
+</p><p>
+保存したデータに<common-tool data-lang="ja">CyberChef</common-tool>の Extract Files をかけると、ファイル <code>extracted_at_0x1b9.jpg</code> などが得られた。<br>
+このファイル <code>extracted_at_0x1b9.jpg</code> は、flagが書かれた画像ファイルだった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Seeing this, I opned the file <code>pcap-challenge-final.pcapng</code> on <common-tool data-lang="en">Wireshark</common-tool>
+and applied a filter <code>ip.addr == 192.168.100.105 &amp;&amp; tcp.port == 80</code>.<br>
+Then, I right-clicked the line with <code>GET /da-warning-message.jpg HTTP/1.1</code> in the list and selected "Follow → HTTP Stream".<br>
+After that, I set "Show data as" to "Raw" and saved the data via "Save as…".
+</p><p>
+I applied "Extract Files" on <common-tool data-lang="en">CyberChef</common-tool> to the data saved. It yielded a file <code>extracted_at_0x1b9.jpg</code> and some other files.<br>
+The file <code>extracted_at_0x1b9.jpg</code> was an image file where the flag was written.
+</p>
+</span>
+
+<div class="flag">flag{angels-fear-to-tread}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>

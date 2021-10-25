@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Release the Crackin'! (DEADFACE CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Release the Crackin'!</h1>
+<span class="language-selector-ja">
+<p>
+<a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a> で用いたファイルについて、
+パスワードクラッキングの結果得られたパスワードを要求された。
+</p><p>
+<code>pcap-challenge-final.pcapng</code> に <code>strings</code> コマンドを適用した結果を眺めると、
+<code>530 User cannot log in.</code> や <code>331 Password required</code> が多数繰り返されている場所が見つかった。<br>
+さらに、その場所の最後あたりに、以下の部分があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Regarding the file used in <a href="../Monstrum_ex_Machina/" class="language-aware-link">Monstrum ex Machina</a>,
+The password obtained from password cracking was asked.
+</p><p>
+Viewing the result of the <code>strings</code> command for the file <code>pcap-challenge-final.pcapng</code>,
+I found an area that has many <code>530 User cannot log in.</code> and <code>331 Password required</code> repeated.<br>
+Then, near the end of the area, I found this part:
+</p>
+</span>
+<code-block data-extension="txt">
+nUSER cgeschickter
+K1&lt;@
+331 Password required
+vPASS darkangel
+I1=@
+230 User logged in.
+</code-block>
+
+<p class="language-selector-ja">
+この部分の <code>PASS</code> の後の文字列より、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag from the strings after <code>PASS</code> in this part.
+</p>
+
+<div class="flag">flag{darkangel}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">DEADFACE CTF</a>
+</p>
+</body>
+</html>
