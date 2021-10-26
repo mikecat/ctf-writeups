@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>layers (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>layers</h1>
+<span class="language-selector-ja">
+<p>
+Docker Hub のURLが与えられた。
+</p><p>
+<common-tool data-lang="ja">AWS</common-tool>でAMI「Ubuntu Server 20.04 LTS (HVM), SSD Volume Type」(<code>ami-03d5c68bab01f3496</code>) を用いて t2.micro のEC2インスタンスを立て、<common-tool data-lang="ja">Tera Term</common-tool> からSSHで接続した。<br>
+そして、Docker Hub の「Docker Pull Command」の所にあったコマンド <code>docker pull qxxxb/layers</code> を実行すると、以下の出力がされた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a page in Docker Hub was given.
+</p><p>
+I created a t2.micro EC2 instance with AMI "Ubuntu Server 20.04 LTS (HVM), SSD Volume Type" (<code>ami-03d5c68bab01f3496</code>) on <common-tool data-lang="en">AWS</common-tool> and connected there via SSH with <common-tool data-lang="en">Tera Term</common-tool>.<br>
+Then, I executed a command <code>docker pull qxxxb/layers</code>, which was in the "Docker Pull Command" section on Docker Hub, and it yielded this output:
+</p>
+</span>
+<code-block data-extension="txt">
+Command 'docker' not found, but can be installed with:
+
+sudo apt install docker.io
+</code-block>
+
+<p class="language-selector-ja">
+そこで、以下のコマンドを実行した。
+</p>
+<p class="language-selector-en">
+Seeing this, I executed these commands:
+</p>
+<code-block data-extension="txt">
+sudo apt-get update
+sudo apt-get -y install docker.io
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+これに続いて再びコマンド <code>docker pull qxxxb/layers</code> を実行すると、「Got permission denied」を含む出力がされた。<br>
+そこで、コマンド <code>sudo docker pull qxxxb/layers</code> を実行した。
+</p><p>
+次に、以下のサイトを参考に、コマンド <code>docker run -it qxxxb/layers</code> を実行した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Executing the command <code>docker pull qxxxb/layers</code> again after this yielded an output containing "Got permission denied".<br>
+Then, I executed a command <code>sudo docker pull qxxxb/layers</code>.
+</p><p>
+After that, I executed a command <code>docker run -it qxxxb/layers</code>, referring to this page:
+</p>
+</span>
+<p><a href="https://qiita.com/kooohei/items/0e788a2ce8c30f9dba53">Dockerコンテナの作成、起動〜停止まで - Qiita</a></p>
+
+<span class="language-selector-ja">
+<p>
+すると再び「Got permission denied」を含む出力がされたので、コマンド <code>sudo docker run -it qxxxb/layers</code> を実行した。
+</p><p>
+その結果現れたシェルで <code>ls</code> コマンドを実行すると、<code>Dockerfile</code> および <code>message.txt</code> があることがわかった。<br>
+<code>Dockerfile</code> の内容を見ると、<code>flag.png</code> をコピーして消している様子がみられた。
+</p><p>
+「docker データ 位置」でググると、<code>/var/lib/docker</code> にデータがあるらしいことがわかった。
+</p><p>
+<code>exit</code> コマンドを実行してEC2インスタンスのシェルに戻り、カレントディレクトリを <code>/var/lib/docker</code> に移した。<br>
+さらに、<code>sudo bash</code> コマンドを実行し、続いて <code>ls -R</code> コマンドを実行すると、<br>
+ディレクトリ <code>overlay2/de297866f7e32710a7524735fbafc90231a215745bd3f356875c7f96ab664f12/diff</code> に <code>Dockerfile</code> と <code>flag.png</code> があることがわかった。<br>
+この <code>flag.png</code> をSCPでダウンロードして閲覧すると、flagが書かれていた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+This resulted in an output that contains "Got permission denied" again, so I executed <code>sudo docker run -it qxxxb/layers</code>.
+</p><p>
+I executed the <code>ls</code> command in the spawned shell, finding files <code>Dockerfile</code> and <code>message.txt</code>.<br>
+Viewing <code>Dockerfile</code>, I found it copying and deleting a file <code>flag.png</code>.
+</p><p>
+I googled "docker データ 位置" and found that there is some data in <code>/var/lib/docker</code>.
+</p><p>
+I executed the <code>exit</code> command to return to the shell for the EC2 instance and changed the working directory to <code>/var/lib/docker</code>.<br>
+Then, I executed <code>sudo bash</code> command and <code>ls -R</code> command.<br>
+As a result, I found that there are files <code>Dockerfile</code> and <code>flag.png</code> in the directory <code>overlay2/de297866f7e32710a7524735fbafc90231a215745bd3f356875c7f96ab664f12/diff</code>.<br>
+I downloaded the file <code>flag.php</code> via SCP and viewed. The flag was there.
+</p>
+</span>
+
+<div class="flag">buckeye{D0CK3R_H4S_L4Y3RS}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>

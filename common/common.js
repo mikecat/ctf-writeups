@@ -223,6 +223,9 @@ const commonToolList = {
 	"AWS": {
 		"ja": "https://aws.amazon.com/jp/",
 		"en": "https://aws.amazon.com/"
+	},
+	"ＴＣＰ／ＩＰテストツール": {
+		"": "http://nonsoft.la.coocan.jp/Download/SocketTool/index.html"
 	}
 };
 

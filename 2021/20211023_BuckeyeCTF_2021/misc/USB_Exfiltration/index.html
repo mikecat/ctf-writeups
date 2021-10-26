@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>USB Exfiltration (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>USB Exfiltration</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>exfiltration.pcapng</code> が与えられた。
+</p><p>
+このファイルを<common-tool data-lang="ja">Wireshark</common-tool>で開き、
+問題文からzipされたファイルが転送されているらしいので、「パケットバイト列」から文字列 <code>PK</code> を検索した。<br>
+すると、Length が 16448 のパケットがヒットし、その後にも Length が 16448 のパケットが並んでいた。
+</p><p>
+そこで、並んでいる Length が 16448 のパケットを順に選択していき、
+それぞれについて画面下部のデータが表示されている部分を右クリックして「16進数ストリームとして...」を選択することでデータをコピーし、
+テキストファイルに1行ずつ貼り付けていく、という作業を行った。<br>
+さらに、その下の Length が 4160 および 337 のパケットについても、同様にコピーして貼り付けた。<br>
+全部で42行のデータが得られた。
+</p><p>
+得られたデータを<common-tool data-lang="ja">CyberChef</common-tool>に入力し、各行をデコードして最初の64バイトを削除することで、zipファイルを得た。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>exfiltration.pcapng</code> was given.
+</p><p>
+Knowing that a zipped file is transfered from the challenge descryption,
+I opened the file on <common-tool data-lang="en">Wireshark</common-tool> and searched for a String <code>PK</code> from "Packet bytes".<br>
+As a result, a packet with the Length 16448 was highlighted and there are some packets with the Length 16448 after the packet.
+</p><p>
+Seeing this, I selected each packets with the Length 16448, right-clicked the data in the bottom of the window, selected "...as a Hex Stream" to copy the data,
+and pasted to each lines of a text file.<br>
+I also copy-and-pasted data of packets with the Length 4160 and 337 below the packets in the same manner.<br>
+Finally, I obtained 42 lines of data.
+</p><p>
+I put the resulting data to <common-tool data-lang="ja">CyberChef</common-tool> as an input, and had it to decode each lines and to remove the first 64 bytes.
+This yielded a zip file.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Fork('%5C%5Cn','',false)From_Hex('Auto')Drop_bytes(0,64,false)Merge()">Fork, From Hex, Drop bytes, Merge - CyberChef</a></p>
+
+<p class="language-selector-ja">
+得られたzipファイルを展開すると、ファイル <code>flag.b64</code> および <code>meme.png</code> が得られた。<br>
+<code>flag.b64</code> の内容にCyberChefの From Base64 をかけると、flagが得られた。
+</p>
+<p class="language-selector-en">
+Extracting the resulting zip file yielded files <code>flag.b64</code> and <code>meme.png</code>.<br>
+I obtained the flag by applying "From Base64" on CyberChef to the contents of <code>flag.b64</code>.
+</p>
+
+<div class="flag">buckeye{why_1snt_7h3r3_4_di55ect0r_4_th1s}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>

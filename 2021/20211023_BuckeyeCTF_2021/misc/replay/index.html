@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>replay (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>replay</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>replay.pcap</code> が与えられた。
+</p><p>
+<code>replay.pcap</code> を<common-tool data-lang="ja">Wireshark</common-tool>で開き、適当な行を右クリックして「追跡 → TCPストリーム」を選択すると、
+何らかのデータを送った後シェルを操作している以下の様子がみられた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and a file <code>replay.pcap</code> were given.
+</p><p>
+I opened <code>replay.pcap</code> in <common-tool data-lang="en">Wireshark</common-tool>, right-clicked a line and selected "Follow → TCP Stream".<br>
+It resulted in this. This looks like the client sent some data and then did some operation in the shell.
+</p>
+</span>
+<p><a href="followed_data.png"><img src="followed_data_thunb.jpg" alt="data in Wireshark"></a></p>
+
+<p class="language-selector-ja">
+「172.27.9.92:60572 → 35.224.47.193:1024 (425 bytes)」を選択し、「としてデータを表示」を「Raw(無加工)形式」にした上で、「…として保存」でデータを保存した。<br>
+さらに、バイナリエディタで最初の <code>0A</code> より後の部分を削除した。<br>
+以下がこの結果得られたデータである。
+</p>
+<p class="language-selector-en">
+I selected "172.27.9.92:60572 → 35.224.47.193:1024 (425 bytes)", set "Show data as" to "Raw" and saved the data via "Save as…".<br>
+Then, I removed the part after the first <code>0A</code> using a binary editor.<br>
+This is the result:
+</p>
+<p><a href="data.dat" class="code-link" data-collapse="true" data-binary="true">data.dat</a></p>
+
+<span class="language-selector-ja">
+<p>
+<common-tool data-lang="ja">Tera Term</common-tool>でサーバに接続し、このデータを「ファイル送信」で送信すると、接続が切れてしまった。<br>
+Wiresharkで通信の状況を確認すると、<code>replay.pcap</code> ではデータを1個のパケットで送信していたのに対し、
+Tera Termからの通信では最初の100バイトとそれ以外の2パケットに分割して送信されていることがわかった。
+</p><p>
+<common-tool data-lang="ja">ＴＣＰ／ＩＰテストツール</common-tool>でサーバに接続し、データを「FILE送信」で送信すると、シェルの操作が可能になった。<br>
+<code>replay.pcap</code> の解析結果から <code>flag.txt</code> があることがわかっているので、<code>cat flag.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I connected to the server using <common-tool data-lang="en">Tera Term</common-tool> and sent the data via "Send file". As a result, the connection was closed.<br>
+Checking the communication via Wireshark, I found that Tera Term is sending the data in 2 packets (the first 100 bytes and the rest)
+while the data is sent in 1 packet in <code>replay.pcap</code>.
+</p><p>
+Connecting to the server via <common-tool data-lang="en">ＴＣＰ／ＩＰテストツール</common-tool> and sending the data via "FILE送信" made the shell available.<br>
+It is known that a file <code>flag.txt</code> exists from the analysis of <code>replay.pcap</code>. I executed a command <code>cat flag.txt</code> and obtained the flag.
+</p>
+</span>
+
+<div class="flag">buckeye{g00d_th1ng_P1E_w4s_d1s4bl3d_0n_th3_b1n4ry}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>
