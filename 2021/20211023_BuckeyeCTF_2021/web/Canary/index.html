@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Canary (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Canary</h1>
+<span class="language-selector-ja">
+<p>
+Discordのアカウント <code>Canary</code> と <code>Canary Admin</code> が指定された。
+</p><p>
+とりあえず、<a href="../StegBot/" class="language-aware-link">StegBot</a> と同様に <code>/info</code> を送ってみることにした。<br>
+<code>Canary</code> へのDMで <code>/info</code> を送ると、ソースコードとしてGitHubのURLが提示された。
+</p><p>
+<code>app/app.ts</code> から、<code>Canary</code>へのDMで <code>/create</code> コマンドを送ることで、アクセスされるとDMで通知が来るURLを作れることがわかった。<br>
+さらに、Cookieに指定のデータを入れた状態で、ここで作られるURLと同じホストのパス <code>/flag</code> にアクセスすることで、flagが得られそうであることも読み取れた。
+</p><p>
+また、<code>admin/app.ts</code> から、<code>Canary Admin</code> にDMでURLを送ると <code>/flag</code> に送るべきCookieをセットした状態でアクセスするが、<br>
+<code>http://(指定のドメイン)</code> または <code>https://(指定のドメイン)</code> から始まるURLへのアクセスは拒否されることがわかった。
+</p><p>
+さて、URLにはドメイン名の前に認証情報を入れることができることが知られている。<br>
+<code>Canary</code> で作成したURLのドメイン名の前に <code>hoge:fuga@</code> を加えたURLを <code>Canary Admin</code> に渡すと、
+<code>Canary</code> からCookieを含むヘッダの情報が送られてきた。
+</p><p>
+<code>/flag</code> にアクセスし、<common-tool data-lang="ja">Firefox</common-tool> の開発者ツールで送られてきたCookieのヘッダを追加して「編集して再送信」することで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Accounts on Discord <code>Canary</code> and <code>Canary Admin</code> were specified.
+</p><p>
+To begin with, I decided to try sending <code>/info</code> like I did in <a href="../StegBot/" class="language-aware-link">StegBot</a>.<br>
+Sending <code>/info</code> to <code>Canary</code> as DM, it posted an URL for GitHub as the source code.
+</p><p>
+Reading <code>app/app.ts</code>, I found that sending a <code>/create</code> command as a DM for <code>Canary</code> will create an URL accesses to that are notified via DM.<br>
+I also found that accessing <code>/flag</code> on the same host as the created URL with a Cookie including specified data will reveal the flag.
+</p><p>
+Reading <code>admin/app.ts</code>, I found that sending an URL to <code>Canary Admin</code> as DM will cause the URL be accessed with the Cookie to send to <code>/flag</code>.<br>
+However, accesses to URLs begin with <code>http://(the specified domain)</code> or <code>https://(the specified domain)</code> are refused.
+</p><p>
+It is known that we can add information for authentication before the domain name of the URL.<br>
+Sending an URL created by <code>Canary</code> with <code>hoge:fuga@</code> added before the domain name to <code>Canary Admin</code>,
+headers including the Cookie were sent from <code>Canary</code>.
+</p><p>
+I obtained the flag by accessing <code>/flag</code> and using "Edit and Resend" in the <common-tool data-lang="en">Firefox</common-tool> developer tools to send a request with the obtained Cookie header added.
+</p>
+</span>
+
+<div class="flag">buckeye{d0ma1n_m4tch1ng_1s_c4s5_1ns3nsit1v3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>

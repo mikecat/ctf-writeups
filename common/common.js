@@ -226,6 +226,9 @@ const commonToolList = {
 	},
 	"ＴＣＰ／ＩＰテストツール": {
 		"": "http://nonsoft.la.coocan.jp/Download/SocketTool/index.html"
+	},
+	"Steghide": {
+		"": "http://steghide.sourceforge.net/"
 	}
 };
 

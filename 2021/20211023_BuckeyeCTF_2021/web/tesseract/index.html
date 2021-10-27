@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>tesseract (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>tesseract</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLと、サーバのファイル一式が与えられた。
+</p><p>
+Webページは、画像ファイルをアップロードするとそこに含まれるテキストを抽出する、とされるものだった。<br>
+<code>dist-tesseract/app.py</code> を読むと、入力のファイル名を含む <code>process_path</code> を用いてコマンドを実行している以下の部分があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page and the files for the server were given.
+</p><p>
+The web page was said that it accepts uploading an image file and extracts texts from the image.<br>
+Reading <code>dist-tesseract/app.py</code>, I found this part that executes a command using <code>process_path</code>, which contains the file name in the input:
+</p>
+</span>
+<code-block data-extension="py">
+            process = subprocess.run(
+                f"tesseract \'{process_path}\' \'{process_path}\' -l eng",
+                shell=True,
+                check=False,
+                capture_output=True,
+            )
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+さらに、<code>app.py</code> と同じディレクトリに <code>flag.txt</code> があった。
+</p><p>
+<common-tool data-lang="ja">Firefox</common-tool>で開発者ツールを開き、一旦適当な画像ファイルをアップロードした後、
+送信されるファイル名を <code>';base64 flag.txt; naiyo</code> に変えて「編集して再送信」すると、Base64エンコードされたデータを含むレスポンスが得られた。<br>
+このデータを<common-tool data-lang="ja">CyberChef</common-tool>の From Base64 でデコードすると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Also, there was a file <code>flag.txt</code> in the same directory as <code>app.py</code>.
+</p><p>
+I opened the developer tools in <common-tool data-lang="en">Firefox</common-tool> and uploaded an image file.
+Then, I performed "Edit and Resend", changing the name of file to upload in the request to <code>';base64 flag.txt; naiyo</code>.<br>
+As a result, the server sent a response that contains Base64-encoded data.
+I obtained the flag by decoding the data using "From Base64" on <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+</span>
+
+<div class="flag">buckeye{5an1t1ze_y0ur_c0mm4nds_or_just_d0nt_use_c0mm4nds_1n_th3_f1r5t_p1ac3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>

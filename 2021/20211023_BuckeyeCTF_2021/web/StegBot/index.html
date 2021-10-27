@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>StegBot (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>StegBot</h1>
+<span class="language-selector-ja">
+<p>
+Discordのアカウント <code>StegBot</code> が指定され、DMで <code>/info</code> を送るよう指示があった。<br>
+送ってみると、ソースコードとしてGitHubのURLが提示された。
+</p><p>
+<code>app/app.ts</code> を読むと、以下のことがわかった。
+</p>
+<ul>
+<li>DMで <code>/embed</code> コマンドを送り、URLを指定すると、そのURLから内容をダウンロードして渡してくれる。</li>
+<li>メッセージ埋め込みのログが <code>app.log</code> に書き込まれる。</li>
+<li>最初に <code>bof.jpg</code> に <code>FLAG</code> を埋め込む処理を行う。</li>
+<li>メッセージを埋め込んだ結果はディレクトリ <code>/tmp/images/</code> 内に保存される。
+</ul>
+<p>
+試しに <code>/embed</code> コマンドに渡すURLとして <code>file:///etc/passwd</code> を渡してみると、<code>/etc/passwd</code> の内容と思われるファイルが得られた。
+</p><p>
+<code>app/jail.cfg</code> から <code>/home/ctf/app</code> を <code>/app</code> にマウントしているらしいことがわかったので、
+URL <code>file:///app/app.log</code> を渡すと、ログの内容を取得できた。
+</p><p>
+ログには <code>bof.jpg</code> を処理した時の出力ファイルのパスとパスワードが記録されていた。<br>
+このパスをもとにしたURLを指定してファイルを取得し、このパスワードを用いて<common-tool data-lang="ja">Steghide</common-tool>でデータを取り出すと、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A Discord account <code>StegBot</code> was specified and there was an instruction to send <code>/info</code> as DM to the account.<br>
+Sending that, it posted an URL for GitHub as the source code.
+</p><p>
+Reading <code>app/app.ts</code>, I found these things:
+</p>
+<ul>
+<li>Sending <code>/embed</code> command as a DM and specifying an URL have it to download data from the URL and to post the data.</li>
+<li>Message embedding operations are logged to <code>app.log</code>.</li>
+<li>When it is launched, it embeds <code>FLAG</code> to <code>bof.jpg</code>.</li>
+<li>The results of message embedding are saved in the directory <code>/tmp/images/</code>.</li>
+</ul>
+<p>
+I tried passing an URL <code>file:///etc/passwd</code> to the <code>/embed</code> command. As a result, I obtained what looks like the contents of <code>/etc/passwd</code>.
+</p><p>
+Finding that it looks like mounting <code>/home/ctf/app</code> to <code>/app</code> by reading <code>app/jail.cfg</code>,
+I passed an URL <code>file:///app/app.log</code> and succeeded to obtain the contents of the log.
+</p><p>
+The log had the path of the output file and the password used in processing <code>bof.jpg</code>.<br>
+I retrieved the output file by specifying the URL created from the path and used <common-tool data-lang="en">Steghide</common-tool> with the password to obtain the flag.
+</p>
+</span>
+
+<div class="flag">buckeye{d0wnl0ad1ng_f1l3s_fr0m_n0d3_w4s_t00_h4rd_s0_1_ju5t_u53d_curl}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>
