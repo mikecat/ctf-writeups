@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>pay2win (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>pay2win</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURLが与えられた。
+</p><p>
+ページのソースを表示すると、最後のあたりで <code>main.js</code> が読み込まれていた。<br>
+このファイルを見ると、<code>plantFlag</code> という関数があった。<br>
+そこで、この関数を改造した以下のコードを<common-tool data-lang="ja">Firefox</common-tool>のコンソールに貼り付け、生成される内容をチェックした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL of a web page was given.
+</p><p>
+Viewing the source of the page, I found <code>main.js</code> loaded near the end.<br>
+Reading the file, I found a function <code>plantFlag</code>.<br>
+I modified this function and pasted the code to the console in <common-tool data-lang="en">Firefox</common-tool> to see what is generated.
+</p>
+</span>
+<p><a href="plantFlag_mod.js" class="code-link" data-collapse="true">plantFlag_mod.js</a></p>
+
+<span class="language-selector-ja">
+<p>
+すると、<code>textContent</code> はflagの文字がシャッフルされたような文字列となり、<br>
+<code>span</code>タグの <code>innerHTML</code> を見ると各文字に <code>flag-char-0</code>、<code>flag-char-1</code> のような連番のクラスがつけられていた。
+</p><p>
+最初のページのソースに戻って観察すると、<code>main.css</code> が読み込まれており、
+これらのクラスに <code>order</code> が指定されていることを発見した。<br>
+そこで、それぞれの文字が <code>order</code> で指定された位置に配置されると推測し、この処理を行う以下のプログラムを作成した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+As a result, the <code>textContent</code> became a string that looks like a shuffled flag,<br>
+and classes with sequential numbers like <code>flag-char-0</code> and <code>flag-char-1</code> were assigned to each characters in the <code>innerHTML</code> of the <code>span</code> tag.
+</p><p>
+Looking at the source of the first page again, I found that <code>main.css</code> is loaded, and that <code>order</code> is specified for each classes like <code>flag-char-0</code> there.<br>
+Finding this, I guessed that each characters will be placed to the positions specified by <code>order</code> and wrote this program to do this:
+</p>
+</span>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<p class="language-selector-ja">
+このプログラムを <code>main.css</code> を入力として実行すると、flagが得られた。
+</p>
+<p class="language-selector-en">
+I executed this program using <code>main.css</code> as the input. The flag was emitted as a result.
+</p>
+
+<div class="flag">buckeye{h0ly_sh1t_wh4t_th3_h3ck_1s_th1s_w31rd_ch4ll3ng3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>
