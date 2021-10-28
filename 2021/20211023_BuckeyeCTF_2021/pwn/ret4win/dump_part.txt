@@ -1,0 +1,49 @@
+00000000004011e0 <win>:
+  4011e0:	f3 0f 1e fa          	endbr64 
+  4011e4:	55                   	push   %rbp
+  4011e5:	48 89 e5             	mov    %rsp,%rbp
+  4011e8:	48 83 ec 30          	sub    $0x30,%rsp
+  4011ec:	89 7d ec             	mov    %edi,-0x14(%rbp)
+  4011ef:	89 75 e8             	mov    %esi,-0x18(%rbp)
+  4011f2:	89 55 e4             	mov    %edx,-0x1c(%rbp)
+  4011f5:	89 4d e0             	mov    %ecx,-0x20(%rbp)
+  4011f8:	44 89 45 dc          	mov    %r8d,-0x24(%rbp)
+  4011fc:	44 89 4d d8          	mov    %r9d,-0x28(%rbp)
+  401200:	48 8d 05 f9 0d 00 00 	lea    0xdf9(%rip),%rax        # 402000 <_fini+0xd5c>
+  401207:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+  40120b:	81 7d ec ef be ad de 	cmpl   $0xdeadbeef,-0x14(%rbp)
+  401212:	75 39                	jne    40124d <win+0x6d>
+  401214:	81 7d e8 be ba fe ca 	cmpl   $0xcafebabe,-0x18(%rbp)
+  40121b:	75 30                	jne    40124d <win+0x6d>
+  40121d:	81 7d e4 ef ee ee be 	cmpl   $0xbeeeeeef,-0x1c(%rbp)
+  401224:	75 27                	jne    40124d <win+0x6d>
+  401226:	81 7d e0 37 33 33 13 	cmpl   $0x13333337,-0x20(%rbp)
+  40122d:	75 1e                	jne    40124d <win+0x6d>
+  40122f:	81 7d dc 78 56 34 12 	cmpl   $0x12345678,-0x24(%rbp)
+  401236:	75 15                	jne    40124d <win+0x6d>
+  401238:	81 7d d8 ed ef cd ab 	cmpl   $0xabcdefed,-0x28(%rbp)
+  40123f:	75 0c                	jne    40124d <win+0x6d>
+  401241:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  401245:	48 89 c7             	mov    %rax,%rdi
+  401248:	e8 e3 fd ff ff       	callq  401030 <system@plt>
+  40124d:	90                   	nop
+  40124e:	c9                   	leaveq 
+  40124f:	c3                   	retq   
+
+0000000000401250 <vuln>:
+  401250:	f3 0f 1e fa          	endbr64 
+  401254:	55                   	push   %rbp
+  401255:	48 89 e5             	mov    %rsp,%rbp
+  401258:	48 83 ec 20          	sub    $0x20,%rsp
+  40125c:	48 8d 3d ad 0d 00 00 	lea    0xdad(%rip),%rdi        # 402010 <_fini+0xd6c>
+  401263:	e8 b8 fd ff ff       	callq  401020 <puts@plt>
+  401268:	48 8d 45 e0          	lea    -0x20(%rbp),%rax
+  40126c:	ba 38 00 00 00       	mov    $0x38,%edx
+  401271:	48 89 c6             	mov    %rax,%rsi
+  401274:	bf 00 00 00 00       	mov    $0x0,%edi
+  401279:	e8 c2 fd ff ff       	callq  401040 <read@plt>
+  40127e:	bf 00 00 00 00       	mov    $0x0,%edi
+  401283:	e8 e8 fd ff ff       	callq  401070 <close@plt>
+  401288:	90                   	nop
+  401289:	c9                   	leaveq 
+  40128a:	c3                   	retq   

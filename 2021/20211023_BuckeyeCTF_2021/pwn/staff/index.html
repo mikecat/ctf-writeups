@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>staff (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>staff</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、サーバのファイル一式が与えられた。<br>
+与えられたファイルのうち <code>chall.c</code> を読むと、以下の関数があることがわかった。
+</p>
+<ul>
+<li><code>find_instructor</code>：<code>Staff</code>を入力すると、初期化されていないローカル配列 <code>course</code> の内容を出力する。</li>
+<li><code>find_course</code>：検索する <code>name</code> の値を入力すると、対応する <code>instructor</code> の値をローカル配列 <code>instructor</code> にコピーする。</li>
+</ul>
+<p>
+また、<code>sp22.txt</code> より、 <code>FLAG 1337</code> に対応する <code>instructor</code> の値がflagになっていそうであることが読み取れた。
+</p><p>
+以下の手順でflagが得られた。
+</p>
+<ol>
+<li><common-tool data-lang="ja">Tera Term</common-tool>でサーバに接続する。</li>
+<li>「Search for a course」を選択するため、<code>1</code> を入力する。</li>
+<li><code>FLAG 1337</code> を入力する。</li>
+<li>「Search for an instructor」を選択するため、<code>2</code> を入力する。</li>
+<li><code>Staff</code> を入力する。</li>
+</ol>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and the files for the server were given.<br>
+Reading <code>chall.c</code> in the given files, I found these functions:
+</p>
+<ul>
+<li><code>find_instructor</code> : Output contents onf the uninitialized local array <code>cource</code> when <code>Staff</code> is entered.</li>
+<li><code>find_course</code> : Read the value of <code>name</code> to search, and copy the value of corresponding <code>instructor</code> to the local array <code>instructor</code>.</li>
+</ul>
+<p>
+I also find that the value of <code>instructor</code> corresponding to <code>FLAG 1337</code> should be the flag from the file <code>sp22.txt</code>.
+</p><p>
+I obtained the flag by these steps:
+</p>
+<ol>
+<li>Connect to the server with <common-tool data-lang="ja">Tera Term</common-tool>.</li>
+<li>Enter <code>1</code> to select "Search for a course".</li>
+<li>Enter <code>FLAG 1337</code>.</li>
+<li>Enter <code>2</code> to select "Search for an instructor".</li>
+<li>Enter <code>Staff</code>.</li>
+</ol>
+</span>
+
+<div class="flag">buckeye{if_0n1y_th15_w0rk3d}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>

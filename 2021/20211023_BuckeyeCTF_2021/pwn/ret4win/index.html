@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ret4win (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>ret4win</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、サーバのファイル一式が与えられた。
+</p><p>
+<code>chall.c</code> を読むと、以下の関数があることがわかった。
+</p>
+<ul>
+<li><code>vuln</code>：<code>read</code>関数で<code>32 + 8 + 16</code> バイトを読み込んだ後、<code>close(0);</code> を実行する。</li>
+<li><code>win</code>：引数が条件を満たせば、<code>system("cat flag.txt");</code> を実行する。</li>
+</ul>
+<p>
+次に、<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpを用いて <code>chall</code> の逆アセンブルを行った。結果の一部を以下に示す。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and the files for the server were given.
+</p><p>
+Reading <code>chall.c</code>, I found these functions:
+</p>
+<ul>
+<li><code>vuln</code> : Reads <code>32 + 8 + 16</code> bytes via the function <code>read</code>, and executes <code>close(0);</code>.</li>
+<li><code>win</code> : Executes <code>system("cat flag.txt");</code> if its arguments satisfies the condition.</li>
+</ul>
+<p>
+Also I disassembled <code>chall</code> via objdump in <common-tool data-lang="en">TDM-GCC</common-tool>. This is a part of the result:
+</p>
+</span>
+<p><a href="dump_part.txt" class="code-link" data-collapse="true">dump_part.txt</a></p>
+
+<span class="language-selector-ja">
+<p>
+<code>vuln</code>関数において、データを<code>-0x20(%rbp)</code>に読み込んでおり、リターンアドレスは<code>%rbp</code>の8バイト先にあるので、
+読み込むデータの<code>0x28</code>バイト目(0-origin)からがリターンアドレスになることがわかる。
+</p><p>
+以下のデータを<common-tool data-lang="ja">Tera Term</common-tool>の「ファイル送信」で送信することで、<br>
+リターンアドレスを<code>win</code>関数の冒頭に設定することで <code>"cat flag.txt"</code> のアドレスを<code>%rax</code>に入れさせ、<br>
+その次のアドレスを<code>mov %rax, %rdi; call system</code>のアドレスに設定することで、<code>system("cat flag.txt");</code> を実行させ、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+We can say that data from the <code>0x28</code>-th byte (the first byte is 0th) of the input will be used as the return address<br>
+because the function <code>vuln</code> stores data read to <code>-0x20(%rbp)</code> and the return address is 8 bytes ahead from <code>%rbp</code>.
+</p><p>
+I obtained the flag by sending this data via "Send file" on <common-tool data-lang="en">Tera Term</common-tool>.<br>
+This data sets the return address to the beginning of the function <code>win</code> to have it store the address of <code>"cat flag.txt"</code> to <code>%rax</code>,<br>
+and places the address of <code>mov %rax, %rdi; call system</code> after the return address to have it execute <code>system("cat flag.txt");</code>.
+</p>
+</span>
+
+<p><a href="payload.bin" class="code-link" data-collapse="true" data-binary="true">payload.bin</a></p>
+
+<div class="flag">buckeye{ret2win_t1m3s_tw0_1s_ret4win_1_guess}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>
