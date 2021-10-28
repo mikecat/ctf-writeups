@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Curly fries (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Curly fries</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、サーバのファイル一式が与えられた。<br>
+与えられたファイルのうち <code>app.c</code> を読むと、以下の処理をしていることが読み取れた。
+</p>
+<ol>
+<li>URLの入力を受け付ける。</li>
+<li><code>malloc</code>で1024バイトの領域を確保する。</li>
+<li>確保した領域に<code>./flag.txt</code>の内容を読み込む。</li>
+<li>確保した領域を開放する。</li>
+<li>読み込んだURLにリクエストを送る。</li>
+<li><code>Content-Length</code> または <code>content-length</code> で始まるヘッダが送られてきたら、<code>malloc</code>で指定された数値+1バイトの領域をレスポンス用に確保する。</li>
+<li>レスポンスが送られてきたら、確保したレスポンス用の領域に書き込む。</li>
+<li>リクエストに成功したら、レスポンス用の領域の内容を出力する。</li>
+</ol>
+<p>
+<code>malloc</code>で同じサイズの領域を確保すると、バッファが使いまわしされることが期待できる。<br>
+そこで、1024バイトの領域を確保させるヘッダを送り、ボディはそれより少ないデータを渡すことで、バッファに残ったflagが出力される可能性があると考えた。
+</p><p>
+これを実行するため、<common-tool data-lang="ja">AWS</common-tool>にAMI「Ubuntu Server 20.04 LTS (HVM), SSD Volume Type」(<code>ami-03d5c68bab01f3496</code>) を使用して t2.micro のEC2インスタンスを立て、そこでサーバのプログラムを動かすことにした。<br>
+このとき、サーバにアクセスできるように、セキュリティグループの設定でソース <code>0.0.0.0/0</code> からTCPの7777番ポートへのアクセスを許可した。
+</p><p>
+<code>Content-Length</code> で指定した長さより少ないデータしか送らずに接続を閉じると、エラーになってしまった。<br>
+そこで、<code>Content-Length-Fake</code> ヘッダで領域を確保させ、データのサイズは(小文字の<code>l</code>を使った) <code>Content-length</code> ヘッダで指定することにした。<br>
+最終的に、以下のサーバプログラムを用いることで、flagが得られた。<br>
+<code>hello, world</code> 1個ではバッファに領域を開放した時に書き込まれるナル文字が残っているようでflagが得られなかったので、<code>hello, world</code> を2個にした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server and the files for the server were given.<br>
+Reading <code>app.c</code> in the given files, I found it doing these process:
+</p>
+<ol>
+<li>Accept an input of an URL.</li>
+<li>Allocate a 1024-byte buffer using <code>malloc</code>.</li>
+<li>Read the contents of <code>./flag.txt</code> to the allocated buffer.</li>
+<li>Free the allocated buffer.</li>
+<li>Send a request to the URL read.</li>
+<li>Allocate (the number specified plus one)-byte buffer for storing response when it receives headers that begins with <code>Content-Length</code> or <code>content-length</code>.</li>
+<li>Store response to the allocated buffer on receiving that.</li>
+<li>Output what in the buffer for storing response after a successful request.</li>
+</ol>
+<p>
+When allocating same-sized buffers via <code>malloc</code>, there is a high chance that the buffer is reused.<br>
+Threfore, I thought that the flag remaining in the buffer can be printed if a header to have it allocate a 1024-byte buffer is sent and the body is shorter than that.
+</p><p>
+To achieve this, I created a t2.micro EC2 instance with the AMI "Ubuntu Server 20.04 LTS (HVM), SSD Volume Type" (<code>ami-03d5c68bab01f3496</code>) on <common-tool data-lang="en">AWS</common-tool> to run my server program.<br>
+I configured the security group to accept accesses to TCP port 7777 from the source <code>0.0.0.0/0</code> to make the server available.
+</p><p>
+Closing the connection with sending less data than specified in the <code>Content-Length</code> resulted in an error.<br>
+Therefore, I decided to have it allocate the buffer using a <code>Content-Length-Fake</code> header and specify the data size using a <code>Content-length</code> (with small <code>l</code>) header.<br>
+In conclusion, I obtained the flag using this server program.<br>
+I put two <code>hello, world</code> because using only one didn't reveal the flag and I thought that is because there are null characters written on freeing the buffer remaining in the buffer.
+</p>
+</span>
+<p><a href="server.pl" class="code-link" data-collapse="true">server.pl</a></p>
+
+<div class="flag">buckeye{https://secret.club/2021/05/13/source-engine-rce-join.html}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>

@@ -229,6 +229,9 @@ const commonToolList = {
 	},
 	"Steghide": {
 		"": "http://steghide.sourceforge.net/"
+	},
+	"cloudflared": {
+		"": "https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation"
 	}
 };
 

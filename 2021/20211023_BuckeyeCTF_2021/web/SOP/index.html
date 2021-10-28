@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SOP (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>SOP</h1>
+<span class="language-selector-ja">
+<p>
+WebページのURL、Admin botのURL、そしてサーバのファイル一式が与えられた。
+</p><p>
+Webページにアクセスすると、PHPのプログラムが表示された。<br>
+このプログラムは、<code>message</code>を設定すると、<code>Content-Type</code>を<code>text/plain; charset="utf-8"</code>に設定し、
+<code>message</code>の内容のうち<code>flag</code>を置換したものを出力するものだった。<br>
+置換先は、アクセス元のIPアドレスが指定のものであれば環境変数<code>FLAG</code>の内容、そうでなければ<code>buckeye{not_the_flag}</code>である。
+</p><p>
+<code>Content-Type</code>が<code>text/plain</code>となるので、用意されたWebページを直接Admin botに渡すことでflagを得るのは難しそうである。<br>
+そこで、外部のページを用意し、そこから用意されたページを読み込ませてflagを得る方法を考えた。<br>
+その結果、<code>script</code>タグの<code>src</code>にすることで、読み込ませることができそうであることに気がついた。
+</p><p>
+具体的には、まず以下のプログラムを用意した。<br>
+flagに<code>"</code>や<code>\</code>といった特殊な文字が含まれると上手く行かないだろうが、それは上手く行かなかった時に考えればいいとした。<br>
+なお、<code>xxxxxxxxxxxxx</code>の部分は、実際の<common-tool data-lang="ja">RequestBin.com</common-tool>のエンドポイントのサブドメインを用いた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+An URL for a web page, an URL for the Admin bot, and the files for the server were given.
+</p><p>
+Accessing the web page, a PHP program was presented.<br>
+The program takes <code>message</code> and prints the contents with <code>flag</code> replaced and <code>Content-Type</code> set to <code>text/plain; charset="utf-8"</code>.<br>
+If the client's IP address is what is specified, <code>flag</code> is replaced to the contents of the environment variable <code>FLAG</code>. Otherwise, it is replaced to <code>buckeye{not_the_flag}</code>.
+</p><p>
+It looks difficult to obtain the flag by directly putting the provided web page to the Admin bot because <code>Content-Type</code> is set to <code>text/plain</code>.<br>
+Therefore, I searched for a way to create an external page and have it load the provided page to obtain the flag.<br>
+As a result, I found that using the provided page as <code>src</code> of a <code>script</code> tag may work.
+</p><p>
+To achieve this, I firstly created this program.<br>
+This won't work if the flag contains special characters like <code>"</code> and <code>\</code>, but I decided to consider that only after I actually find it not working.<br>
+The <code>xxxxxxxxxxxxx</code> part should be replaced to an actual subdomain of an endpoint for <common-tool data-lang="en">RequestBin.com</common-tool>.
+</p>
+</span>
+<p><a href="script_script.js" class="code-link" data-collapse="true">script_script.js</a></p>
+
+<p class="language-selector-ja">
+このプログラムを<common-tool data-lang="ja">CyberChef</common-tool>の URL Encode でエンコードして埋め込み、以下のHTMLファイルを作成した。
+</p>
+<p class="language-selector-en">
+I created this HTML file with encoding this program via "URL Encode" on <common-tool data-lang="en">CyberChef</common-tool> and embedding that.
+</p>
+<p><a href="script.html.txt" class="code-link" data-collapse="true" data-extension="html">script.html</a></p>
+
+<span class="language-selector-ja">
+<p>
+このファイルを<code>php -S</code>コマンドと<common-tool data-lang="ja">cloudflared</common-tool>でインターネットからアクセスできる状態にし、
+そのURLをAdmin botに渡すと、RequestBinにAdmin botからのアクセスがあった。<br>
+しかし、その内容は <code>buckeye{not_the_flag}</code> だった。
+</p><p>
+与えられたファイル中の <code>docker-compose.yml</code> を見ると、用意されたWebページのサーバの内部におけるIPアドレスは <code>172.16.0.10</code> らしいことがわかった。<br>
+そこで、このIPアドレスを使用した以下のHTMLファイルを用意した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I made this file available from the Internet using the <code>php -S</code> command and <common-tool data-lang="en">cloudflared</common-tool>.<br>
+Then, I put the URL to the Admin bot. As a result, the Admin bot accessed to the RequestBin, but the contents was <code>buckeye{not_the_flag}</code>.
+</p><p>
+Reading <code>docker-compose.yml</code> in the given file, I found the internal IP address for the server of the provided web page is <code>172.16.0.10</code>.<br>
+Seeing this, I created this HTML file using this IP address.
+</p>
+</span>
+<p><a href="script2.html.txt" class="code-link" data-collapse="true" data-extension="html">script2.html</a></p>
+
+<p class="language-selector-ja">
+このファイルのURLをAdmin botに渡すと、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by putting the URL for this file to the Admin bot.
+</p>
+
+<div class="flag">buckeye{th3_l3tt3r5_0f_S0P_Ar3_1n_JS0NP}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>
