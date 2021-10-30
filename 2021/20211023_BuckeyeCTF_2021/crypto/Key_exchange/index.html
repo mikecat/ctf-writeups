@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Key exchange (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Key exchange</h1>
+<span class="language-selector-ja">
+<p>
+TCPサーバの接続情報と、サーバのプログラム <code>server.py</code> が与えられた。<br>
+<code>server.py</code> は以下のような処理をするものだった。
+</p>
+<ol>
+<li>素数<code>p</code>と定数<code>g = 5</code>を用意し、出力する。</li>
+<li>乱数<code>a</code>を用意する。</li>
+<li><code>g</code>の<code>a</code>乗を<code>p</code>で割った余り<code>A</code>を計算し、出力する。</li>
+<li><code>1</code>より大きく<code>p - 1</code>未満の整数<code>B</code>を入力させる。</li>
+<li><code>B</code>の<code>a</code>乗を<code>p</code>で割った余り<code>shared_secret</code>を計算する。</li>
+<li><code>shared_secret</code>を<code>long_to_bytes</code>で変換したデータのSHA-1ハッシュの先頭16バイトを鍵として、<code>FLAG</code>を<code>AES.MODE_ECB</code>で暗号化し、出力する。</li>
+</ol>
+<p>
+<code>shared_secret</code>の計算には、<code>B ^ a === (g ^ b) ^ a === g ^ (ab)  (mod p)</code> というコメントがついていた。<br>
+この計算を進めると、<code>g ^ (ab) === (g ^ a) ^ b === A ^ b (mod p)</code> となる。<br>
+すなわち、適当な数<code>b</code>を用意し、<code>g</code>を<code>b</code>乗して<code>p</code>で割った余りを<code>B</code>として送信すると、<br>
+<code>A</code>を<code>b</code>乗して<code>p</code>で割ることで<code>shared_secret</code>の値を求めることができる。
+</p><p>
+サーバに接続すると、例えば以下が出力された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Information to connect to a TCP server, and a program for the server <code>server.py</code> were given.<br>
+What <code>server.py</code> does is:
+</p>
+<ol>
+<li>Prepare a prime number <code>p</code> and a constant value <code>g = 5</code>, and print them.</li>
+<li>Prepare an random integer <code>a</code>.</li>
+<li>Calculate <code>g</code> to the <code>a</code>-th power modulo <code>p</code> as <code>A</code>, and print that.</li>
+<li>Read an integer <code>B</code>, which is greater than <code>1</code> and less than <code>p - 1</code>.</li>
+<li>Calculate <code>B</code> to the <code>a</code>-th power modulo <code>p</code> as <code>shared_secret</code>.</li>
+<li>Encrypt <code>FLAG</code> with <code>AES.MODE_ECB</code> using the first 16 bytes of the SHA-1 hash value of <code>shared_secret</code> converted via <code>long_to_bytes</code> as the key, and print the result.</li>
+</ol>
+<p>
+There was a comment <code>B ^ a === (g ^ b) ^ a === g ^ (ab)  (mod p)</code> for the calculation of <code>shared_secret</code>.<br>
+Proceeding this calculation yields <code>g ^ (ab) === (g ^ a) ^ b === A ^ b (mod p)</code>.<br>
+This means that we can obtain the value of <code>shared_secret</code> by calculating <code>A</code> to the <code>b</code>-th power modulo <code>p</code><br>
+after preparing some random value <code>b</code> and sending <code>g</code> to the <code>b</code>-th power modulo <code>p</code> as <code>B</code>.
+</p><p>
+For an example, this was printed after connecting to the server:
+</p>
+</span>
+<code-block data-extension="txt">
+I'm going to send you the flag.
+However, I noticed that an FBI agent has been eavesdropping on my messages,
+so I'm going to send it to you in a way that ONLY YOU can decrypt the flag.
+
+p = 13100953797897539436008478171867615770854825342065671749974255587240935194028242863668388402707550617039437399297551882716990247250202130495220466889106119
+g = 5
+A = 4172727189770658610889137742629770066474852445855501339216972286122628606291523457829146016595944156179125767594146778765988657548101768506883419118758577
+Give me your public key B:
+</code-block>
+
+<p class="language-selector-ja">
+これに対し、Pythonのインタラクティブを用いて以下のように<code>B</code>として送信する値を計算できる。<br>
+なお、接続が切れる前に<code>B</code>を送信できるよう、<code>g</code>や<code>b</code>の値はサーバに接続する前に用意しておくとよい。
+</p>
+<p class="language-selector-en">
+Seeing this, we can calculate the value to send as <code>B</code> using the interactive mode of Python like this.<br>
+You should prepare the values of <code>g</code> and <code>b</code> before connecting to the server to make it easier to send <code>B</code> before the connection gets closed.
+</p>
+<code-block data-extension="txt">
+Python 3.8.2 (tags/v3.8.2:7b3ab59, Feb 25 2020, 23:03:10) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> g = 5
+>>> b = 3142857142857
+>>> p = 13100953797897539436008478171867615770854825342065671749974255587240935194028242863668388402707550617039437399297551882716990247250202130495220466889106119
+>>> B = pow(g, b, p)
+>>> B
+7158990485917916975114189539310763209191741436636609628891953547793497596963956031178839236844427200655067928073491099870766188675029873537034390693810448
+</code-block>
+
+<p class="language-selector-ja">
+ここで求めた<code>B</code>の値を送信すると、サーバから以下の出力がされた。
+</p>
+<p class="language-selector-en">
+Sending the value of <code>B</code> obtained here, the server sent this:
+</p>
+<code-block data-extension="txt">
+ciphertext = e1a24055154c2b29a0f48f977315704dd02d1b735b43907e77c11a96900e9fba81b2b39f883f3238779e581de55658f9fd6cc6f4ad0e05b014426fa48266ce23
+</code-block>
+
+<p class="language-selector-ja">
+Pythonのインタラクティブを用い、<code>B</code>を求めた続きで<code>shared_secret</code>の値を求める。
+</p>
+<p class="language-selector-en">
+Then, calculate the value of <code>shared_secret</code> using the interactive mode of Python after obtaining the value of <code>B</code>.
+</p>
+<code-block data-extension="txt">
+>>> A = 4172727189770658610889137742629770066474852445855501339216972286122628606291523457829146016595944156179125767594146778765988657548101768506883419118758577
+>>> shared_secret = pow(A, b, p)
+>>> hex(shared_secret)
+'0x17f4ed4e5f25fa2161e2c70a0b1bf7d863c8a7e8a93055b5df8ec0a483cf6b2f15b99bd99549cfd440cd126a3147aebed1d6ea4d66bef961bd177099b06d9de8'
+</code-block>
+
+<p class="language-selector-ja">
+得られた<code>shared_secret</code>の値を<common-tool data-lang="ja">CyberChef</common-tool>に入力し、
+SHA-1値の最初16バイトを求める。
+</p>
+<p class="language-selector-en">
+After that, put the calculated value of <code>shared_secret</code> to <common-tool data-lang="en">CyberChef</common-tool>
+to obtain the first 16 bytes of the SHA-1 value.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')SHA1(80)Take_bytes(0,32,false)&amp;input=MTdmNGVkNGU1ZjI1ZmEyMTYxZTJjNzBhMGIxYmY3ZDg2M2M4YTdlOGE5MzA1NWI1ZGY4ZWMwYTQ4M2NmNmIyZjE1Yjk5YmQ5OTU0OWNmZDQ0MGNkMTI2YTMxNDdhZWJlZDFkNmVhNGQ2NmJlZjk2MWJkMTc3MDk5YjA2ZDlkZTg">From Hex, SHA1, Take bytes - CyberChef</a></p>
+
+<p class="language-selector-ja">
+これで暗号化の鍵が求まったが、このままサーバから出力されたciphertextをCyberChefの AES Decrypt で複号しようとすると、「Unable to decrypt input with these parameters.」と出てしまう。<br>
+これは、(現在の)CyberChefの AES Decrypt のECBモードではパディングの使用が強制されるためである。<br>
+そこで、まず空文字列をこの鍵で暗号化し、パディングのブロックを得る。<br>
+ECBモードは各ブロックを独立して暗号化する方式なので、ciphertextのデータは不要である。
+</p>
+<p class="language-selector-en">
+Now I got the encryption key, but simply trying to decrypt the ciphertext sent from the server using "AES Decrypt" on CyberChef results in "Unable to decrypt input with these parameters.".<br>
+This is because using padding is forced in the ECB mode of "AES Decrypt" of (current) CyberChef.<br>
+To overcome this, firstly we should encrypt an empty string with this key to obtaine a padding block.<br>
+The ciphertext is not needed here because each blocks are encrypted independently in the ECB mode.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=AES_Encrypt(%7B'option':'Hex','string':'f146b495942070c97f1a9849e7e2e8dd'%7D,%7B'option':'Hex','string':''%7D,'ECB','Raw','Hex',%7B'option':'Hex','string':''%7D)">AES Encrypt - CyberChef</a></p>
+
+<p class="language-selector-ja">
+ciphertextの後ろに得られたパディングのブロックを追加し、AES Decrypt を行うと、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by adding the obtained padding block after the ciphertext and applying "AES Decrypt".
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=AES_Decrypt(%7B'option':'Hex','string':'f146b495942070c97f1a9849e7e2e8dd'%7D,%7B'option':'Hex','string':''%7D,'ECB','Hex','Raw',%7B'option':'Hex','string':''%7D,%7B'option':'Hex','string':''%7D)&amp;input=ZTFhMjQwNTUxNTRjMmIyOWEwZjQ4Zjk3NzMxNTcwNGRkMDJkMWI3MzViNDM5MDdlNzdjMTFhOTY5MDBlOWZiYTgxYjJiMzlmODgzZjMyMzg3NzllNTgxZGU1NTY1OGY5ZmQ2Y2M2ZjRhZDBlMDViMDE0NDI2ZmE0ODI2NmNlMjMKYzg5ZDBlYzE4Y2VmZThjZjc0OWNhNTAwMjkyYzFlNDI">AES Decrypt - CyberChef</a></p>
+
+<div class="flag">buckeye{DH_1s_s0_h3ck1ng_c00l_l1k3_wh0_w0uldv3_th0ught_0f_th1s?}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>
