@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Defective RSA (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Defective RSA</h1>
+<span class="language-selector-ja">
+<p>
+テキストファイル <code>chall.py</code> が与えられた。<br>
+このファイルには、以下の処理をするプログラムと、その出力が書かれていた。
+</p>
+<ol>
+<li>定数 <code>e = 1440</code> を用意する。</li>
+<li>1024ビットの素数 <code>p, q</code> を用意する。</li>
+<li><code>flag</code> を <code>bytes_to_long</code> で変換した値を <code>e</code> 乗して <code>p * q</code> で割った余りを求め、その値を <code>c</code> とする。</li>
+<li><code>e, p, q, c</code> の値を出力する。
+</ol>
+<p>
+通常通りRSA暗号の復号をしようとすると、<code>(p - 1) * (q - 1)</code> を法とする <code>e</code> の逆数が存在せず、できなかった。<br>
+<code>e</code> の約数で <code>(p - 1) * (q - 1)</code> を法とする逆数が求まるものを探すと、<code>9</code> の逆数が求まった。
+</p><p>
+平文の <code>e = 1440 = 9 * 160</code> 乗は、「平文の160乗」の9乗とみなすことができる。<br>
+従って、<code>9</code>の逆数を使うことで、「平文の160乗」を復号できるはずである。
+</p><p>
+そこで、<common-tool data-lang="ja">SageMath</common-tool>を用い、復号後<code>p</code>および<code>q</code>それぞれを法として復号結果の160乗根を求めてみた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A text file <code>chall.py</code> was given.<br>
+The file had a program to do following process and its output.
+</p>
+<ol>
+<li>Preaoare a constant value <code>e = 1440</code>.</li>
+<li>Create 1024-bit prime numbers <code>p, q</code>.</li>
+<li>Convert <code>flag</code> using <code>bytes_to_long</code> and calculate it to the <code>e</code>-th power modulo <code>p * q</code>. Name the result as <code>c</code>.</li>
+<li>Output values of <code>e, p, q, c</code>.</li>
+</ol>
+<p>
+Trying to perform decryption of RSA cipher as usual, I found it impossible because the inverse of <code>e</code> modulo <code>(p - 1) * (q - 1)</code> didn't exist.<br>
+Searching for a number that divides <code>e</code> and an inverse of the number modulo <code>(p - 1) * (q - 1)</code> exists, I found that an inverse of <code>9</code> can be obtained.
+</p><p>
+The plaintext to the <code>e = 1440 = 9 * 160</code>-th power can be seen as "the plaintext to the 160th power" to the 9th power.<br>
+Therefore, "the plaintext to the 160th power" should be recovered using the inverse of <code>9</code>.
+</p><p>
+I used <common-tool data-lang="en">SageMath</common-tool> to calculate the 160th roots of the result of decryption modulo <code>p</code> and <code>q</code>.
+</p>
+</span>
+<p><a href="solve.sage" class="code-link" data-collapse="true" data-extension="py">solve.sage</a></p>
+
+<p class="language-selector-ja">
+実行開始後、約5分後に実行結果が出た。<br>
+得られた<code>q</code>を法とする復号結果の160乗根を<common-tool data-lang="ja">CyberChef</common-tool>で変換すると、flagが得られた。
+</p>
+<p class="language-selector-en">
+After about 5 minuts, it produced some results.<br>
+I obtained the flag by converting the 160th root modulo <code>q</code> using <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=To_Base(16)From_Hex('Auto')&amp;input=ODIxNTA4NTI2MTA2OTkyMTk1MjcyODkzNTE2MTQyNzY1MDU3ODk3OTE0NzM0MDI2MTk4NzY5MTkyNzM2NDY5MTU2OTA0OTM4MTE3MTc4MTA3NjQ3OTg2MzQwMTUxMTY1Cg">To Base, From Hex - CyberChef</a></p>
+
+<div class="flag">buckeye{r0ots_0f_uN1Ty_w0rk_f0r_th1s???}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Key exchange 2 (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Key exchange 2</h1>
+<p class="language-selector-ja">
+TCPサーバの接続情報が与えられた。<br>
+<common-tool data-lang="ja">Tera Term</common-tool>で接続してみると、以下のような出力がされた。
+</p>
+<p class="language-selector-en">
+Informattion to connect to a TCP server was given.<br>
+Connecting to the server using <common-tool data-lang="en">Tera Term</common-tool>, the server printed things like this:
+</p>
+<code-block data-extension="txt">
+I'm going to send you the flag.
+However, I noticed that an FBI agent has been eavesdropping on my messages,
+so I'm going to send it to you in a way that ONLY YOU can decrypt the flag.
+
+p = 12251795882968515335720230660073746659413869760924025221649852208035051237856708925781912778413121581923338535504285363717654276804327121718065343894161577
+g = 5
+Can you still get the shared secret without my public key A?
+Give me your public key B: 
+</code-block>
+<span class="language-selector-ja">
+<p>
+これは、<a href="../Key_exchange/" class="language-aware-link">Key exchange</a>と同様の処理を、<code>A</code>を出力せずに行っていると予想した。<br>
+そうだとすれば、<code>shared_secret</code>の値を求めることができれば暗号化の鍵を求めることができるはずである。
+</p><p>
+Key exchange においては、<code>shared_secret</code>は入力された<code>B</code>の値を<code>a</code>乗して<code>p</code>で割った余りをとることで作られる。<br>
+ということは、もし<code>1</code>以外に mod <code>p</code> における<code>1</code>の3乗根が存在すれば、
+その数を<code>B</code>として入力すると、<code>shared_secret</code>は<code>B</code>、<code>B</code>の2乗、<code>1</code>のどれかになるはずである。
+</p><p>
+先ほどのサーバの出力の例について、以下のようにして<common-tool data-lang="ja">Sage Cell Server</common-tool>を用いて<code>1</code>の3乗根を求めた。<br>
+<code>p</code>の値によっては1以外の3乗根が求まらないことがあったが、何回か接続し直すと1以外の3乗根が求まる<code>p</code>の値になった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+I guessed that this is doing a process like one done in <a href="../Key_exchange/" class="language-aware-link">Key exchange</a> without printing the value of <code>A</code>.<br>
+Assuming that, we can get the encryption key by obtaining the value of <code>shared_secret</code>.
+</p><p>
+In "Key exchange", <code>shared_secret</code> is <code>B</code> to the <code>a</code>-th power modulo <code>p</code>.<br>
+Therefore, if the 3rd root of <code>1</code> modulo <code>p</code> other than <code>1</code> exists,
+using the value as <code>B</code> will make <code>shared_secret</code> one of <code>B</code>, the square of <code>B</code>, or <code>1</code>.
+</p><p>
+Regarding the example of the output from the server, I used <common-tool data-lang="en">Sage Cell Server</common-tool> to obtaine the 3rd root of <code>1</code>.<br>
+There were no 3rd roots other than 1 for some value of <code>p</code>, but a value of <code>p</code> with which we can calculate 3rd roots other than 1 appeared after several reconnections.
+</p>
+</span>
+<code-block data-extension="py">
+n=12251795882968515335720230660073746659413869760924025221649852208035051237856708925781912778413121581923338535504285363717654276804327121718065343894161577
+
+F = IntegerModRing(n)
+print(F(1).nth_root(3, all=True))
+</code-block>
+
+<p class="language-selector-ja">
+求まった3乗根の1つ
+</p>
+<p class="language-selector-en">
+This is one of the 3rd roots:
+</p>
+<code-block data-extension="txt">
+7191913673163613897488283950986433933185763568097469131901982702534156192969929339505441043029606560041994238242674105317600356701526959347916836181617823
+</code-block>
+<p class="language-selector-ja">
+をサーバに送信すると、以下の出力が得られた。
+</p>
+<p class="language-selector-en">
+Sending this value to the server, it printed this:
+</p>
+<code-block data-extension="txt">
+ciphertext = 981a500a7b227d47cea9a32643c76240e5a6f06e3515e04853e078e2ca1d9ccf9cffbe5e5addb8d05c45210a10bb8940
+</code-block>
+
+<p class="language-selector-ja">
+Pythonのインタラクティブモードで<code>B</code>、および<code>B</code>の2乗を<code>p</code>で割った余りの16進表現を求め、
+以下のように<common-tool data-lang="ja">CyberChef</common-tool>で対応する暗号鍵を取得した。
+</p>
+<p class="language-selector-en">
+I obtained hexadecimal representations of <code>B</code> and square of <code>B</code> modulo <code>p</code> using the interactive mode of Python,
+and obtained corresponding encryption keys using <common-tool data-lang="en">CyberChef</common-tool> in this way:
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Fork('%5C%5Cn','%5C%5Cn',false)From_Hex('Auto')SHA1(80)Drop_bytes(32,9999,false)&amp;input=MDEKODk1MTU3N2RlZGRiOTFjZDIxNTY1ZGI4YjkwNTdhYzYxYWQ0ZjlkNDljMGFmYWM1NDNjNTY2YWZiNzRjMTA3MDNjYjIwZGVhNWRlN2I1ODk2YWNmMmNmYjQwNDE1OTJmYmEwZWY2NTQ3NjU4ZTBmODQ4M2U5YTcwZTE1N2FjOWYKNjA5YzMwNjViZDI4NThhMWM4NzBhZWZjNWJjZmQzMWZiMGYwZTQyYjljNjNkYWJiMGFlZDBjYjMzNDA3OGI2ZTgzOGQ1YThiM2FlODc5MGNjNzM2OTAzYzBkYzNlMzY2ZTE0NThjYjVmNzgwYjAxYTliMDA4ODcyMTNhMGRjMDk">Fork, From Hex, SHA1, Drop bytes - CyberChef</a></p>
+
+<span class="language-selector-ja">
+<p>
+さらに、以下のようにしてそれぞれの暗号鍵で得られた暗号文の復号を行った。
+</p>
+<ol>
+<li>暗号文と鍵候補を入力として受け取る。</li>
+<li>暗号文をRegisterに保存し、入力から消す。</li>
+<li>Forkを行い、それぞれの鍵候補について以下を行う。
+<ol>
+<li>鍵候補をRegisterに保存し、入力を空にする。</li>
+<li>パディングのブロックを作成するため、この空を暗号化する。</li>
+<li>得られた暗号文の前に、入力の暗号文を追加する。</li>
+<li>その結果を復号する。</li>
+</ol></li>
+</ol>
+</span>
+<span class="language-selector-en">
+<p>
+Then, I decrypted the ciphertext sent from the server using each encryption keys in these steps:
+</p>
+<ol>
+<li>Receive the ciphertext and the candidates of the key as the input.</li>
+<li>Put the ciphertext to Register and remove that from the input.</li>
+<li>Using Fork, do this for each candidates of the key:
+<ol>
+<li>Put the candidate of the key to Register and make the input empty.</li>
+<li>Encrypt the empty input to create a padding block.</li>
+<li>Add the ciphertext from the input before the resulting ciphertext.</li>
+<li>Decrypt the result.</li>
+</ol></li>
+</ol>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Register('(%5B0-9a-f%5D%2B)',true,false,false)Find_/_Replace(%7B'option':'Regex','string':'.*?%5C%5Cn'%7D,'',false,false,true,false)Fork('%5C%5Cn','%5C%5Cn',false)Register('(%5B0-9a-f%5D%2B)',true,false,false)Find_/_Replace(%7B'option':'Regex','string':'.*'%7D,'',true,false,true,false)AES_Encrypt(%7B'option':'Hex','string':'$R1'%7D,%7B'option':'Hex','string':''%7D,'ECB','Raw','Hex',%7B'option':'Hex','string':''%7D)Find_/_Replace(%7B'option':'Regex','string':'%5E'%7D,'$R0',true,false,true,false)AES_Decrypt(%7B'option':'Hex','string':'$R1'%7D,%7B'option':'Hex','string':''%7D,'ECB','Hex','Raw',%7B'option':'Hex','string':''%7D,%7B'option':'Hex','string':''%7D)&amp;input=OTgxYTUwMGE3YjIyN2Q0N2NlYTlhMzI2NDNjNzYyNDBlNWE2ZjA2ZTM1MTVlMDQ4NTNlMDc4ZTJjYTFkOWNjZjljZmZiZTVlNWFkZGI4ZDA1YzQ1MjEwYTEwYmI4OTQwCmJmOGI0NTMwZDhkMjQ2ZGQ3NGFjNTNhMTM0NzFiYmExCjc5ODhmNGJlYjUxOTNiMWMwNjA0YzkzNDdhOTVhMmJkCmFhODU4MThhMGM0OGFlOWQ3Zjc5MGY5ZDRhOWU2NDA1">Register, 7 more - CyberChef</a></p>
+
+<p class="language-selector-ja">
+その結果、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag from the result.
+</p>
+
+<div class="flag">buckeye{sup3r_dup3r_t1ny_m1cr0sc0p1c_subgr0up5!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>
