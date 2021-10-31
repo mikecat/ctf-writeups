@@ -232,6 +232,9 @@ const commonToolList = {
 	},
 	"cloudflared": {
 		"": "https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation"
+	},
+	"JD-GUI": {
+		"": "http://java-decompiler.github.io/"
 	}
 };
 

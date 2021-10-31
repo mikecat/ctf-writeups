@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Buttons (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Buttons</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>Buttons.jar</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">JD-GUI</common-tool>で逆コンパイルしてみると、<code>printFlag</code>関数があったが、この関数の処理は移動のログを参照するようだった。
+</p><p>
+<code>java -jar Buttons.jar</code> コマンドで実行してみると、ボタンが大量にある以下の画面が表示された。<br>
+適当にボタンを押してくと、押したボタンが無効化される場合と、「Illegal move, you lose」と書かれたダイアログが出て初期状態に戻る場合があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A file <code>Buttons.jar</code> was given.
+</p><p>
+Decompiling via <common-tool data-lang="en">JD-GUI</common-tool>, I found a function <code>printFlag</code>, but I also found that the function uses the log of movements.
+</p><p>
+Executing the program using a command <code>java -jar Buttons.jar</code>, it showed this window with a lot of buttons.<br>
+Pressing the buttons randomly, I found that there are cases where the pressed button is disabled, and ones where a dialog saying "Illegal move, you lose" appears and the status is reset to the intial one.
+</p>
+</span>
+<p><a href="buttons_initial.png"><img src="buttons_initial_thumb.jpg" alt="Buttons!"></a></p>
+
+<span class="language-selector-ja">
+<p>
+逆コンパイル結果をさらに読むと、<code>isLegalMove</code> 関数より、以下の条件を全て満たすボタンを押すことで進めていけそうであることがわかった。
+</p>
+<ul>
+<li>前回押したボタン (最初に押すボタンについては、左上の最初から無効になっているボタン) と隣接している。(4方向)</li>
+<li><code>grid</code> の対応する要素が <code>0</code> である。</li>
+</ul>
+<p>
+そこで、逆コンパイル結果から <code>grid</code> のデータを取り出し、<common-tool data-lang="ja">CyberChef</common-tool>で見やすいように加工した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+With further reading of the result of decompilation, I found that pressing buttons that satisfy all of these conditions will move the status forward.
+</p>
+<ul>
+<li>Adjacent to the button previously pressed (regarding to the first button to press, the initially disabled button in the top left) in one of the 4 directions.</li>
+<li>The corresponding element of <code>grid</code> is <code>0</code>.</li>
+</ul>
+<p>
+Then, I took out the data for <code>grid</code> and processed it on <common-tool data-lang="en">CyberChef</common-tool> to improve readability.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%7D,%5C%5Cs%2B%7B'%7D,'*',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5B%5E01*%5D'%7D,'',true,false,true,false)Find_/_Replace(%7B'option':'Simple%20string','string':'*'%7D,'%5C%5Cn',true,false,true,false)&amp;input=ICBwcml2YXRlIHN0YXRpYyBmaW5hbCBpbnRbXVtdIGdyaWQgPSBuZXcgaW50W11bXSB7IAogICAgICB7IAogICAgICAgIDEsIDAsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIAogICAgICAgIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIDEsIAogICAgICAgIDEgfSwgeyAKICAgICAgICAxLCAwLCAxLCAwLCAwLCAwLCAwLCAwLCAxLCAwLCAKICAgICAgICAwLCAwLCAwLCAwLCAxLCAwLCAwLCAwLCAwLCAwLCAKICAgICAgICAxIH0sIHsgCiAgICAgICAgMSwgMCwgMSwgMCwgMSwgMSwgMSwgMCwgMSwgMCwgCiAgICAgICAgMSwgMSwgMSwgMCwgMSwgMSwgMSwgMSwgMSwgMCwgCiAgICAgICAgMSB9LCB7IAogICAgICAgIDEsIDAsIDEsIDAsIDAsIDAsIDEsIDAsIDAsIDAsIAogICAgICAgIDEsIDAsIDEsIDAsIDAsIDAsIDAsIDAsIDAsIDAsIAogICAgICAgIDEgfSwgeyAKICAgICAgICAxLCAwLCAxLCAwLCAxLCAwLCAxLCAxLCAxLCAxLCAKICAgICAgICAxLCAwLCAxLCAxLCAxLCAxLCAxLCAxLCAxLCAwLCAKICAgICAgICAxIH0sIHsgCiAgICAgICAgMSwgMCwgMSwgMCwgMSwgMCwgMSwgMCwgMSwgMCwgCiAgICAgICAgMCwgMCwgMCwgMCwgMCwgMCwgMSwgMCwgMCwgMCwgCiAgICAgICAgMSB9LCB7IAogICAgICAgIDEsIDAsIDEsIDEsIDEsIDAsIDEsIDAsIDEsIDAsIAogICAgICAgIDEsIDEsIDEsIDAsIDEsIDEsIDEsIDAsIDEsIDEsIAogICAgICAgIDEgfSwgeyAKICAgICAgICAxLCAwLCAwLCAwLCAwLCAwLCAxLCAwLCAwLCAwLCAKICAgICAgICAxLCAwLCAxLCAwLCAwLCAwLCAwLCAwLCAxLCAwLCAKICAgICAgICAxIH0sIHsgCiAgICAgICAgMSwgMSwgMSwgMSwgMSwgMSwgMSwgMCwgMSwgMSwgCiAgICAgICAgMSwgMCwgMSwgMSwgMSwgMSwgMSwgMSwgMSwgMCwgCiAgICAgICAgMSB9LCB7IAogICAgICAgIDEsIDAsIDEsIDAsIDAsIDAsIDAsIDAsIDEsIDAsIAogICAgICAgIDAsIDAsIDEsIDAsIDAsIDAsIDAsIDAsIDAsIDAsIAogICAgICAgIDEgfSwgCiAgICAgIHsgCiAgICAgICAgMSwgMCwgMSwgMCwgMSwgMSwgMSwgMSwgMSwgMCwgCiAgICAgICAgMSwgMCwgMSwgMSwgMSwgMSwgMSwgMCwgMSwgMCwgCiAgICAgICAgMSB9LCB7IAogICAgICAgIDEsIDAsIDAsIDAsIDEsIDAsIDAsIDAsIDAsIDAsIAogICAgICAgIDEsIDAsIDAsIDAsIDAsIDAsIDAsIDAsIDEsIDAsIAogICAgICAgIDEgfSwgeyAKICAgICAgICAxLCAwLCAxLCAxLCAxLCAxLCAxLCAxLCAxLCAwLCAKICAgICAgICAxLCAxLCAxLCAxLCAxLCAxLCAxLCAxLCAxLCAwLCAKICAgICAgICAxIH0sIHsgCiAgICAgICAgMSwgMCwgMCwgMCwgMCwgMCwgMSwgMCwgMCwgMCwgCiAgICAgICAgMSwgMCwgMSwgMCwgMCwgMCwgMCwgMCwgMSwgMCwgCiAgICAgICAgMSB9LCB7IAogICAgICAgIDEsIDEsIDEsIDEsIDEsIDAsIDEsIDAsIDEsIDEsIAogICAgICAgIDEsIDAsIDEsIDAsIDEsIDAsIDEsIDEsIDEsIDAsIAogICAgICAgIDEgfSwgeyAKICAgICAgICAxLCAwLCAwLCAwLCAxLCAwLCAwLCAwLCAxLCAwLCAKICAgICAgICAwLCAwLCAxLCAwLCAxLCAwLCAwLCAwLCAwLCAwLCAKICAgICAgICAxIH0sIHsgCiAgICAgICAgMSwgMCwgMSwgMSwgMSwgMSwgMSwgMSwgMSwgMCwgCiAgICAgICAgMSwgMSwgMSwgMCwgMSwgMSwgMSwgMSwgMSwgMSwgCiAgICAgICAgMSB9LCB7IAogICAgICAgIDEsIDAsIDEsIDAsIDAsIDAsIDAsIDAsIDAsIDAsIAogICAgICAgIDEsIDAsIDAsIDAsIDEsIDAsIDAsIDAsIDAsIDAsIAogICAgICAgIDEgfSwgeyAKICAgICAgICAxLCAwLCAxLCAwLCAxLCAxLCAxLCAwLCAxLCAxLCAKICAgICAgICAxLCAwLCAxLCAxLCAxLCAwLCAxLCAxLCAxLCAwLCAKICAgICAgICAxIH0sIHsgCiAgICAgICAgMSwgMCwgMCwgMCwgMCwgMCwgMSwgMCwgMCwgMCwgCiAgICAgICAgMCwgMCwgMCwgMCwgMCwgMCwgMSwgMCwgMCwgMCwgCiAgICAgICAgMSB9LCAKICAgICAgeyAKICAgICAgICAxLCAxLCAxLCAxLCAxLCAxLCAxLCAxLCAxLCAxLCAKICAgICAgICAxLCAxLCAxLCAxLCAxLCAxLCAxLCAxLCAxLCAwLCAKICAgICAgICAxIH0gfTs">Find / Replace, 2 more - CyberChef</a></p>
+
+<p class="language-selector-ja">
+この結果を参考に <code>0</code> の位置のボタンを押していき、右下の旗のマークのボタンを押すと、flagが表示された。<br>
+また、標準出力にもflagが出力された。
+</p>
+<p class="language-selector-en">
+Seeing the result of this, I pressed buttons that correspond to <code>0</code>. The flag appeared when I pressed the button with a flag mark in the bottom right.<br>
+The flag was also printed to the standard output.
+</p>
+
+<div class="flag">buckeye{am4z1ng_j0b_y0u_b1g_j4va_h4ck3r}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>

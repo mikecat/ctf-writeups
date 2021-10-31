@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Neurotic (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Neurotic</h1>
+<span class="language-selector-ja">
+<p>
+プログラム <code>src.py</code> と、ファイル <code>model.pth</code> が与えられた。<br>
+<code>src.py</code> は、以下の処理をするものだった。
+</p>
+<ul>
+<li><code>nn.Sequential(*([nn.Linear(8, 8, bias=False)] * 7))</code> を用いたクラスのインスタンスを用意し、そのデータを <code>model.pth</code> に保存する。</li>
+<li><code>flag</code>を8×8の行列に変形する。</li>
+<li>できた行列を用意したインスタンスを用いて処理する。</li>
+<li>その結果を出力する。 (ここでの出力内容はコメントとして書かれている)</li>
+</ul>
+<p>
+まず、<code>nn.Linear(8, 8, bias=False)</code> とは何かを調べると、
+8次元の入力を行列の掛け算により8次元の出力に変換する処理 (<code>bias=False</code> なので定数の加算はしない) のようだった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+A program <code>src.py</code> and a file <code>model.pth</code> were given.<br>
+What <code>src.py</code> does is:
+</p>
+<ul>
+<li>Create an instance of a class that uses <code>nn.Sequential(*([nn.Linear(8, 8, bias=False)] * 7))</code> and save its data to <code>model.pth</code>.</li>
+<li>Reshape <code>flag</code> to an 8 x 8 matrix.</li>
+<li>Process the matrix with the created instance.</li>
+<li>Output the result. (This output is given as a comment.)</li>
+</ul>
+<p>
+To begin with, I searched for what is <code>nn.Linear(8, 8, bias=False)</code>.<br>
+I found that it converts a 8-dimension input to a 8-dimension output by matrix multiplication (No addition of constant values is performed because <code>bias=False</code>).
+</p>
+</span>
+<p><a href="https://pytorch.org/docs/stable/generated/torch.nn.Linear.html">Linear — PyTorch 1.10.0 documentation</a></p>
+
+<p class="language-selector-ja">
+次に、<code>nn.Sequential</code> とは何かを調べると、渡された処理をそれぞれ順に行う処理のようだった。
+</p>
+<p class="language-selector-en">
+Then, I searched for what is <code>nn.Sequential</code>. It turned out to be a process where the passed processes are sequentially done.
+</p>
+<p><a href="https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html#torch.nn.Sequential">Sequential — PyTorch 1.10.0 documentation</a></p>
+
+<span class="language-selector-ja">
+<p>
+これらを組み合わせた <code>nn.Sequential(*([nn.Linear(8, 8, bias=False)] * 7))</code> は「8次元の入力を行列の掛け算により8次元の出力に変換する処理」を7回繰り返す処理ということだとわかった。
+</p><p>
+次に、<code>model.pth</code> をバイナリエディタで見ると、先頭に <code>PK</code> が見えた。<br>
+そこで、これはzipアーカイブであると推測し、<common-tool data-lang="ja">7-Zip</common-tool>で展開した。<br>
+すると、<code>archive/data/93839392490432</code> という256バイトのファイルがあり、これが <code>nn.Linear</code> で用いられる行列のデータであると推測した。<br>
+そして、この行列のデータをテキストに変換する以下のプログラムを作成した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Combining these, <code>nn.Sequential(*([nn.Linear(8, 8, bias=False)] * 7))</code> should be a process where "a process to convert a 8-dimension input to a 8-dimension output by matrix multiplication" is repeated 7 times.
+</p><p>
+After that, I viewed <code>model.pth</code> in a binary editor and found it beginning with <code>PK</code>.<br>
+Therefore, I guessed that this is a zip archive and unzipped that using <common-tool data-lang="en">7-Zip</common-tool>.<br>
+Then, I found a 256-byte file <code>archive/data/93839392490432</code> and guessed that this is the data for the matrix used in <code>nn.Linear</code>.<br>
+I created this program to convert this matrix data to text:
+</p>
+</span>
+<p><a href="bin2mat.pl" class="code-link" data-collapse="true">bin2mat.pl</a></p>
+
+<span class="language-selector-ja">
+<p>
+さらに、<code>src.py</code> の出力としてコメントで書かれているデータもBase64デコードすると256バイトになったので、同様に行列を表すテキストに変換した。
+</p><p>
+ここで、実験のためにflagの最初の部分 <code>buckeye{</code> に<common-tool data-lang="ja">CyberChef</common-tool>で To Decimal をかける。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Also, Base64-decoding the data written in the comment as the output of <code>src.py</code> yielded 256-byte data.
+I also converted this data to a text representation of matrix in the same way.
+</p><p>
+To use in an experiment, I applied "To Decimal" on <common-tool data-lang="en">CyberChef</common-tool> to the first part of the flag <code>buckeye{</code>.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=To_Decimal('Comma',false)&amp;input=YnVja2V5ZXs">To Decimal - CyberChef</a></p>
+
+<p class="language-selector-ja">
+Raspberry Pi の <code>wolfram</code> コマンドを利用して、この変換結果に <code>model.pth</code> から読み取った行列の7乗を掛けてみた。
+</p>
+<p class="language-selector-en">
+Using the <code>wolfram</code> command on Raspberry Pi, I multiplied the matrix read from <code>model.pth</code> to the 7th power to the result of conversion.
+</p>
+<p><a href="model_test.txt" class="code-link" data-collapse="true">model_test.txt</a></p>
+
+<p class="language-selector-ja">
+結果は以下のようになった。
+</p>
+<p class="language-selector-en">
+This is the result:
+</p>
+<code-block data-extension="txt">
+Out[4]= {{0.438170130153532794, -0.007831040597014949, -0.104243176889190001,
+
+&gt;     0.344312929055393102, -0.413639742721401102, 0.082283533362897931,
+
+&gt;     0.013686747264994923, -0.068815595488821103}}
+</code-block>
+
+<p class="language-selector-ja">
+これは、出力データから読み取った以下の行列の1行目と近い値である。
+</p>
+<p class="language-selector-en">
+This result is near to this first row of the matrix read from the output data:
+</p>
+<code-block data-extension="txt">
+{0.4381701052188873291015625, -0.007831037044525146484375, -0.10424315929412841796875, 0.3443129360675811767578125, -0.4136398136615753173828125, 0.082283549010753631591796875, 0.0136867575347423553466796875, -0.06881560385227203369140625}
+</code-block>
+
+<p class="language-selector-ja">
+出力データから読み取った行列に、<code>model.pth</code> から読み取った行列の7乗の逆行列を掛け、さらにその結果を四捨五入した。
+</p>
+<p class="language-selector-en">
+I multiplied the inverse of the matrix read from <code>model.pth</code> to the 7th power to the matrix read from the output data, and rounded the result.
+</p>
+<p><a href="model_reverse.txt" class="code-link" data-collapse="true">model_reverse.txt</a></p>
+
+<p class="language-selector-ja">
+以下の結果が得られた。
+</p>
+<p class="language-selector-en">
+This is the result:
+</p>
+<code-block data-extension="txt">
+Out[6]= {{98, 117, 99, 107, 101, 121, 101, 123},
+
+&gt;    {119, 52, 49, 116, 95, 49, 116, 115},
+
+&gt;    {95, 52, 108, 108, 95, 109, 52, 116},
+
+&gt;    {114, 49, 120, 95, 109, 117, 108, 116},
+
+&gt;    {49, 112, 108, 49, 99, 97, 116, 49}, {48, 110, 63, 63, 63, 63, 95, 52},
+
+&gt;    {108, 119, 121, 52, 121, 53, 95, 104}, {52, 115, 95, 98, 51, 51, 110, 125}}
+</code-block>
+
+<p class="language-selector-ja">
+この結果をCyberChefで変換することで、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag by converting this result using CyberChef.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%5B%5E0-9,%5D'%7D,'',true,false,true,false)From_Decimal('Comma',false)&amp;input=e3s5OCwgMTE3LCA5OSwgMTA3LCAxMDEsIDEyMSwgMTAxLCAxMjN9LAoKPiAgICB7MTE5LCA1MiwgNDksIDExNiwgOTUsIDQ5LCAxMTYsIDExNX0sCgo%2BICAgIHs5NSwgNTIsIDEwOCwgMTA4LCA5NSwgMTA5LCA1MiwgMTE2fSwKCj4gICAgezExNCwgNDksIDEyMCwgOTUsIDEwOSwgMTE3LCAxMDgsIDExNn0sCgo%2BICAgIHs0OSwgMTEyLCAxMDgsIDQ5LCA5OSwgOTcsIDExNiwgNDl9LCB7NDgsIDExMCwgNjMsIDYzLCA2MywgNjMsIDk1LCA1Mn0sCgo%2BICAgIHsxMDgsIDExOSwgMTIxLCA1MiwgMTIxLCA1MywgOTUsIDEwNH0sIHs1MiwgMTE1LCA5NSwgOTgsIDUxLCA1MSwgMTEwLCAxMjV9fQ">Find / Replace, From Decimal - CyberChef</a></p>
+
+<div class="flag">buckeye{w41t_1ts_4ll_m4tr1x_mult1pl1cat10n????_4lwy4y5_h4s_b33n}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>

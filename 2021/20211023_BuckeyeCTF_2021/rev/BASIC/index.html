@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BASIC (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>BASIC</h1>
+<span class="language-selector-ja">
+<p>
+ファイル <code>BASIC.8xp</code> と <code>ti84plus.rom</code> が与えられた。
+</p><p>
+<code>BASIC.8xp</code> の内容をバイナリエディタで見ると、先頭が <code>**TI83F*</code> となっていた。<br>
+「ti83f」でググると、以下のページが見つかった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Files <code>BASIC.8xp</code> and <code>ti84plus.rom</code> were given.
+</p><p>
+Viewing the contents of <code>BASIC.8xp</code> with a binary editor, the first part was <code>**TI83F*</code>.<br>
+I googled "ti83f" and found this page:
+</p>
+</span>
+<p><a href="https://bitbucket.org/keoni29/ti83f/src/master/">keoni29 / ti83f — Bitbucket</a></p>
+
+<p class="language-selector-ja">
+このページから、<code>.8xp</code> ファイルをデコードできる以下のツールへのリンクがあった。
+</p>
+<p class="language-selector-en">
+From the page, this tool that can decode <code>.8xp</code> files was linked.
+</p>
+<p><a href="https://bitbucket.org/keoni29/dt8xp/src/master/">keoni29 / dt8xp — Bitbucket</a></p>
+
+<p class="language-selector-ja">
+このツールを用いて <code>BASIC.8xp</code> をデコードすると、以下の結果が得られた。
+</p>
+<p class="language-selector-en">
+Decoding <code>BASIC.8xp</code> using this tool resulted in this:
+</p>
+<p><a href="detokenized.txt" class="code-link" data-collapse="true">detokenized.txt</a></p>
+
+<p class="language-selector-ja">
+この結果から、入力された文字列の各文字を <code>Str2</code> の <code>L</code> で指定された位置の文字と比較し、
+全部一致したら <code>CORRECT</code> と出力するらしいことが読み取れた。<br>
+そこで、比較対象の文字を並べて出力する以下のプログラムを作成した。
+</p>
+<p class="language-selector-en">
+From this result, I found that it will compare each characters in the input with characters in <code>Str2</code> specified by <code>L</code>,
+and that it will print <code>CORRECT</code> if all characters matched.<br>
+Then, I created this program to print characters to compare.
+</p>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<p class="language-selector-ja">
+このプログラムの出力より、flagが得られた。
+</p>
+<p class="language-selector-en">
+I obtained the flag from this program's output.
+</p>
+
+<div class="flag">BUCKEYE{M4TH-CLA55-W4S-B0R1NG}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>

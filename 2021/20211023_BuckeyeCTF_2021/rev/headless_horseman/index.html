@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>headless_horseman (BuckeyeCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>headless_horseman</h1>
+<p class="language-selector-ja">
+以下のファイルが与えられた。
+</p>
+<p class="language-selector-en">
+These files were given:
+</p>
+<code-block data-extension="txt">
+headless_horseman
+|-- __MACOSX/
+|   `-- distributed_files/
+|       `-- ._README.txt
+`-- distributed_files/
+    |-- README.txt
+    |-- body_bag/
+    |   |-- bloated_body
+    |   |-- decomposing_body
+    |   `-- rotting_body
+    `-- headless_horseman
+</code-block>
+
+<span class="language-selector-ja">
+<p>
+<code>distributed_files/headless_horseman</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、
+<code>main</code>関数から以下の関数が呼び出されていることがわかった。
+</p>
+<ul>
+<li><code>print_intro</code>：メッセージを出力する。</li>
+<li><code>offer_pumpkins</code>：<code>scanf</code>関数の書式<code>%d</code>で整数を読み込む。</li>
+<li><code>count_offering</code>：読み込んだ整数を<code>first_count</code>関数および<code>second_count</code>関数でチェックし、両方のチェックに通過したら<code>dump_heads</code>関数を呼び出す。</li>
+</ul>
+<p>
+<code>first_count</code>関数は、入力の上位16ビットが <code>0xdead</code> かをチェックしている。<br>
+<code>second_count</code>関数は、入力の下位16ビットが <code>0xface</code> かをチェックしている。<br>
+(<code>second_count</code>関数は逆コンパイル結果では入力全体をチェックしているように見えるが、アセンブリコードを見ると下位16ビットしか見ていないことがわかる)<br>
+合わせると、<code>0xdeadface</code>、すなわち　<code>-559023410</code> を入力すればいいことがわかる。
+</p><p>
+<code>distributed_files/headless_horseman</code> を<common-tool data-lang="ja">CS50 IDE</common-tool>で実行し、<code>-559023410</code> を入力すると、以下の6個のファイルが出力された。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Decompiling <code>distributed_files/headless_horseman</code> using <common-tool data-lang="en">Ghidra</common-tool>,
+I found the function <code>main</code> calling these functions:
+</p>
+<ul>
+<li><code>print_intro</code> : Print some messages.</li>
+<li><code>offer_pumpkins</code> : Read an integer using the function <code>scanf</code> with the format specifier <code>%d</code>.</li>
+<li><code>count_offering</code> : Check the integer read by functions <code>first_count</code> and <code>second_count</code>, and call the function <code>dump_heads</code> if the input passes both checks.</li>
+</ul>
+<p>
+The function <code>first_count</code> checks if the upper 16 bits of the input is <code>0xdead</code>.<br>
+The function <code>second_count</code> checks if the lower 16 bits of the input is <code>0xface</code>.<br>
+(The function <code>second_count</code> looks as if it is checking the whole input, but reading the assembly code reveals that it is checking only the lower 16 bits.)<br>
+Combining these, the value to input is <code>0xdeadface</code>, which means <code>-559023410</code>.
+</p><p>
+I executed <code>distributed_files/headless_horseman</code> on <common-tool data-lang="en">CS50 IDE</common-tool> and entered <code>-559023410</code>.
+As a result, it produced these 6 files:
+</p>
+</span>
+<ul>
+<li><code>dessicated_head</code></li>
+<li><code>fetid_head</code></li>
+<li><code>moldy_head</code></li>
+<li><code>putrid_head</code></li>
+<li><code>shrunken_head</code></li>
+<li><code>swollen_head</code></li>
+</ul>
+
+<p class="language-selector-ja">
+各ファイルの内容を確認すると、それぞれELFヘッダーのようだった。<br>
+そこで、これらのファイルを <code>distributed_files/body_bag</code> ディレクトリ内のファイルと総当りで合体させる以下のプログラムを作成し、実行した。
+</p>
+<p class="language-selector-en">
+Checking the contents of each files, they looked ELF headers.<br>
+I created this program to concatenate the files with the files in the directory <code>distributed_files/body_bag</code> using all combinations, and executed that.
+</p>
+<p><a href="gattai.pl" class="code-link" data-collapse="true">gattai.pl</a></p>
+
+<p class="language-selector-ja">
+できたファイル群を <code>readelf -lS</code> でチェックすると、以下の3個のファイルのみエラーが出なかった。
+</p>
+<p class="language-selector-en">
+I checked the resulting files using the command <code>readelf -lS</code>. As a result, these 3 files didn't produce any errors while the other files did:
+</p>
+<ul>
+<li><code>dessicated_head_decomposing_body</code></li>
+<li><code>moldy_head_bloated_body</code></li>
+<li><code>shrunken_head_rotting_body</code></li>
+</ul>
+
+<span class="language-selector-ja">
+<p>
+そこで、これらのファイルをGhidraで逆コンパイルした。
+</p><p>
+<code>dessicated_head_decomposing_body</code> では、<code>main</code>関数から<code>katrina</code>関数が呼ばれていた。<br>
+<code>katrina</code>関数では、メッセージを出力した後文字列を読み込み、それを<code>encrpyted_words</code> (<code>21 09 04 09 1C 00 7F 24 00 1A 09 1C 28 00 00</code>) とxorして出力していた。<br>
+ここで出力されるメッセージの中に、以下の部分があった。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+Seeing this, I decompiled these files using Ghidra.
+</p><p>
+In the file <code>dessicated_head_decomposing_body</code>, the function <code>main</code> calls the function <code>katrina</code>.<br>
+The function <code>katrina</code> prints some messages, reads a string, and print the string with exclusive-ored with <code>encrpyted_words</code> (<code>21 09 04 09 1C 00 7F 24 00 1A 09 1C 28 00 00</code>).<br>
+The message printed here contained this part:
+</p>
+</span>
+<blockquote>
+'Drat! it looks like I encrypted my portion but I cant seem to remember what I used!'<br>
+'can you help me out? I was never very creative with these things, maybe try the street I grew up on? or my Home Town?'
+</blockquote>
+
+<p class="language-selector-ja">
+<code>distributed_files/README.txt</code> を読むと、「the village of Sleepy Hollow」についてのお話が書かれていた。<br>
+そこで、<common-tool data-lang="ja">CyberChef</common-tool>を用い、<code>Sleepy Hollow</code> とのXORをとった。
+</p>
+<p class="language-selector-en">
+Reading <code>distributed_files/README.txt</code>, I found a story about "the village of Sleepy Hollow".<br>
+Seeing this, I calculated XOR with <code>Sleepy Hollow</code> on <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=XOR(%7B'option':'Hex','string':'21%2009%2004%2009%201C%2000%207F%2024%2000%201A%2009%201C%2028%2000%2000'%7D,'Standard',false)&amp;input=U2xlZXB5IEhvbGxvdw">XOR - CyberChef</a></p>
+
+<span class="language-selector-ja">
+<p>
+結果は <code>really_loves_</code> となった。
+</p><p>
+<code>moldy_head_bloated_body</code> では、<code>main</code>関数から<code>ichabod</code>関数が呼ばれていた。<br>
+<code>ichabod</code>関数では、<code>check_surroundings</code>関数を呼び出し、その返り値が0なら<code>print_incantation</code>関数を呼び出していた。<br>
+<code>print_incantation</code>関数では、<code>"ZmxhZ3t0aGVfaG9yc2VtYW5fanVzdF8="</code> を<code>b_decode</code>関数に渡した結果を出力していた。<br>
+そこで、このデータにCyberChefの From Base64 を適用してみた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+The result was <code>really_loves_</code>.
+</p><p>
+In the file <code>moldy_head_bloated_body</code>, the function <code>main</code> calls the function <code>ichabod</code>.<br>
+The function <code>ichabod</code> calls the function <code>check_surroundings</code>, and when its return values is 0, it calls the function <code>print_incantation</code>.<br>
+The function <code>print_incantation</code> prints the result of the function <code>b_decode</code> with <code>"ZmxhZ3t0aGVfaG9yc2VtYW5fanVzdF8="</code> passed as an argument.<br>
+Seeing this, I tried applying "From Base64" to the data on CyberChef.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)&amp;input=Wm14aFozdDBhR1ZmYUc5eWMyVnRZVzVmYW5WemRGOD0">From Base64 - CyberChef</a></p>
+
+<span class="language-selector-ja">
+<p>
+結果は <code>flag{the_horseman_just_</code> となった。
+</p><p>
+<code>shrunken_head_rotting_body</code> では、<code>main</code>関数から<code>brom</code>関数が呼ばれていた。<br>
+<code>brom</code>関数は、<code>local_10</code>の値が指定のものだったら<code>print_flag</code>関数を呼ぶ処理をしていた。<br>
+<code>print_flag</code>関数では、<code>letters</code>、<code>to_replace</code>、<code>buff</code> の値を用いて何かを出力していた。<br>
+そこで、<code>print_flag</code>関数の処理を再現する以下のプログラムを書き、実行した。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+The result was <code>flag{the_horseman_just_</code>.
+</p><p>
+In the file <code>shrunken_head_rotting_body</code>, the function <code>main</code> calls the function <code>brom</code>.<br>
+The function <code>brom</code> calls the function <code>print_flag</code> if the value of <code>local_10</code> is what is expected.<br>
+The function <code>print_flag</code> prints something based on the values of <code>letters</code>, <code>to_replace</code>, and <code>buff</code>.<br>
+Seeing this, I created this program to mimic what is done in the function <code>print_flag</code>, and executed that.
+</p>
+</span>
+<p><a href="rotting_print_flag.pl" class="code-link" data-collapse="true">rotting_print_flag.pl</a></p>
+
+<span class="language-selector-ja">
+<p>
+結果は <code>pumpkin_pie}</code> となった。
+</p><p>
+これらの3個のファイルの解析結果を繋げることで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en">
+<p>
+The result was <code>pumpkin_pie}</code>.
+</p><p>
+I obtained the flag by concatenating what are obtained from these 3 files.
+</p>
+</span>
+
+<div class="flag">flag{the_horseman_just_really_loves_pumpkin_pie}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">BuckeyeCTF 2021</a>
+</p>
+</body>
+</html>
