@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>jazz (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>jazz</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>challenge.jar</code> と、問題文 <code>9xLmMiI2znmPam'D_A_1:RQ;Il\*7:%i".R&lt;</code> が与えられた。
+</p><p>
+<code>challenge.jar</code> を <common-tool data-lang="ja">JD-GUI</common-tool> で解析すると、以下の <code>challenge.java</code> が得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A file <code>challenge.jar</code> and a challenge descryption <code>9xLmMiI2znmPam'D_A_1:RQ;Il\*7:%i".R&lt;</code> were given.
+</p><p>
+Analysing <code>challenge.jar</code> using <common-tool data-lang="en">JD-GUI</common-tool>, I obtained this <code>challenge.java</code>.
+</p>
+</span>
+<p><a href="challenge.java" class="code-link" data-collapse="true">challenge.java</a></p>
+
+<p class="language-selector-ja" lang="ja">
+そこで、以下のプログラムを作成し、<code>challenge.java</code> の出力が問題文になるような入力を<common-tool data-lang="ja">Z3</common-tool>で求めた。
+</p>
+<p class="language-selector-en" lang="en">
+Seeing this, I created this program to obtain an input for <code>challenge.java</code> such that its output will be the challenge descryption using <common-tool data-lang="en">Z3</common-tool>.
+</p>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムの出力に <code>}</code> を補うことで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by adding <code>}</code> to the output of this program.
+</p>
+
+<div class="flag">kqctf{D34D_0N_T1|\/|3_3vgy90N51Fob1s}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Deoxyencoded Nucleic Acid (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Deoxyencoded Nucleic Acid</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>dna1.txt</code> が与えられた。
+</p><p>
+<code>dna1.txt</code> の先頭のデータ <code>TGGC</code> と、flagの先頭と予想される <code>k</code> のASCIIコードの2進数表現 <code>01101011</code> を見比べると、<br>
+<code>T</code> が <code>01</code> に、<code>G</code> が <code>10</code> に、<code>C</code> が <code>11</code> に対応しそうに見えた。<br>
+そう仮定すると、残った <code>A</code> は <code>00</code> に対応すると予想できる。
+</p><p>
+<common-tool data-lang="ja">CyberChef</common-tool>を用いて <code>dna1.txt</code> の内容に対してこの変換を行い、From Binary をかけることで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A file <code>dna1.txt</code> was given.
+</p><p>
+Comparing <code>TGGC</code>, which is the first part of <code>dna1.txt</code>, and <code>01101011</code>, which is the binary representation of the ASCII code of <code>k</code>, which I guessed as the first part of the flag,<br>
+it looked like <code>T</code> corresponds to <code>01</code>, <code>G</code> corresponds to <code>10</code>, and <code>C</code> corresponds to <code>11</code>.<br>
+Assuming this, the remainder <code>A</code> should correspond to <code>00</code>.
+</p><p>
+I obtained the flag by applying this conversion to <code>dna1.txt</code> and then applying "From Binary" on <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Simple%20string','string':'T'%7D,'01',true,false,true,false)Find_/_Replace(%7B'option':'Simple%20string','string':'G'%7D,'10',true,false,true,false)Find_/_Replace(%7B'option':'Simple%20string','string':'C'%7D,'11',true,false,true,false)Find_/_Replace(%7B'option':'Simple%20string','string':'A'%7D,'00',true,false,true,false)From_Binary('Space',8)&amp;input=VEdHQ1RDQVRUR0FDVENUQVRHVEdUQ0dDVEdHVFRDVEFUQ0FDVFRDQ1RHQUdUR0FUVENBQ1RHR1RUR0FDVEdBVEFDQVRBQ0FUVENHVFRUQ0NUR0FHVEdBVFRDQUNUR1RUVFRDQ1RHVEdUR0NDVENUVFRDQUdUQ0NUCg">Find / Replace, 4 more - CyberChef</a></p>
+
+<div class="flag">kqctf{its_basica11y_base_four}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>

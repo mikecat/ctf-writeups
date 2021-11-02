@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Road Safety Association (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Road Safety Association</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>lotta_numbers.txt</code> が与えられた。
+</p><p>
+このファイルには整数 <code>c</code>、<code>p</code>、<code>q</code>、<code>e</code> が書かれていたので、以下のプログラムでRSA暗号の復号を行った。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A file <code>lotta_numbers.txt</code> was given.
+</p><p>
+Seeing integers <code>c</code>, <code>p</code>, <code>q</code>, and <code>e</code> written in the file, I performed a decryption of RSA cipher using this program:
+</p>
+</span>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+得られた結果に<common-tool data-lang="ja">CyberChef</common-tool>で From Hex をかけることで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by applying "From Hex" on <common-tool data-lang="en">CyberChef</common-tool> to the result.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')&amp;input=NmI3MTYzNzQ2NjdiNzkzMDc1NzYzMzVmMzY3MjM0NjQ3NTM0MzczMzY0NWY2NjcyMzA2ZDVmNzIzNTM0NWYzMzZjMzM2ZDMzNmUzNzM0NzI3OTVmMzU2MzY4MzAzMDZjNWY2MTYzMzgzNzM3MzA2MjY0NjM2NTYyNjM3ZA">From Hex - CyberChef</a></p>
+
+<div class="flag">kqctf{y0uv3_6r4du473d_fr0m_r54_3l3m3n74ry_5ch00l_ac8770bdcebc}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>

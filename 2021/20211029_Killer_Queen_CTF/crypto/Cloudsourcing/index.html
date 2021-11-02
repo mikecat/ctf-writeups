@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Cloudsourcing (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Cloudsourcing</h1>
+<p class="language-selector-ja" lang="ja">
+以下のファイルが与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+These files were given:
+</p>
+<code-block data-extension="txt">
+cloudsourcing
+|-- __MACOSX
+|   |-- ._key.pub
+|   `-- ._mystery.txt
+|-- key.pub
+`-- mystery.txt
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+<code>key.pub</code> の内容のうちBase64らしい部分を<common-tool data-lang="ja">CyberChef</common-tool>でデコードし、Parse ASN.1 hex string をかけると、
+1個の大きい整数と1個の小さい整数が出てきた。
+</p>
+<p class="language-selector-en" lang="en">
+I decoded a part of <code>key.pub</code> that looks like Base64 and applying "Parse ASN.1 hex string" in <common-tool data-lang="en">CyberChef</common-tool>.
+As a result, a large integer and a small integer appeared.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)To_Hex('Space',0)Parse_ASN.1_hex_string(0,32)&amp;input=TUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF6VGY3M1ZRcmdzamg1YVJwY0Uxdwphc3BFTzVCNDhaZ2pJZlp5bG9DelI1Y0MyUmMxZStZd3ZJLzJoTlB1YWdlTGdtak9xazZGTE8zZHhhMmtlbXpICjJFQkcrbjdSSGx4SWU0ejZob2JYQ2tYTTRTZDRPN052SGxrZWJlNVVMb092cEp4czVmN0xCNHpOZmZsNDlNTFYKUm1HSk9XSTMzTFZQaTg2VlFnNTNVNW5WQ1VUbmRtcVdKc25qZjA2YWVOSmIwaHRGQTFveTdlQTlHYWFOeUJaQwo3cmVjVStwajVDSm1ubGl0eGFTYUxMVGFoaTdtbFc5Mmo0TERuRG5JT0RoRXR4cW1XQTNzTUxvTUdHd2x2ZTErCmNYZDQrcjFvdmhrQldta0JSNS9scC9wMktRTHNwZXQ1SHpEWmdBbHZRekEwQ3cycTZCMm10MzNoZ1ZiN0pmVDgKV1FJREFRQUI">From Base64, To Hex, Parse ASN.1 hex string - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+そこで、まず大きい整数を10進数に変換した。
+</p>
+<p class="language-selector-en" lang="en">
+Firstly, I converted the large integer to decimal.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base(16)&amp;input=MDBjZDM3ZmJkZDU0MmI4MmM4ZTFlNWE0Njk3MDRkNzA2YWNhNDQzYjkwNzhmMTk4MjMyMWY2NzI5NjgwYjM0Nzk3MDJkOTE3MzU3YmU2MzBiYzhmZjY4NGQzZWU2YTA3OGI4MjY4Y2VhYTRlODUyY2VkZGRjNWFkYTQ3YTZjYzdkODQwNDZmYTdlZDExZTVjNDg3YjhjZmE4Njg2ZDcwYTQ1Y2NlMTI3NzgzYmIzNmYxZTU5MWU2ZGVlNTQyZTgzYWZhNDljNmNlNWZlY2IwNzhjY2Q3ZGY5NzhmNGMyZDU0NjYxODkzOTYyMzdkY2I1NGY4YmNlOTU0MjBlNzc1Mzk5ZDUwOTQ0ZTc3NjZhOTYyNmM5ZTM3ZjRlOWE3OGQyNWJkMjFiNDUwMzVhMzJlZGUwM2QxOWE2OGRjODE2NDJlZWI3OWM1M2VhNjNlNDIyNjY5ZTU4YWRjNWE0OWEyY2I0ZGE4NjJlZTY5NTZmNzY4ZjgyYzM5YzM5YzgzODM4NDRiNzFhYTY1ODBkZWMzMGJhMGMxODZjMjViZGVkN2U3MTc3NzhmYWJkNjhiZTE5MDE1YTY5MDE0NzlmZTVhN2ZhNzYyOTAyZWNhNWViNzkxZjMwZDk4MDA5NmY0MzMwMzQwYjBkYWFlODFkYTZiNzdkZTE4MTU2ZmIyNWY0ZmM1OQ">From Base - CyberChef</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+得られた数を<common-tool data-lang="ja">factordb.com</common-tool>で調べると、2個の素数の積であることがわかった。
+</p><p>
+次に、<code>mystery.txt</code> の内容をBase64デコードし、16進数に変換した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+<common-tool data-lang="en">factordb.com</common-tool> revealed that the obtained integer is a multiple of two prime numbers.
+</p><p>
+Then, I Base64-decoed the contents of <code>mystery.txt</code> and converted the result to hexadecimal.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)To_Hex('None',0)&amp;input=T3o1Y0czdWg2SEdvUFRzTTl5RVJSMnNlbkorZmxrRDlkaWtneklEaW1UN3h2Z3VZRUhHQ012WWlENUY1ZHdiRElsdk03U3FZeGJ6c3g1TDcrS2ZnNU9rdnJKT01kYzd0RXNRSzdMNG40UVNOMm1oeFZQMEFqeHBIZ3Vmb2IrTWZ2TDcvMzZncmI2dGFlVzhsNXVMVXZlWjNhUEsvWEp0MzV6blBTY0N4VExTaEZHajB4Yy9hQ3hSWllWK29OVDZ5Z3lQVjRSU0doOHYveWVZOWJZMXdJallmUUxxdWZLZW9nY3NkQnRCWFRZUUdDWCtKUW85TlZCTE5rVTd6UUxUK0FLaXQ2OEhrVHNPUlhoak5CRnF2ajRoUXMzakI0cmZVdDU0TUtvRER1SzBCRnJmQUNLSklRZTJMcG1CdHJWem5seWZ5Z0lCZm1Gd3Jka0hSRGk5YmRBPT0">From Base64, To Hex - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+これまで得られた情報を用い、<code>key.pub</code> から得られた大きい整数が <code>n</code>、小さい整数が <code>e</code> であると仮定し、以下のプログラムで <code>mystery.txt</code> の内容に対しRSA暗号の復号を行った。
+</p>
+<p class="language-selector-en" lang="en">
+Using these information, I applied decryption of RSA cipher to the contents of <code>mystery.txt</code> using this program, assuming the large integer obtained from <code>key.pub</code> is <code>n</code> and the small integer is <code>e</code>.
+</p>
+<p><a href="decode.py" class="code-link" data-collapse="true">decode.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+復号結果にCyberChefの From Hex をかけることで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by applying "From Hex" on CyberChef to the result of decryption.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')&amp;input=MDIwNzJiNDdmZjAzODg5NTQ4Y2FjMGJmODY5ZWI1YzZjMmUzM2Q0ZjhlNWE1YzEyY2RhNmJiYWFmNGQ2ZjkyZWM3YmU5MmE2MGEwYzQ1YTBkOWVjNWM0Nzc0NTdiMzk2MWE4NGI3ODE3OGE4OGZmZWU0ZTUxYjYyZjcwYTEyOTdjMjUwYjYyMjgzY2EzNzAxNGYwZDI5NDlmYzllZTg4NDgxN2MwOTNhNjYxM2IwMGRmZTQ2MGI1YzAzOTE3YWY5YTY1MjhhOTU1ZGI0NGFhYjkxMTM0NzcxNzFmYzkxZWRlNzI2YWVkM2FjOTU3MTFjNDUyMzhmNGUyMTc4MTkzNTAzYjYzYTNjMzE5MDkzMmRhMmQxZTA2ZWY1NzVmYzgxOTc3YmZmMzg2YTZlNThjMjg5MGFlYWYzMDYwMjE3YjMwZGExZDc1ODAxZDYzODNkZTc4ZDQ4NzUyOGRjOTA0NTM2ZWViNWMyYjYxNzU1ZGFkNzY0NDlkZDAwNmI3MTYzNzQ2NjdiNzkzMDc1NzYzMzVmMzY3MjM0NjQ3NTM0MzczMzY0NWY2NjcyMzA2ZDVmNzIzNTM0NWY2ZDMxNjQ2NDZjMzM1ZjM1NjM2ODMwMzA2YzVmNjE2MjY1Mzc2NTM3Mzk2NTMyMzQzNDYxMzkzNjM4MzY2NTY2NjMzMDdk">From Hex - CyberChef</a></p>
+
+<div class="flag">kqctf{y0uv3_6r4du473d_fr0m_r54_m1ddl3_5ch00l_abe7e79e244a9686efc0}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>

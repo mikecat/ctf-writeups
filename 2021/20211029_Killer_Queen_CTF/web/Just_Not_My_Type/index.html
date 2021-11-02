@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Just Not My Type (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Just Not My Type</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、ファイル <code>type.php</code> が与えられた。
+</p><p>
+Webページにアクセスすると、Passwordの入力欄があった。<br>
+<code>type.php</code> を見ると、<code>$_POST["password"]</code> と <code>$FLAG</code> を <code>strcasecmp</code> で比較し、返り値が <code>0</code> であれば <code>$FLAG</code> の内容を出力する、という処理があった。
+</p><p>
+まず、<common-tool data-lang="ja">Firefox</common-tool>の開発者ツールを開いておき、Passwordとして <code>a</code> を入力して送信した。<br>
+そして、送られたリクエストの要求ボディにある <code>password</code> を <code>password[]</code> に書き換え、「編集して再送信」した。<br>
+すると、flagを含むレスポンスが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+An URL of a web page and a file <code>type.php</code> were given.
+</p><p>
+Accessing the web page, I found a form to enter Password.<br>
+Reading <code>type.php</code>, I found a part that compares <code>$_POST["password"]</code> and <code>$FLAG</code> using <code>strcasecmp</code>, and print the value of <code>$FLAG</code> if the return value is <code>0</code>.
+</p><p>
+Firstly, I opened the developer tools of <common-tool data-lang="en">Firefox</common-tool> and sent <code>a</code> as the Password.<br>
+Then, I changed <code>password</code> in the request body of the request sent to <code>password[]</code> and resent the request.<br>
+As a result, I got a response that contains the flag.
+</p>
+</span>
+
+<div class="flag">flag{no_way!_i_took_the_flag_out_of_the_source_before_giving_it_to_you_how_is_this_possible}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>

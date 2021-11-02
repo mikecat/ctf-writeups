@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>sneeki snek 2 oh no what did i do (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>sneeki snek 2 oh no what did i do</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>sneekisnek2.txt</code> が与えられた。
+</p><p>
+このファイルは <a href="../sneeki_snek/" class="language-aware-link">sneeki snek</a> と同様のプログラムのようなもので、前半は <code>append</code> と数値が並んでいた。<br>
+そこで、まずはこの <code>append</code> と数値の組をリストに変換する以下のプログラムを作成・実行した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A file <code>sneekisnek2.txt</code> was given.
+</p><p>
+This file was something that looks like a program, like what was given in <a href="../sneeki_snek/" class="language-aware-link">sneeki snek</a>.<br>
+The former part of the file had many pairs of <code>append</code> and numbers.<br>
+Seeing this, I created this program to convert these pairs of <code>append</code> and numbers to a list:
+</p>
+</span>
+<p><a href="extract.pl" class="code-link" data-collapse="true">extract.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+そして、残りの部分を手作業で変換し、以下のプログラムを作成した。
+</p>
+<p class="language-selector-en" lang="en">
+After that, I created this program by converting the rest part manually:
+</p>
+<p><a href="kakikudasi.py" class="code-link" data-collapse="true">kakikudasi.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムを実行することで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by executing this program.
+</p>
+
+<div class="flag">kqctf{snek_waas_not_so_sneeki}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>
