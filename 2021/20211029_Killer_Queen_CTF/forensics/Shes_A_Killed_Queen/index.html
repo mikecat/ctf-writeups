@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Shes A Killed Queen (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Shes A Killed Queen</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>queen.png</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">TSXBIN</common-tool> で <code>queen.png</code> を開くと、<code>IHDR</code>チャンクの<code>Width</code>と<code>Height</code>が0になっていることがわかった。<br>
+これは、PBjar CTF の <a href="../../../20210917_PBjar_CTF/forens/Art_Mystery/" class="language-aware-link">Art Mystery</a> と同様である。
+</p><p>
+そこで、同様に <code>extract.pl</code> を用いて<code>IDAT</code>チャンクのデータを抜き出し、<common-tool data-lang="ja">CyberChef</common-tool> の Zlib Inflate をかけると、3,240,675バイトのデータが得られた。<br>
+このサイズを素因数分解すると、<code>3240675 = 3 * 3 * 3 * 5 * 5 * 4801</code> となった。
+</p><p>
+また、<code>IHDR</code>チャンクに記録された<code>Depth</code>は 8、<code>ColorType</code>は 6 (Truecolour with alpha) である。<br>
+これが正しいと仮定すれば、1ピクセルを4バイトで表し、さらに行の最初にエンコード形式を表す1バイトが付くので、1行は<code>4n+1</code>バイト (<code>n</code>は整数) になるはずである。
+</p><p>
+<code>4801 = 4 * 1200 + 1</code> なので、画像の幅を1200ピクセルと仮定すると、条件を満たす。<br>
+この時、画像の高さは <code>3 * 3 * 3 * 5 * 5 = 675</code> バイトとなる。<br>
+そこで、TSXBINで<code>Width</code>に1200、<code>Height</code>に675を書き込んでみると、画像を開くことができた。
+</p><p>
+得られた画像を調べた結果、CyberChefの View Bit Plane で Colour を Red、Bit を 0とすると、左上に以下の意味ありげな記号群が出ることがわかった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A file <code>queen.png</code> was given.
+</p><p>
+Opening <code>queen.png</code> with <common-tool data-lang="en">TSXBIN</common-tool>, I found that <code>Width</code> and <code>Height</code> in the <code>IHDR</code> chunk are set to 0.<br>
+This looks like the same as <a href="../../../20210917_PBjar_CTF/forens/Art_Mystery/" class="language-aware-link">Art Mystery</a> in PBjar CTF.
+</p><p>
+Seeing this, I extracted the data of <code>IDAT</code> chunks using <code>extract.pl</code> and applied "Zlib Inflate" on <common-tool data-lang="en">CyberChef</common-tool> like I did in "Art Mystery", obtaining 3,240,675-byte data.<br>
+Factoring this size results in <code>3240675 = 3 * 3 * 3 * 5 * 5 * 4801</code>.
+</p><p>
+Also, in the <code>IHDR</code> chunk, <code>Depth</code> is set to 8 and <code>ColorType</code> is set to 6 (Truecolour with alpha).<br>
+Assuming that these values are correct, one row is represented by <code>4n+1</code> bytes (<code>n</code> is an integer) because one pixel is represented using 4 bytes and one byte that represents the encoding method is added.
+</p><p>
+Assuming that the width of the image is 1200 pixels satisfies the condition because <code>4801 = 4 * 1200 + 1</code>.<br>
+With this assumption, the height of the image is <code>3 * 3 * 3 * 5 * 5 = 675</code>.<br>
+Based on this, I tried writing 1200 as <code>Width</code> and 675 as <code>Height</code> using TSXBIN. After that, I succeeded to open the image.
+</p><p>
+Investigating the image obtained, I found that applying "View Bit Plane" with setting Colour to Red and Bit to 0 on CyberChef reveals these symbols that looks meaningful in the top left of the result:
+</p>
+</span>
+<p><a href="kigou.png"><img src="kigou.png" alt="the symbols"></a></p>
+
+<p class="language-selector-ja" lang="ja">
+さらに、得られた画像をGoogleの「画像で検索」にかけたところ、以下のページなどが見つかった。
+</p>
+<p class="language-selector-en" lang="en">
+Also, I put the obtained image to Google "search for an image" and found this page, for example:
+</p>
+<p><a href="https://en.wikipedia.org/wiki/Mary,_Queen_of_Scots">Mary, Queen of Scots - Wikipedia</a></p>
+
+<p class="language-selector-ja" lang="ja">
+「Mary, Queen of Scots font」でググると、「画像検索結果」から以下のページにたどり着いた。
+</p>
+<p class="language-selector-en" lang="en">
+I googled "Mary, Queen of Scots font" and found this page from the result of image search:
+</p>
+<p><a href="https://www.dcode.fr/mary-stuart-code">Mary Queen of Scots Cipher/Code - Online Decoder, Translator</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このページに View Bit Plane で出てきた記号を入力し、デコードを行った結果を整形することで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by entering the symbols obtained from "View Bit Plane" to this page, decoding and formatting the result.
+</p>
+
+<div class="flag">kqctf{SHES_A_KILLED_QUEEN_BY_THE_GUILLOTINE_RANDOMCHRSIADHFKILIHASDKFHQIFPXKRL}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>

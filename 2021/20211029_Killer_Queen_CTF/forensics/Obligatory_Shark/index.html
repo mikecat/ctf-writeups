@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Obligatory Shark (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Obligatory Shark</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>challenge.pcapng</code> が与えられた。
+</p><p>
+このファイルに <code>strings</code> コマンドをかけると、Ubuntu 20.04.3 LTS のログイン時のメッセージのようなものが出てきた。<br>
+このファイルを<common-tool data-lang="ja">Wireshark</common-tool>で開き、適当なTCPパケットを右クリックして「追跡 → TCPストリーム」を選択すると、<br>
+ユーザ名 <code>user2</code>、パスワード <code>33a465747cb15e84a26564f57cda0988</code> でログインしていることがわかった。
+</p><p>
+そこで、<code>kqctf{33a465747cb15e84a26564f57cda0988}</code> や <code>kqctf{user2:33a465747cb15e84a26564f57cda0988}</code> を試したが、incorrectとなった。
+</p><p>
+<code>33a465747cb15e84a26564f57cda0988</code> を<common-tool data-lang="ja">CrackStation</common-tool>で解析すると、これは <code>dancingqueen</code> のmd5であることがわかった。<br>
+これに基づいてflagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A file <code>challenge.pcapng</code> was given.
+</p><p>
+Applying <code>strings</code> command to this file, I found something like a message that is printed on logging in to Ubuntu 20.04.3 LTS.<br>
+Opening the file with <common-tool data-lang="en">Wireshark</common-tool>, right-clicking some TCP packet, and selecting "Follow → TCP Stream",<br>
+I found that an username <code>user2</code> and a password <code>33a465747cb15e84a26564f57cda0988</code> is used for logging in.
+</p><p>
+Seeing this, I tried <code>kqctf{33a465747cb15e84a26564f57cda0988}</code> and <code>kqctf{user2:33a465747cb15e84a26564f57cda0988}</code>, and they are judged as incorrect.
+</p><p>
+I analysed <code>33a465747cb15e84a26564f57cda0988</code> using <common-tool data-lang="en">CrackStation</common-tool>, and it revealed that the string is the md5 of <code>dancingqueen</code>.<br>
+I obtained the flag based on this.
+</p>
+</span>
+
+<div class="flag">kqctf{dancingqueen}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>

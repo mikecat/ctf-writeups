@@ -235,6 +235,12 @@ const commonToolList = {
 	},
 	"JD-GUI": {
 		"": "http://java-decompiler.github.io/"
+	},
+	"sherlock": {
+		"": "https://github.com/sherlock-project/sherlock"
+	},
+	"DTMF Decoder": {
+		"": "http://www.polar-electric.com/DTMF/Index.html"
 	}
 };
 

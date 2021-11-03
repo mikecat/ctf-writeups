@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Underscore in Corrupted (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Underscore in Corrupted</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>ohno.png</code> が与えられたが、中身はPNGファイルではなさそうだった。
+</p><p>
+<common-tool data-lang="ja">CyberChef</common-tool>を用い、<code>ohno.png</code> のデータと通常のPNGファイルの最初の部分 <code>89 50 4E 47 0D 0A 1A 0A</code> をXORしてみると、
+flagの最初の部分と思われる <code>kqctf{</code> が出てきた。
+</p><p>
+同じく問題名に Underscore が入っている Underscore in C (rev) で与えられたファイル <code>Underscore_in_C.png</code> のデータを <code>ohno.png</code> とXORすると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A file <code>ohno.png</code> was given, but its contents didn't look like a PNG file.
+</p><p>
+Using <common-tool data-lang="en">CyberChef</common-tool>, I applied "XOR" to the data in <code>ohno.png</code> with the first part of normal PNG files <code>89 50 4E 47 0D 0A 1A 0A</code>.<br>
+As a result, <code>kqctf{</code>, which looks like the first part of the flag, appeared.
+</p><p>
+I tried applying "XOR" to the data in <code>ohno.png</code> with the data in <code>Underscore_in_C.png</code> given in the challenge "Underscore in C" (rev), which also has "Underscore" in the name.<br>
+I obtained the flag from the result.
+</p>
+</span>
+
+<div class="flag">kqctf{y0u_r3c0v3r3d_my_m4573rp13c3!_1_c4n_m4k3_34r5_bl33d_4n07h3r_d4y.}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>

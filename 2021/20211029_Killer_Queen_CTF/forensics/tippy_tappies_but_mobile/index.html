@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>tippy tappies (but mobile) (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>tippy tappies (but mobile)</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+音声ファイル <code>tippytappiesbutmobile.wav</code> が与えられた。
+</p><p>
+聴いてみると、電話のボタンを押した時のような音が入っていた。
+</p><p>
+そこで、「dtmf decoder」でググり、<common-tool data-lang="ja">DTMF Decoder</common-tool>を見つけた。<br>
+手元の Windows 10 環境に普通にインストールしようとすると、以下のダイアログが出て拒否されてしまった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+An audio file <code>tippytappiesbutmobile.wav</code> was given.
+</p><p>
+Listening to the file, I found it including sounds that should appear on pressing phone buttons.
+</p><p>
+I googled "dtmf decoder" and found <common-tool data-lang="en">DTMF Decoder</common-tool>.<br>
+When I tried to install this tool in my Windows 10 environment as usual, it refused to install with this dialog:
+</p>
+</span>
+<blockquote>
+This program must be run on Windows 95/98/ME/NT/2000/XP/2003 Server.
+</blockquote>
+<span class="language-selector-ja" lang="ja">
+<p>
+互換モードを「Windows XP (Service Pack 3)」に設定することで、インストールができた。<br>
+インストールしたツールの起動は、互換モードを設定せずにできた。
+</p><p>
+このツールで、音声ファイル中のクレジットカード番号として入力している部分をデコードし、<code>kqctf{}</code> で囲むことで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I succeeded to install the tool by setting the compatibility mode to "Windows XP (Service Pack 3)".<br>
+Using the tool after installation didn't require setting the compatibility mode.
+</p><p>
+I obtained the flag by decoding the part that is entered as a credit card number using this tool, and putting that into <code>kqctf{}</code>.
+</p>
+</span>
+
+<div class="flag">kqctf{4716097646384761}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>

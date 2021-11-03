@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Every Breath You Take (Killer Queen CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Every Breath You Take</h1>
+<p class="language-selector-ja" lang="ja">
+以下の問題文が与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+This challenge descryption was given:
+</p>
+<blockquote>
+I would play video games and always feel like somebody's watchin' me. So I changed my username into my current one. Find the username I was using before sampinkerton
+</blockquote>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+<common-tool data-lang="ja">sherlock</common-tool>で <code>sampinkerton</code> を検索し、ゲームっぽい項目を見ていくと、以下のページが見つかった。
+</p>
+<p><a href="https://steamcommunity.com/id/sampinkerton">Steam コミュニティ :: sampinkerton</a></p>
+<p>
+このページの「sampinkerton」の右の三角マークをクリックすると、「このユーザーの過去のプレイヤー名」としてflagのような文字列が表示された。<br>
+この文字列を <code>kqctf{}</code> で囲むことで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I searched for <code>sampinkerton</code> using <common-tool data-lang="en">sherlock</common-tool> and checked results that looked related to games, finding this page:
+</p>
+<p><a href="https://steamcommunity.com/id/sampinkerton">Steam Community :: sampinkerton</a></p>
+<p>
+I clicked the triangle mark in the right of "sampinkerton" and found a string that looks like the flag as "This user has also played as".<br>
+I obtained the flag by putting the string in <code>kqctf{}</code>.
+</p>
+</span>
+
+<div class="flag">kqctf{wh0s_pl41ng_7r1k50n_m3?__e2q3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Killer Queen CTF</a>
+</p>
+</body>
+</html>
