@@ -79,10 +79,41 @@ function parse_CTFd(solves, challenges) {
 	return result;
 }
 
+function parse_WaniCTFd(solves, challenges) {
+	const result = [];
+	const targetId = solves.id;
+	for (let i = 0; i < challenges.data.length; i++) {
+		const info = challenges.data[i];
+		const solver = info.solver;
+		let solved = false;
+		let solvedTime = null;
+		let point = null;
+		for (let j = 0; j < solver.length; j++) {
+			if (solver[j].userid === targetId) {
+				solved = true;
+				solvedTime = (new Date(solver[j].created / 1000000)).toJSON();
+				point = solver[j].point;
+				break;
+			}
+		}
+		if (solved) {
+			result.push({
+				category: info.category,
+				name: info.title,
+				solves: info.solved,
+				value: point,
+				time: solvedTime
+			});
+		}
+	}
+	return result;
+}
+
 const parsers = [
 	parse_RACTF,
 	parse_rCTF,
-	parse_CTFd
+	parse_CTFd,
+	parse_WaniCTFd
 ];
 
 function parseJSON(jsonStr) {
