@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ltrace (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>ltrace</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ELFファイル <code>ltrace</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpで逆アセンブルし、<code>strings --radix=x</code> コマンドで文字列データを確認したところ、<br>
+<code>-0x40(%rbp)</code> に <code>scanf</code> 関数でデータを読み込んだ後、それを <code>strcmp</code> 関数で <code>-0x70(%rbp)</code> のデータと比較し、一致しなければ「Incorrect」を出力することがわかった。
+</p><p>
+そこで、バイナリを書き換え、一致しなかった時に <code>-0x70(%rbp)</code> の値を出力させることにした。<br>
+具体的には、アドレス<code>142d</code>にある <code>48 8d 3d f6 0b 00 00</code> (<code>lea 0xbf6(%rip),%rdi</code>) を、<code>48 8d 7d 90 90 90 90</code> (<code>lea -0x70(%rbp),%rdi; nop; nop; nop</code>) に書き換えた。
+</p><p>
+書き換えたバイナリを<common-tool data-lang="ja">CS50 IDE</common-tool>にアップロードして実行し、適当な入力を与えると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+An ELF file <code>ltrace</code> was given.
+</p><p>
+I disassembled the file via objdump in <common-tool data-lang="en">TDM-GCC</common-tool>, and extracted strings via <code>strings --radix=x</code> command.<br>
+As a result, I found it reads data to <code>-0x40(%rbp)</code> via the function <code>scanf</code>, compares the data with data in <code>-0x70(%rbp)</code> using the function <code>strcmp</code>, and prints "Incorrect" if they differs.
+</p><p>
+Seeing this, I decided to modify the binary to have it print data in <code>-0x70(%rbp)</code> on mismatch.<br>
+To achieve this, I changed <code>48 8d 3d f6 0b 00 00</code> (<code>lea 0xbf6(%rip),%rdi</code>) at the address <code>142d</code> to <code>48 8d 7d 90 90 90 90</code> (<code>lea -0x70(%rbp),%rdi; nop; nop; nop</code>).
+</p><p>
+I obtained the flag my uploading the modified binary to <common-tool data-lang="ja">CS50 IDE</common-tool>, executing that, and giving some input.
+</p>
+</span>
+
+<div class="flag">FLAG{c4n_y0u_7r4c3_dyn4m1c_l1br4ry_c4ll5?}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>pwsh (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>pwsh</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+テキストファイル <code>pwsh.ps1</code> が与えられた。
+</p><p>
+ファイルの内容を見ると、数列と文字列のリストが書かれているようだった。<br>
+そこで、まず以下のプログラムを用い、文字列のリストを数列が示す順番に並べ替えた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A text file <code>pwsh.ps1</code> was given.
+</p><p>
+Checking the contents of the file, I found a sequence of numbers and a list of strings.<br>
+Seeing this, I created this program to reorder the strings according to the sequence of numbers.
+</p>
+</span>
+<p><a href="reorder.pl" class="code-link" data-collapse="true">reorder.pl</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+さらに、文字列のリストの後に書かれていた文字列の意味を推測し、
+その結果に従って <code>cW4</code> を <code>"</code> に、<code>8r3</code> を <code>_</code> に、<code>fj7</code> を <code>$</code> に置換した。
+</p><p>
+その結果にflagが含まれていた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Then, I guessed the meaning of the string after the list of strings, and according to that,
+I replaced <code>cW4</code> to <code>"</code>, <code>8r3</code> to <code>_</code>, and <code>fj7</code> to <code>$</code>.
+</p><p>
+The result contaned the flag.
+</p>
+</span>
+
+<div class="flag">FLAG{y0u_5ucc33d3d_1n_cl34r1n6_0bfu5c473d_p0w3r5h3ll}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>
