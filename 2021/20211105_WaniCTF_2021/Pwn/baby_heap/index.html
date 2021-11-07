@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>baby_heap (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>baby_heap</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報が与えられた。<br>
+また、ELFファイル <code>chall</code> やC言語のソースコード <code>baby_heap.c</code> などのファイルが与えられた。
+</p><p>
+問題文より、今回扱うプログラムはメモリの確保や開放と値の書き込みが自由にでき、
+<code>main_ret</code> に <code>system('/bin/sh')</code> のアドレスを書き込めばいいらしいことがわかった。<br>
+また、<code>main_ret</code> および <code>system('/bin/sh')</code> のアドレスは出力された。
+</p><p>
+ここで、自分が以前書いた以下の記事を参照する。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server was given.<br>
+Also, files including an ELF file <code>chall</code> and a C source code <code>baby_heap.c</code> were given.
+</p><p>
+The challenge descryption explained that the program to deal with in this challenge allows arbitrary allocation, deallocation, and writing of a value,
+and that the address of <code>system('/bin/sh')</code> should be written to <code>main_ret</code>.<br>
+Also, the addresses of <code>main_ret</code> and <code>system('/bin/sh')</code> are printed.
+</p><p>
+Here I'll refer this article I wrote before:
+</p>
+</span>
+<p><a href="https://qiita.com/mikecat_mixc/items/b3877c33fbdee40131d1">free()した場所への書き込みで、malloc()の結果を操作する - Qiita</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+すると、以下の操作を行うことで、<code>malloc()</code> に任意のアドレスを返させることができることがわかる。
+</p>
+<ol>
+<li>同じ大きさの領域を2回確保する。</li>
+<li>確保した領域を2個とも開放する。</li>
+<li>2回目に開放した領域の先頭に返させたいアドレスを書き込む。</li>
+<li>最初と同じ大きさの領域を2回確保する。この2回目の確保の結果が書き込んだアドレスになる。</li>
+</ol>
+<p>
+この操作を行うことで、メモリ確保の結果として<code>main</code>関数のリターンアドレスの場所を返させ、そこに <code>system('/bin/sh')</code> を書き込むことができた。<br>
+この状態で終了操作を行うことで、シェルを起動できた。<br>
+<code>ls -al</code> コマンドを実行するとファイル <code>flag.txt</code> があることがわかり、<code>cat flag.txt</code> コマンドを実行するとflagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+According to this article, we can have <code>malloc()</code> return arbitrary address by these steps:
+</p>
+<ol>
+<li>Allocate two buffers with the same size.</li>
+<li>Deallocate the two allocated buffers.</li>
+<li>Write the address to be returned to the beginning of the secondly deallocated buffer.</li>
+<li>Allocate two buffers with the same size as the first step. The result of the second allocation here will be the address written.</li>
+</ol>
+<p>
+Using this method, I succeeded to have it return the address where the return address of the function <code>main</code> is stored as a result of memory allocation, and to write <code>system('/bin/sh')</code> there.<br>
+After that, requesting to exit launched the shell.<br>
+Executing a command <code>ls -al</code> revealed that there is a file <code>flag.txt</code>, and I obtained the flag by executing a command <code>cat flag.txt</code>.
+</p>
+</span>
+<p><a href="log.txt" class="code-link" data-collapse="true">log.txt</a></p>
+
+<div class="flag">FLAG{This_is_Hint_for_the_diva}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>
