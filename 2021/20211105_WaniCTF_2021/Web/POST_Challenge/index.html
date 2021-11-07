@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>POST Challenge (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>POST Challenge</h1>
+<p class="language-selector-ja" lang="ja">
+WebページのURLと、サーバのファイル一式が与えられた。<br>
+Webページにアクセスすると、Challenge 1 から Challenge 5 までの問題をそれぞれ解くといいらしいことがわかった。<br>
+各問題で求められていることは、<code>web-http-post/app/app.js</code> を参照した。
+</p>
+<p class="language-selector-en" lang="en">
+An URL of a web page and the files for the server were given.<br>
+Opening the web page, I found that we should solve each questions from Challenge 1 to Challenge 5.<br>
+I referred <code>web-http-post/app/app.js</code> to know what is the goal of each questions.
+</p>
+
+<h2>Challenge 1</h2>
+<span class="language-selector-ja" lang="ja">
+<p>
+<code>req.body.data === "hoge"</code> となるようなリクエストを要求された。
+</p><p>
+<common-tool data-lang="ja">Firefox</common-tool>の開発者ツールのネットワークタブを開き、リロードして適当なリクエストを送った後、以下のように「編集して再送信」することでflagのパーツが得られた。
+</p>
+<ul>
+<li>メソッドを <code>POST</code> にする。</li>
+<li>URLを指定のものにする。</li>
+<li>要求ヘッダーに <code>Content-Type: application/json</code> を追加する。</li>
+<li>要求ボディを <code>{"data":"hoge"}</code> とする。</li>
+</ul>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+The goal is sending a request that satisfies the condition <code>req.body.data === "hoge"</code>.
+</p><p>
+I opened the Network tab in the developer tools in <common-tool data-lang="en">Firefox</common-tool>, sent some request by reloading, and used "Edit and Resend" to modify the request in this way to obtain a part of the flag:
+</p>
+<ul>
+<li>Set the method to <code>POST</code>.</li>
+<li>Set the URL to what is specified.</li>
+<li>Add <code>Content-Type: application/json</code> to the request header.</li>
+<li>Set the request body to <code>{"data":"hoge"}</code>.</li>
+</ul>
+</span>
+
+<h2>Challenge 2</h2>
+<span class="language-selector-ja" lang="ja">
+<p>
+Challenge 1 の条件に加え、<code>User-Agent</code> が <code>Mozilla/5.0</code> を含むリクエストを要求された。
+</p><p>
+Challenge 1 で送ったリクエストのURLを Challenge 2 用に変え、「編集して再送信」することで、flagのパーツが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+The goal is sending a request that satisfies the condition for Challenge 1 and its <code>User-Agent</code> contains <code>Mozilla/5.0</code>.
+</p><p>
+I obtained a part of the flag by using "Edit and Resend" to modify the request for Challenge 1 to set the URL for Challenge 2.
+</p>
+</span>
+
+<h2>Challenge 3</h2>
+<span class="language-selector-ja" lang="ja">
+<p>
+<code>req.body.data?.hoge === "fuga"</code> となるようなリクエストを要求された。
+</p><p>
+Challenge 1 で送ったリクエストのURLを Challenge 3 用に変え、要求ボディを <code>{"data":{"hoge":"fuga"}}</code> に「編集して再送信」することで、flagのパーツが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+The goal is sending a request that satisfies the condition <code>req.body.data?.hoge === "fuga"</code>.
+</p><p>
+I obtained a part of the flag by using "Edit and Resend" to modify the request for Challenge 1 to set the URL for Challenge 3 and to set the request body to <code>{"data":{"hoge":"fuga"}}</code>.
+</p>
+</span>
+
+<h2>Challenge 4</h2>
+<span class="language-selector-ja" lang="ja">
+<p>
+<code>req.body.hoge === 1 && req.body.fuga === null</code> となるようなリクエストを要求された。
+</p><p>
+Challenge 1 で送ったリクエストのURLを Challenge 4 用に変え、要求ボディを <code>{"hoge":1, "fuga": null}</code> に「編集して再送信」することで、flagのパーツが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+The goal is sending a request that satisfies the condition <code>req.body.hoge === 1 && req.body.fuga === null</code>.
+</p><p>
+I obtained a part of the flag by using "Edit and Resend" to modify the request for Challenge 1 to set the URL for Challenge 4 and to set the request body to <code>{"hoge":1, "fuga": null}</code>.
+</p>
+</span>
+
+<h2>Challenge 5</h2>
+<span class="language-selector-ja" lang="ja">
+<p>
+MD5が <code>public/images/wani.png</code> のMD5と同じであるファイルを含むリクエストを要求された。
+</p><p>
+以下のページを参照し、ファイルを送信する用のフォームを作った。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+The goal is sending a request that contains a file whose MD5 is the same as one of <code>public/images/wani.png</code>.
+</p><p>
+I referred this page to create a form to send a file.
+</p>
+</span>
+<p><a href="https://www.tagindex.com/html_tag/form/input_file.html">HTMLタグ/フォームタグ/ファイルの送信欄を作る - TAG index</a></p>
+
+<p class="language-selector-ja" lang="ja">
+以下が作成したフォームを含むファイルである。<br>
+フォームに <code>enctype="multipart/form-data"</code> 属性を指定するのがポイントである。
+</p>
+<p class="language-selector-en" lang="en">
+This is a file I created that contains the form.<br>
+The key point is to add an attribute <code>enctype="multipart/form-data"</code> to the form.
+</p>
+<p><a href="attack5.html.txt" class="code-link" data-collapse="true" data-extension="html">attack5.html</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このフォームからファイル <code>web-http-post/app/public/images/wani.png</code> を送信することで、flagのパーツが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained a part of the flag by sending the file <code>web-http-post/app/public/images/wani.png</code> from this form.
+</p>
+
+<h2>flag</h2>
+<p class="language-selector-ja" lang="ja">
+Challenge 1 ～ Challenge 5 で得られたflagのパーツをWebページに載っていた指示通りに組み合わせることで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by building that from the parts obtained from Challenge 1 to Challenge 5 as specified in the web page.
+</p>
+
+<div class="flag">FLAG{y0u_ar3_http_p0st_m@ster!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

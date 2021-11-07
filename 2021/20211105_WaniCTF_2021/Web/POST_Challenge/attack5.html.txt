@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>POST Challenge</title>
+</head>
+<body>
+<h1>POST Challenge</h1>
+<h2>Challenge 5</h2>
+<form method="POST" action="https://post.web.wanictf.org/chal/5" enctype="multipart/form-data">
+<p>
+<input type="file" name="data">
+<input type="submit" value="submit">
+</p>
+</form>
+</body>
+</html>

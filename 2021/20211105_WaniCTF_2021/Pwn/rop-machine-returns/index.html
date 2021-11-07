@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>rop-machine-returns (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>rop-machine-returns</h1>
+<p class="language-selector-ja" lang="ja">
+TCPサーバの接続情報が与えられた。<br>
+また、ELFファイル <code>rop-returns</code> と、C言語のソースコード <code>rop-returns.c</code> が与えられた。<br>
+<code>rop-returns.c</code> は、最初に <code>"/bin/sh"</code> のアドレスを出力した後、以下の操作ができるプログラムだった。
+</p>
+<p class="language-selector-en" lang="en">
+Information to connect to a TCP server was given.<br>
+Also, an ELF file <code>rop-returns</code> and a C source code <code>rop-returns.c</code> were given.<br>
+<code>rop-returns.c</code> was a program that first prints the address of <code>"/bin/sh"</code>, and then provides these operations:
+</p>
+<ul>
+<li>1. append hex value</li>
+<li>2. append "pop rdi; ret" addr</li>
+<li>3. append "system" addr</li>
+<li>8. show menu (this one)</li>
+<li>9. show rop_arena</li>
+<li>0. execute rop</li>
+</ul>
+<p class="language-selector-ja" lang="ja">
+似たプログラムを WaniCTF'21-spring の <a href="https://qiita.com/mikecat_mixc/items/b1143557abb05d0f0f3c#03-rop-machine-easy">03 rop machine easy</a> で扱ったことがあり、
+スタックに積む値を低位から高位の順で入力していけばよさそうだと予想できた。<br>
+以下の順で操作を行うことで、シェルを起動できた。
+</p>
+<p class="language-selector-en" lang="en">
+I have dealt with a program like this in <a href="https://qiita.com/mikecat_mixc/items/b1143557abb05d0f0f3c#03-rop-machine-easy">03 rop machine easy</a> in WaniCTF'21-spring.
+From this experience, I guessed that the values to put on the stack should be entered from the lower address to the higher address.<br>
+I succeeded to launch the shell by doing operations in this order:
+</p>
+<ol>
+<li>2. append "pop rdi; ret" addr</li>
+<li>1. append hex value → hex value?: 404070
+<span class="language-selector-ja" lang="ja">(出力された <code>"/bin/sh"</code> のアドレス)</span>
+<span class="language-selector-en" lang="en">(the printed address of <code>"/bin/sh"</code>)</span>
+</li>
+<li>3. append "system" addr</li>
+<li>0. execute rop</li>
+</ol>
+
+<p class="language-selector-ja" lang="ja">
+<code>ls -al</code> コマンドを実行するとファイル <code>flag.txt</code> があることがわかり、<code>cat flag.txt</code> コマンドを実行するとflagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+Executing a command <code>ls -al</code> revealed that there is a file <code>flag.txt</code>, and I obtained the flag by executing a command <code>cat flag.txt</code>.
+</p>
+
+<div class="flag">FLAG{please-learn-how-to-use-rop-machine}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

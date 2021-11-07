@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tarinai (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Tarinai</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報が与えられた。<br>
+また、ELFファイル <code>chall</code> やC言語のソースコード <code>tarinai.c</code> などのファイルが与えられた。
+</p><p>
+<code>tarinai.c</code> から、以下のことが読み取れた。
+</p>
+<ul>
+<li><code>main</code>関数から<code>vuln</code>関数が呼び出される。</li>
+<li><code>vuln</code>関数はローカル配列<code>Name</code>のアドレスを出力し、そこに<code>read</code>関数で258バイトまで読み込む。</li>
+</ul>
+<p>
+さらに、<code>chall</code>を<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpで逆アセンブルした結果から、
+<code>read</code>関数による読み込み先は <code>-0x100(%rbp)</code> であることがわかった。<br>
+258バイトしか読み込めないので、保存された<code>%rbp</code>の値の下位2バイトを書き換えることはできるが、リターンアドレスを書き換えることができなそうである。
+</p><p>
+保存された<code>%rbp</code>の値を書き換えると、<code>main</code>関数に戻った時の<code>%rbp</code>の値に反映される。<br>
+さらに、これが<code>main</code>関数の<code>leave</code>命令により、<code>%rsp</code>に書き込まれる。<br>
+したがって、ROP (Return-Oriented Programming) のコードを読み込ませ、そのアドレスから(<code>leave</code>命令で<code>%rbp</code>をポップする分の)8を引いた値を<code>%rbp</code>に書き込めば、
+<code>main</code>関数からROPを実行してくれるはずである。
+</p><p>
+まず、逆アセンブル結果の <code>.plt.sec</code> に <code>setbuf</code>、<code>printf</code>、<code>alarm</code>、<code>read</code>の4個の関数が見えるので、
+<code>printf</code>関数を用いてこれらの関数のメモリ上の位置を読み取ることにした。
+</p><p>
+まず、読み込ませるデータの先頭に<code>printf</code>関数に渡す書式を書き込む。<br>
+次に、データを16バイトにアラインメントし、<code>printf</code>を実行させるROPのコードを入れる。<br>
+さらに、リターンアドレスが入る分1要素開け、出力させる関数のアドレスがあるアドレスを入れる。<br>
+最後に、残りの領域を埋め、<code>%rbp</code>を設定するためのデータを入れる。<br>
+これを行うのが以下のプログラムである。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server was given.<br>
+Also, files including an ELF file <code>chall</code> and a C source code <code>baby_heap.c</code> were given.
+</p><p>
+Reading <code>tarinai.c</code>, I found these things:
+</p>
+<ul>
+<li>The function <code>main</code> calls the function <code>vuln</code>.</li>
+<li>The function <code>vuln</code> prints the address of a local array <code>Name</code> and read at most 258 bytes using the function <code>read</code> there.</li>
+</ul>
+<p>
+Also, disassembling <code>chall</code> using "objdump" of <common-tool data-lang="en">TDM-GCC</common-tool>,
+I found that data read by the function <code>read</code> is stored to <code>-0x100(%rbp)</code>.<br>
+Since it can read only upto 258 bytes, we can rewrite the lowest 2 bytes of saved value of <code>%rbp</code>, but it looks difficult to modify the return address.
+</p><p>
+Changing the saved value of <code>%rbp</code> will affect the value of <code>%rbp</code> after returning to the function <code>main</code>.<br>
+Then, the value will be put to <code>%rsp</code> by the instruction <code>leave</code> in the function <code>main</code>.<br>
+Therefore, ROP (Return-Oriented Programming) should be executed from the function <code>main</code>
+after putting code for ROP and setting <code>%rbp</code> to the address of the code minus 8 (because <code>%rbp</code> is popped in the instruction <code>leave</code>).
+</p><p>
+Firstly, seeing 4 functions <code>setbuf</code>, <code>printf</code>, <code>alarm</code>, and <code>read</code> in <code>.plt.sec</code> in the disassembled result,
+I decided to obtain the addresses of these functions on the memory using the function <code>printf</code>.
+</p><p>
+Firstly, put the format specifier to pass to the function <code>printf</code> in the beginning of the data to feed.<br>
+Then, after aligning the data to 16 bytes, put ROP code to execute the function <code>printf</code>.<br>
+After adding one blank element instead of the return address, put the addresses of the addresses of the function to be printed.<br>
+Finally, pad the left spce and put data to set <code>%rbp</code>.<br>
+This is my program to to this:
+</p>
+</span>
+<p><a href="leak.pl" class="code-link" data-collapse="true">leak.pl</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+得られた関数のアドレスと名前を<common-tool data-lang="ja">libc-database</common-tool>に入れ、FIND を押すと、<br>
+<code>libc6_2.31-0ubuntu9.2_amd64</code>、<code>libc6_2.31-0ubuntu9.1_amd64</code>、<code>libc6_2.31-0ubuntu9.3_amd64</code> の3件の候補が出てきた。<br>
+この3件の候補については、<code>printf</code>、<code>system</code>、<code>str_bin_sh</code>の値は同じだった。
+</p><p>
+次に、これらの値を用いてシェルを起動する以下のプログラムを作成した。<br>
+まず、<code>printf</code>関数のメモリ上の位置を取得し、再び<code>main</code>関数を呼び出す。<br>
+そして、取得した<code>printf</code>の位置から<code>system</code>と<code>str_bin_sh</code>の位置を計算し、<code>system("/bin/sh");</code>を実行する。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I put the names and addresses of the functions obtained to <common-tool data-lang="en">libc-database</common-tool> and pressed FIND,<br>
+finding 3 candidates <code>libc6_2.31-0ubuntu9.2_amd64</code>, <code>libc6_2.31-0ubuntu9.1_amd64</code>, and <code>libc6_2.31-0ubuntu9.3_amd64</code>.<br>
+The values of <code>printf</code>, <code>system</code>, and <code>str_bin_sh</code> are the same among these 3 candidates.
+</p><p>
+Then, I created this program to launch the shell using these values.<br>
+This program firstly obtain the address of the funciton <code>printf</code> on the memory and call the function <code>main</code> again.<br>
+Then, calculate the addresses of <code>system</code> and <code>str_bin_sh</code> from the obtained address of <code>printf</code> and execute <code>system("/bin/sh");</code>.
+</p>
+</span>
+<p><a href="shell.pl" class="code-link" data-collapse="true">shell.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムにより、シェルを起動できた。<br>
+<code>ls -al</code> コマンドを実行するとファイル <code>flag.txt</code> があることがわかり、<code>cat flag.txt</code> コマンドを実行するとflagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+This program succeeded to launch the shell.<br>
+Executing a command <code>ls -al</code> revealed that there is a file <code>flag.txt</code>, and I obtained the flag by executing a command <code>cat flag.txt</code>.
+</p>
+
+<div class="flag">FLAG{Now_You_Know_Function_Epilogue}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BOF (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>BOF</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報が与えられた。<br>
+また、ELFファイル <code>chall</code> と、C言語のソースコード <code>bof.c</code> が与えられた。
+</p><p>
+<code>bof.c</code> を読むと、<code>gets</code> 関数を用いて入力を読み込む部分と、<code>flag</code>の内容を出力する部分があった。<br>
+<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpで<code>chall</code>を逆アセンブルすると、入力は <code>-0x40(%rbp)</code> に読み込まれ、リターンアドレスは <code>%rbp</code> の8バイト先にあることがわかった。<br>
+すなわち、入力の最初から <code>0x48</code> バイト先がリターンアドレスである。
+</p><p>
+<common-tool data-lang="ja">Tera Term</common-tool>でサーバに接続し、
+リターンアドレスを<code>flag</code>の内容を出力する部分のアドレスに書き換える以下のデータを「ファイル送信」することで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server was given.<br>
+Also, an ELF file <code>chall</code> and a C source code <code>bof.c</code> were given.
+</p><p>
+Reading <code>bof.c</code>, I found a part to read input using the function <code>gets</code>, and a part that prints the contents in <code>flag</code>.<br>
+Disassembling <code>chall</code> using "objdump" from <common-tool data-lang="en">TDM-GCC</common-tool>, I found that the input is stored to <code>-0x40(%rbp)</code> and that the return address is 8 bytes ahead from <code>%rbp</code>.<br>
+This means that the return address is <code>0x48</code> bytes ahead from the beginning of the input.
+</p><p>
+I connected to the server using <common-tool data-lang="en">Tera Term</common-tool> and
+sent this data to rewrite the return address to the address of the part that prints the contents in <code>flag</code> via "Send file" to obtain the flag.
+</p>
+</span>
+<p><a href="payload.bin" class="code-link" data-collapse="true" data-binary="true">payload.bin</a></p>
+
+<div class="flag">FLAG{D0_y0U_kN0w_BuFf3r_0Ver_fL0w?_ThA2k_y0U_fOR_s01v1ng!!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>
