@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Styled memo (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Styled memo</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、サーバのファイル一式が与えられた。<br>
+Webページは、ユーザ登録を行ってログインをした後、以下ができるものだった。
+</p>
+<ul>
+<li>メモの作成・詳細の表示・編集</li>
+<li>「adminNOw7YaumにadminNOw7Yaumのメモを確認してもらう」</li>
+<li>ユーザ名とメモ用CSSの設定</li>
+</ul>
+<p>
+ログイン後最初のページのソースを調べると、<code>class</code> に <code>btn</code> を含む要素の <code>data-content</code> 属性にメモの内容が入っているようだった。
+</p><p>
+<code>web-styled-memo/django/app/crawler.py</code> より、「adminNOw7YaumにadminNOw7Yaumのメモを確認してもらう」はadminに自分のアカウントにログインさせる機能のようである。<br>
+また、メモ用CSSは、<code>css/(ユーザ名)/example.css</code> のような形で表示されていた。<br>
+ユーザ名を <code>(もとのユーザ名)/../adminNOw7Yaum</code> とし、<code>example.css</code> をアップロードすると、メモ用CSSの表示が <code>css/adminNOw7Yaum/example.css</code> となった。<br>
+この性質を用いると、adminにアップロードしたCSSを参照させることができそうである。
+</p><p>
+この性質を用い、以下のようにしてflagを求めていった。
+</p>
+<ol>
+<li>以下の <code>gen.pl</code> を用い、endpointに<common-tool data-lang="ja">RequestBin.com</common-tool>のエンドポイントを指定してCSSを作成する。</li>
+<li>ユーザ名を <code>(適当な文字列)/../adminNOw7Yaum</code> に設定した上で、作成したCSSを <code>example.css</code> として設定する。</li>
+<li>「adminNOw7YaumにadminNOw7Yaumのメモを確認してもらう」をクリックする。</li>
+<li>RequestBin にprefixとsuffixにそれぞれ1文字加わったデータが送られるので、それらを新しいprefixとsuffixとし、新しいCSSを作る。</li>
+<li>2に戻り、flag全体が求まるまで繰り返す。</li>
+</ol>
+<p>
+生成するCSSはprefixやsuffixに1文字足したものを <code>data-content</code> に対する属性セレクタに使用することで、これらの文字列が含まれるメモがあるかを判定するものである。<br>
+prefixとsuffixの存在判定を同じ要素で行ってしまうと片方しか送られないようだったので、suffixの存在判定にはメモを含む要素の兄弟を使用するようにした。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+An URL of a web page and the files for the server were given.<br>
+These functions were available in the web page after registering and logging in:
+</p>
+<ul>
+<li>Create, display, edit notes.</li>
+<li>"adminNOw7YaumにadminNOw7Yaumのメモを確認してもらう"</li>
+<li>Set username and CSS for notes.</li>
+</ul>
+<p>
+Reading the source of the first page after logging in, I found that the contents of notes are in <code>data-content</code> attributes of elements whose <code>class</code> contains <code>btn</code>.
+</p><p>
+Reading <code>web-styled-memo/django/app/crawler.py</code>, I guessed that "adminNOw7YaumにadminNOw7Yaumのメモを確認してもらう" is a function to have the admin to log in his/her own account.<br>
+Also, the CSS for notes was shown like <code>css/(username)/example.css</code>.<br>
+When I set the username to <code>(previous username)/../adminNOw7Yaum</code> and uploaded <code>example.css</code>, the CSS for notes was displayed as <code>css/adminNOw7Yaum/example.css</code>.<br>
+This feature should be useful to have the admin refer uploaded CSS.
+</p><p>
+Using this feature, I obtained the flag in these steps:
+</p>
+<ol>
+<li>Create a CSS using <code>gen.pl</code> with the "endpoint" set to my endpoint for <common-tool data-lang="en">RequestBin.com</common-tool>.</li>
+<li>Set the username to <code>(some string)/../adminNOw7Yaum</code> and upload the created CSS as <code>example.css</code>.</li>
+<li>Click "adminNOw7YaumにadminNOw7Yaumのメモを確認してもらう".</li>
+<li>The "prefix" and "suffix" with one character added for each of them will be sent to RequestBin, so create a new CSS using them as new "prefix" and "suffix".</li>
+<li>Go back to 2 and repeat these steps until the whole flag is revealed.</li>
+</ol>
+<p>
+The CSS to create uses "prefix" and "suffix" with one character added in the attrubute selector for <code>data-content</code> to check if notes that contain these strings exists.<br>
+Trying to perform existence check for both of "prefix" and "suffix" using the same element resulted in seeing only one of the results,
+so I used a sibling node to check "suffix".
+</p>
+</span>
+<p><a href="gen.pl" class="code-link" data-collapse="true">gen.pl</a></p>
+
+<div class="flag">FLAG{CSS_Injecti0n_us1ng_d1r3ctory_tr@versal}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

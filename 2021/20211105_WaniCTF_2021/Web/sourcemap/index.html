@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>sourcemap (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>sourcemap</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+WebページのURLが与えられた。
+</p><p>
+ページのソースを読むと、<code>/js/app.bcff35da.js</code> を参照していることがわかった。<br>
+このファイルの内容を<common-tool data-lang="ja">CyberChef</common-tool>の JavaScript Beautify にかけて読むと、
+<code>submit: function () {</code> ～ <code>}</code> の中に <code>'_50urc3m4p}'</code> という怪しい部分があった。
+</p><p>
+そこで、この <code>submit: function () {</code> ～ <code>}</code> の中で定義されている関数 (<code>function (t, e)</code> の呼び出しを含む) を<common-tool data-lang="ja">Firefox</common-tool>のコンソールにコピペし、
+この <code>'_50urc3m4p}'</code> を含む <code>===</code> の右側の部分を評価した。<br>
+すると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+An URL of a web page was given.
+</p><p>
+Reading the source of the page, I found it referring <code>/js/app.bcff35da.js</code>.<br>
+Reading the contents of the file after applying "JavaScript Beautify" in <common-tool data-lang="en">CyberChef</common-tool>,
+I found an interesting part <code>'_50urc3m4p}'</code> inside <code>submit: function () {</code> and <code>}</code>.
+</p><p>
+Seeing this, I copy-and-pasted the function defined inside <code>submit: function () {</code> and <code>}</code> (including the call of <code>function (t, e)</code>) to the console in <common-tool data-lang="en">Firefox</common-tool>,<br>
+and evaluated the part in the right of <code>===</code> which includes <code>'_50urc3m4p}'</code>.<br>
+This resulted in the flag.
+</p>
+</span>
+
+<div class="flag">FLAG{d3v700l_c4n_r3v34l_50urc3_c0d3_fr0m_50urc3m4p}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>
