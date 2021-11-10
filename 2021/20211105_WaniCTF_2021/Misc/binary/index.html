@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>binary (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>binary</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+テキストファイル <code>binary.csv</code> および <code>sample.py</code> が与えられた。
+</p><p>
+<code>binary.csv</code> の内容を見ると、<a href="../digital_ASK/" class="language-aware-link">digital ASK</a> で与えられたファイルと同じ感じだった。<br>
+これを digital ASK で用いた<common-tool data-lang="ja">CyberChef</common-tool> のRecipeで処理すると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Text files <code>binary.csv</code> and <code>sample.py</code> were given.
+</p><p>
+Checking what's in <code>binary.csv</code>, I found it looks like what was given in <a href="../digital_ASK/" class="language-aware-link">digital ASK</a>.<br>
+I obtained the flag by putting this file to a <common-tool data-lang="en">CyberChef</common-tool> Recipe which I used in "digital ASK".
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%5E.*,'%7D,'',true,false,true,false)Remove_whitespace(false,true,true,false,false,false)Drop_bytes(0,6,false)Find_/_Replace(%7B'option':'Regex','string':'1%7B16%7D'%7D,'A',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'0%7B16%7D'%7D,'B',true,false,true,false)Substitute('AB','10')From_Binary('Space',8)">Find / Replace, 6 more - CyberChef</a></p>
+
+<div class="flag">FLAG{binary-is-essential-for-communication}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

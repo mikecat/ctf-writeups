@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>docker_dive (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>docker_dive</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+テキストファイル <code>Dockerfile</code> と、ELFファイル <code>solver</code> が与えられた。
+</p><p>
+<code>solver</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、
+<code>entry</code>関数から<code>__libc_start_main</code>関数に<code>FUN_001014b2</code>関数が渡されていることがわかった。<br>
+<code>FUN_001014b2</code>は、以下のものであった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A text file <code>Dockerfile</code> and a ELF file <code>solver</code> were given.
+</p><p>
+Decompiling <code>solver</code> using <common-tool data-lang="en">Ghidra</common-tool>,
+I found that the function <code>entry</code> passes the function <code>FUN_001014b2</code> to the function <code>__libc_start_main</code>.<br>
+This is the function <code>FUN_001014b2</code>:
+</p>
+</span>
+<p><a href="FUN_001014b2.c" class="code-link" data-collapse="true">FUN_001014b2.c</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+このプログラムは、環境の情報に基づいて64bitの値を作り、それに基づく鍵を埋め込まれたデータとxorして出力するものである。<br>
+この鍵の生成では、値を<code>0xa5</code>で割っていき、0になったら値をリセットする処理が行われていた。<br>
+そこで、<code>1 &lt;&lt; 63</code> を <code>0xa5</code> で繰り返し割ってみると、9回目で値が1を下回った。<br>
+よって、xorする鍵は9バイト程度の周期を持つと推測できる。
+</p><p>
+まず、以下の<common-tool data-lang="ja">CyberChef</common-tool>のRecipeを用い、逆コンパイル結果からデータを取り出した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+This program creates a 64-bit value from information about the environment, generates a key from the value, and prints the exclusive-or of the key and embed data.<br>
+During generating this key, the value is divided by <code>0xa5</code> and resetted when the value reaches to 0.<br>
+I tried repeatedly dividing <code>1 &lt;&lt; 63</code> by <code>0xa5</code>, and found that the result becomes less than 1 after the 9th division.<br>
+Therefore, the key for exclusive-or can be guessed to have a cycle around 9 bytes.
+</p><p>
+Firstly, I extracted the embed data using this <common-tool data-lang="en">CyberChef</common-tool> Recipe.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%5E.*%20%3D%20(0x)?(%5B0-9a-fA-F%5D%2B);$'%7D,'$2',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5E(.)$'%7D,'0$1',true,false,true,false)Remove_whitespace(false,true,true,false,false,false)&amp;input=ICBsb2NhbF9mOFswXSA9IDB4NzI7CiAgbG9jYWxfZjhbMV0gPSAweDM4OwogIGxvY2FsX2Y4WzJdID0gMHg2NTsKICBsb2NhbF9mOFszXSA9IDB4NTQ7CiAgbG9jYWxfZTggPSAweDQ4OwogIGxvY2FsX2U0ID0gMHgzYzsKICBsb2NhbF9lMCA9IDB4NzA7CiAgbG9jYWxfZGMgPSA2OwogIGxvY2FsX2Q4ID0gMHg0MDsKICBsb2NhbF9kNCA9IDB4N2Y7CiAgbG9jYWxfZDAgPSAweDFhOwogIGxvY2FsX2NjID0gMHgxNDsKICBsb2NhbF9jOCA9IDB4NDQ7CiAgbG9jYWxfYzQgPSAweDZjOwogIGxvY2FsX2MwID0gMHhkOwogIGxvY2FsX2JjID0gMHg3MDsKICBsb2NhbF9iOCA9IDQ7CiAgbG9jYWxfYjQgPSAweDQwOwogIGxvY2FsX2IwID0gMHg0MDsKICBsb2NhbF9hYyA9IDB4MWI7CiAgbG9jYWxfYTggPSAweDdiOwogIGxvY2FsX2E0ID0gMHg1NDsKICBsb2NhbF9hMCA9IDB4NTY7CiAgbG9jYWxfOWMgPSAweDMxOwogIGxvY2FsXzk4ID0gMHgxZjsKICBsb2NhbF85NCA9IDB4NDI7CiAgbG9jYWxfOTAgPSAweDcxOwogIGxvY2FsXzhjID0gMHg0MDsKICBsb2NhbF84OCA9IDB4MWI7CiAgbG9jYWxfODQgPSAweDdiOwogIGxvY2FsXzgwID0gMHgyNDsKICBsb2NhbF83YyA9IDB4NWI7CiAgbG9jYWxfNzggPSAweDIwOwogIGxvY2FsXzc0ID0gMHgxZjsKICBsb2NhbF83MCA9IDB4Mzc7CiAgbG9jYWxfNmMgPSAweDcwOwogIGxvY2FsXzY4ID0gMHg1NzsKICBsb2NhbF82NCA9IDB4MWY7CiAgbG9jYWxfNjAgPSAweDQxOwogIGxvY2FsXzVjID0gMHg0MTsKICBsb2NhbF81OCA9IDB4NGU7">Find / Replace, 2 more - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+次に、XORした結果の先頭が <code>FLAG{</code> となるような鍵を長さを変えて試していくと、<br>
+長さ9バイトの鍵を用いた時にflagの一部 <code>FLAG{####Kn0W_####to_Ge####to_7h####ckeR}</code> を復元できたようだった。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I tried some keys with different length such that the first part of the result of XOR becomes <code>FLAG{</code>.<br>
+As a result, I succeeded to recover a part of the flag <code>FLAG{####Kn0W_####to_Ge####to_7h####ckeR}</code> when I used a 9-byte key.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')Drop_bytes(0,0,false)Register('(.*)',true,false,true)XOR(%7B'option':'UTF8','string':'FLAG%7B'%7D,'Standard',false)Register('(.%7B9%7D)',true,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5E.*$'%7D,'$R0',true,false,false,true)XOR(%7B'option':'Latin1','string':'$R1'%7D,'Standard',false)Find_/_Replace(%7B'option':'Regex','string':'(.%7B5%7D).%7B4%7D'%7D,'$1%23%23%23%23',true,false,true,false)&amp;input=NzIzODY1NTQ0ODNjNzAwNjQwN2YxYTE0NDQ2YzBkNzAwNDQwNDAxYjdiNTQ1NjMxMWY0MjcxNDAxYjdiMjQ1YjIwMWYzNzcwNTcxZjQxNDE0ZQ">From Hex, 7 more - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+flagの残りの部分が全て英大文字、英小文字、数字、アンダーバーのどれかになるようなflagの先頭部分の候補を以下のプログラムで探し、
+得られた候補の中からそれっぽいものを当てはめた。
+</p>
+<p class="language-selector-en" lang="en">
+Using this program, I searched for candidates of the first part of the flag such that all of the rest part of the flag becomes uppercase or lowercase English alphabets, numbers, or an underscore.<br>
+Then, I selected characters that looks fitting well from the candidates.
+</p>
+<p><a href="search.pl" class="code-link" data-collapse="true">search.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+flagの先頭を <code>FLAG{Y0u_</code> と仮定して得られた <code>FLAG{Y0u_Kn0W_h0w_to_GeT_1nto_7hE_DockeR}</code> は、incorrectとなった。<br>
+flagの先頭を <code>FLAG{y0u_</code> と仮定すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+<code>FLAG{Y0u_Kn0W_h0w_to_GeT_1nto_7hE_DockeR}</code>, obtained by assuming that the first part of the flag is <code>FLAG{Y0u_</code>, was judged as incorrect.<br>
+I obtained the flag by assuming that the first part of the flag is <code>FLAG{y0u_</code>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')Drop_bytes(0,0,false)Register('(.*)',true,false,true)XOR(%7B'option':'UTF8','string':'FLAG%7By0u_'%7D,'Standard',false)Register('(.%7B9%7D)',true,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5E.*$'%7D,'$R0',true,false,false,true)XOR(%7B'option':'Latin1','string':'$R1'%7D,'Standard',false)Find_/_Replace(%7B'option':'Regex','string':'(.%7B8%7D).%7B1%7D'%7D,'$1%23',true,false,true,false/disabled)&amp;input=NzIzODY1NTQ0ODNjNzAwNjQwN2YxYTE0NDQ2YzBkNzAwNDQwNDAxYjdiNTQ1NjMxMWY0MjcxNDAxYjdiMjQ1YjIwMWYzNzcwNTcxZjQxNDE0ZQ">From Hex, 7 more - CyberChef</a></p>
+
+<div class="flag">FLAG{y0u_Kn0W_H0w_to_Get_1nto_7he_DockeR}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

@@ -241,6 +241,9 @@ const commonToolList = {
 	},
 	"DTMF Decoder": {
 		"": "http://www.polar-electric.com/DTMF/Index.html"
+	},
+	"gnuplot": {
+		"": "http://www.gnuplot.info/"
 	}
 };
 

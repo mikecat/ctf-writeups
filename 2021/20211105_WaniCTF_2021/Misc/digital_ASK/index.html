@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>digital ASK (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>digital ASK</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+テキストファイル <code>digital_ask.csv</code> が与えられた。
+</p><p>
+このファイルの内容を見ると、小数点を含む数 <code>time</code> と、0か1の <code>signal</code> のデータが並んでいるようだった。<br>
+そこで、<code>time</code> はとりあえず無視し、<common-tool data-lang="ja">CyberChef</common-tool>で <code>signal</code> のデータだけを抽出した。<br>
+すると、0や1が16個ずつ並んでいるようだったので、それぞれ1個ずつにまとめた。<br>
+これに対して From Binary をかけることで、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A text file <code>digital_ask.csv</code> was given.
+</p><p>
+Checking what's in the file, there were lines of a decimal number <code>time</code> and a 0/1 character <code>signal</code>.<br>
+I ignored <code>time</code> to begin with, and extracted only <code>signal</code> using <common-tool data-lang="en">CyberChef</common-tool>.<br>
+The result looked like 16 0s or 1s are used as an unit, so I replaced them to one 0 or 1.<br>
+I obtained the flag by applying "From Binary" to the result.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%5E.*,'%7D,'',true,false,true,false)Remove_whitespace(false,true,true,false,false,false)Drop_bytes(0,6,false)Find_/_Replace(%7B'option':'Regex','string':'1%7B16%7D'%7D,'A',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'0%7B16%7D'%7D,'B',true,false,true,false)Substitute('AB','10')From_Binary('Space',8)">Find / Replace, 6 more - CyberChef</a></p>
+
+<div class="flag">FLAG{please-understand-frame-format-of-wireless-communication}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>
