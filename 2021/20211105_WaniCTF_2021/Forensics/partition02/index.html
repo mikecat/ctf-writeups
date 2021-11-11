@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>partition02 (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>partition02</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+<a href="../partition01/" class="language-aware-link">partition01</a> で与えられたファイルについて、
+flag画像が<code>FLAG01</code>と<code>FLAG02</code>に分割して入っているという情報が与えられた。
+</p><p>
+<code>partition.img</code> に <code>strings</code> コマンドをかけた結果から <code>FLAG01</code> を検索すると、
+見つかった場所の近くに <code>flag01.png</code> という文字列があり、さらにその近くに <code>IHDR</code> という文字列があった。<br>
+バイナリエディタで <code>partition.img</code> から文字列 <code>IHDR</code> を検索すると、<code>0x4912400c</code> に見つかり、<code>0x49124000</code> からデータが始まっているようだった。<br>
+そこで、以下のように <code>dd</code> コマンドを用い、この場所から適当なサイズのデータを取り出した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Regarding of the file given in <a href="../partition01/" class="language-aware-link">partition01</a>,
+information that a flag image is divided and put into <code>FLAG01</code> and <code>FLAG02</code> was given.
+</p><p>
+I searched for <code>FLAG01</code> from the output of the <code>strings</code> command applied to <code>partition.img</code>,
+I found that there is a string <code>flag01.png</code> near the occurance of <code>FLAG01</code>, and that there is a string <code>IHDR</code> around there.<br>
+I seached for a string <code>IHDR</code> from <code>partition.img</code> using a binary editor. As a result, I found that at <code>0x4912400c</code> and it looked like data is beginning from <code>0x49124000</code>.<br>
+Seeing this, I extracted some data from there using the <code>dd</code> command in this way: 
+</p>
+</span>
+<code-block data-extension="txt">
+dd bs=512 skip=2394400 count=1024 if=..\partition01\partition.img of=first.bin
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+さらに、バイナリエディタで <code>partition.img</code> から文字列 <code>IEND</code> を検索すると、<code>0x691279d2</code> に見つかった。<br>
+そこで、以下のように <code>dd</code> コマンドを用い、この場所を含む512バイトのブロックまでの適当なサイズのデータを取り出した。
+</p>
+<p class="language-selector-en" lang="en">
+After that, I searched for a string <code>IEND</code> from <code>partition.img</code> using a binary editor and found it at <code>0x691279d2</code>.<br>
+Seeing this, I used the <code>dd</code> command to extract some data until the 512-byte block that contains the occurance in this way:
+</p>
+<code-block data-extension="txt">
+dd bs=512 skip=3441981 count=1024 if=..\partition01\partition.img of=second.bin
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+取り出した <code>first.bin</code> からバイナリエディタで <code>00 00 00 00 00</code> を検索すると、<code>0x3c00</code> から大量のゼロが並んでいた。<br>
+取り出した <code>second.bin</code> の最後からバイナリエディタで <code>00 00 00 00 00</code> を検索すると、<code>0x7c600</code> からゼロでないデータが始まっていることがわかった。<br>
+そこで、以下のように、これらのゼロでないデータを取り出して結合した。
+</p>
+<p class="language-selector-en" lang="en">
+I searched for <code>00 00 00 00 00</code> from the extracted file <code>first.bin</code> using a binary editor, finding that there are a lot of zeros from <code>0x3c00</code>.<br>
+I searched for <code>00 00 00 00 00</code> from the extracted file <code>second.bin</code> using a binary editor, finding that non-zero data begins from <code>0x7c600</code>.<br>
+Seeing these, I extracted these non-zero data and concatenated them using these commands:
+</p>
+<code-block data-extension="txt">
+dd if=first.bin count=30 bs=512 of=first-data.bin
+dd if=second.bin skip=995 bs=512 of=second-data.bin
+cat first-data.bin second-data.bin &gt; recover.png
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+結合した結果は画像として閲覧することができ、flagが書かれていた。
+</p>
+<p class="language-selector-en" lang="en">
+The result of concatenation was enable to be opened as an image, and the flag was written there. 
+</p>
+
+<div class="flag">FLAG{you_found_flag_in_FLAGs}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

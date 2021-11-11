@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>poly (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>poly</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>flag.png</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">ImageMagick</common-tool>の <code>identify -verbose</code> コマンドで調べると、以下の出力がされた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A file <code>flag.png</code> was given.
+</p><p>
+Investigating the file using <code>identify -verbose</code> command from <common-tool data-lang="en">ImageMagick</common-tool>, it produced this output:
+</p>
+</span>
+<code-block data-extension="txt">
+identify: IDAT: Extra compressed data `for-poly\flag.png' @ warning/png.c/MagickPNGWarningHandler/1748.
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+<common-tool data-lang="ja">TweakPNG</common-tool>でチェックしたところ、今回の <code>flag.png</code> には <code>IDAT</code> チャンクが1個しかないことがわかった。<br>
+そこで、<common-tool data-lang="ja">CyberChef</common-tool>の Drop bytes でヘッダを取り除き、Zlib Inflate を行った。<br>
+その結果、7,079,040バイトのデータが得られ、これは<code>IHDR</code>チャンクの値から計算できる大きさと同じだった。
+</p><p>
+展開後のデータには余計なデータは無いようなので、展開前のデータを調べることにした。<br>
+Zlib Inflate の前に Drop bytes を追加してデータの最後を削り、Zlib Inflate がエラーにならない最小の Start の値を探した。<br>
+その結果、45370 まではエラーにならないことがわかった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Checking with <common-tool data-lang="en">TweakPNG</common-tool>, I found that this <code>flag.png</code> contains only one <code>IDAT</code> chunk.<br>
+Seeing this, I used <common-tool data-lang="en">CyberChef</common-tool> to remove the header via "Drop bytes" and to apply "Zlib Inflate".<br>
+This resulted in 7,079,040 bytes of data. This size is the same as the expected size calculated from values in the <code>IHDR</code> chunk.
+</p><p>
+Finding that the extracted data doesn't have extra part, I moved to investigate data before extracting.<br>
+I added "Drop bytes" before "Zlib Inflate" to remove the last part of data and searched for the minimum value of "Start" that doesn't make "Zlib Inflate" throw an error.<br>
+As a result, I found that it doesn't cause error until the value becomes less than 45370.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Drop_bytes(0,41,false)Drop_bytes(45370,9999999,false)Zlib_Inflate(0,0,'Adaptive',false,false)">Drop bytes, Drop bytes, Zlib Inflate - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+そこで、この Drop bytes を Take bytes に変え、この無くても Zlib Inflate がエラーにならない部分のデータを取り出した。
+</p>
+<p class="language-selector-en" lang="en">
+After that, I replace this "Drop bytes" with "Take bytes" to extract this data removing which doesn't make "Zlib Inflate" throw an error.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Drop_bytes(0,41,false)Take_bytes(45370,9999999,false)">Drop bytes, Take bytes - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+取り出したデータを<common-tool data-lang="ja">VLC media player</common-tool>で開いてみると、約4秒の音声が再生され、文字が読み上げられていた。<br>
+これらの文字を書き起こし、<code>FLAG{}</code> を加えることで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I tried opening extracted data with <common-tool data-lang="en">VLC media player</common-tool>. As a result, about 4-second audio was played and characters were read.<br>
+I obtained the flag by writting down these characters and adding <code>FLAG{}</code>.
+</p>
+
+<div class="flag">FLAG{thisismpng3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

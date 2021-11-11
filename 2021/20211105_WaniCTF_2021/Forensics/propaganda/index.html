@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>propaganda (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>propaganda</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+動画ファイル <code>flag.mp4</code> が与えられた。
+</p><p>
+再生してみると、時々不自然なフレームが挟まっていた。<br>
+そこで、以下のように<common-tool data-lang="ja">FFmpeg</common-tool>を用いてフレームごとに分解した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A movie file <code>flag.mp4</code> was given.
+</p><p>
+Playing the movie, I found that there were some unusual frames inserted.<br>
+then, I splitted the movie into frames using <common-tool data-lang="en">FFmpeg</common-tool> in this way:
+</p>
+</span>
+<code-block data-extension="txt">
+ffmpeg -i for-propaganda\flag.mp4 -q:v 2 frames\%04d.jpg
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+すると、<code>0200.jpg</code> (など) にflagが書かれていた。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I found the flag written in <code>0200.jpg</code> (and some other images).
+</p>
+
+<div class="flag">FLAG{Stand_tall_We_are_Valorant_We_are_fighters!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>

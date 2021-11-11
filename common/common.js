@@ -244,6 +244,9 @@ const commonToolList = {
 	},
 	"gnuplot": {
 		"": "http://www.gnuplot.info/"
+	},
+	"FFmpeg": {
+		"": "https://www.ffmpeg.org/"
 	}
 };
 
