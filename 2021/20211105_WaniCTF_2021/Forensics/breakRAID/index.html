@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>breakRAID (WaniCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>breakRAID</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>breakRAID.tar.gz</code> が与えられた。<br>
+これを展開すると、ファイル <code>disk00</code>、<code>disk01</code>、<code>disk02</code> が得られた。
+</p><p>
+<code>disk00</code> は、全部のバイトが<code>0x00</code>だった。<br>
+<code>disk01</code> に<code>strings</code>コマンドをかけると、<code>IHDR</code>などのPNGのチャンク名が出てきた。<br>
+<code>disk02</code> に<code>strings</code>コマンドをかけると、PNGのチャンク名に加え、<code>01.png</code> ～ <code>18.png</code> のファイル名と思われる文字列が出てきた。
+</p><p>
+ファイルが3個あるということは、使われているディスクが3台であることを表していると予想できる。<br>
+とりあえず、以下を参照してRAIDの種類の特定を試みた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A file <code>breakRAID.tar.gz</code> was given.<br>
+Files <code>disk00</code>, <code>disk01</code>, and <code>disk02</code> are extracted from this file.
+</p><p>
+All bytes of <code>disk00</code> were <code>0x00</code>.<br>
+Applying the <code>strings</code> command to <code>disk01</code> yielded PNG chunk names like <code>IHDR</code>.<br>
+Applying the <code>strings</code> command to <code>disk01</code> yielded not only PNG chunk names but also strings from <code>01.png</code> to <code>18.png</code> that look like names of files.
+</p><p>
+I guessed that having 3 files means that 3 disks are used.<br>
+To begin with, I tried to determine which kind of RAID is used referring this:
+</p>
+</span>
+<p><a href="https://ja.wikipedia.org/wiki/RAID">RAID - Wikipedia</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+RAID 0 は、耐障害性が無いため今回の問題には適さなそうである。<br>
+RAID 1 は複数のディスクに同じ内容を書き込むが、今回は<code>disk01</code>と<code>disk02</code>の内容が異なるので適さなそうである。<br>
+RAID 2 は最低5台のディスクを必要とするが、今回は3台しか無いので適さなそうである。<br>
+RAID 3、RAID 4、RAID 5 は3台のディスクで構築でき、今回の条件と矛盾しなそうである。<br>
+RAID 6 は最低4台のディスクを必要とするが、今回は3台しか無いので適さなそうである。
+</p><p>
+したがって、今回使われているのは RAID 3、RAID 4、RAID 5 のどれかであると考えられる。<br>
+これらの方式ではXORを用いるようなので、とりあえず以下のプログラムで <code>disk01</code> と <code>disk02</code> のXORをとり、<code>disk-xored</code> とした。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+RAID 0 doesn't look good for this challenge because it has no fault tolerance.<br>
+RAID 1 doesn't fit because it should write the same data to multiple disks while data in <code>disk01</code> and <code>disk02</code> differ.<br>
+RAID 2 doesn't fit because it requires at least 5 disks while there are only 3.<br>
+RAID 3, RAID 4, RAID 5 can be constructed using 3 disks and it looks good for this challenge.<br>
+RAID 6 doesn't fit becaseu it requires at least 4 disks while there are only 3.
+</p><p>
+In conclusion, one of RAID 3, RAID 4, or RAID 5 should be used in this challenge.<br>
+Since exclusive-or is used in these methods, so I performed exclusive-or of <code>disk01</code> and <code>disk02</code> using this program and saved the result to <code>disk-xored</code>.
+</p>
+</span>
+<p><a href="xor.c" class="code-link" data-collapse="true">xor.c</a></p>
+
+<p class="language-selector-ja" lang="ja">
+得られたファイル群からバイナリエディタで文字列 <code>IHDR</code> および <code>IEND</code> を探すと、以下の位置に見つかった。
+</p>
+<p class="language-selector-en" lang="en">
+I searched for strings <code>IHDR</code> and <code>IEND</code> from the files using a binary editor, and found at these positions:
+</p>
+<details>
+<summary>
+<span class="language-selector-ja" lang="ja">ファイル中の <code>IHDR</code> および <code>IEND</code> の位置</span>
+<span class="language-selector-en" lang="en">The places of <code>IHDR</code> and <code>IEND</code> in the files</span>
+</summary>
+<code-block data-extension="txt">
+IHDR
+disk01
+0x0d1b00c
+0x421900c 0x423b00c 0x425d00c 0x427f00c
+disk02
+0x0d1b00c
+0x422200c 0x424300c 0x426400c 0x428700c 0x42aa00c 0x42cd00c
+0x610000c 0x612200c 0x614400c 0x616500c
+disk-xored
+0x428700c 0x42aa00c 0x42cd00c
+0x610700c 0x612900c 0x614b00c
+
+IEND
+disk01
+0x0d3b8c6
+0x423a994 0x425cd0b 0x427ec04
+disk02
+0x0d3b8c6
+0x42217cb 0x4242f82 0x4263b6c 0x4286bcd 0x42a9bcd 0x42ccbcd 0x42efbdc
+0x6121d5c 0x6143210 0x6164f82
+disk-xored
+0x4286bcd 0x42a9bcd 0x42ccbcd 0x42efbdc
+0x61066fe 0x6128c97 0x614a210 0x616dbc0
+</code-block>
+</details>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+同じ位置のものを除くと、<code>IHDR</code> と <code>IEND</code> がそれぞれ18個ずつ見つかった。<br>
+これは、ファイル名と思われる文字列 <code>01.png</code> ～ <code>18.png</code> に対応していそうである。
+</p><p>
+次に、以下のプログラムを用い、各ファイル中の文字列 <code>IHDR</code>、<code>IDAT</code>、<code>IEND</code> の配置を調べた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Removing occurances at the same position, I found 18 occurancees of each of <code>IHDR</code> and <code>IEND</code>.<br>
+This looks matching with the strings that looks names of files <code>01.png</code> and <code>18.png</code>.
+</p><p>
+After that, I used this program to see places of strings <code>IHDR</code>, <code>IDAT</code>, and <code>IEND</code> in each files.
+</p>
+</span>
+<p><a href="list_chunk.pl" class="code-link" data-collapse="true">list_chunk.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+すると、画像全体が埋め込まれていそうな部分が、重複を除いて以下の16箇所あった。
+</p>
+<p class="language-selector-en" lang="en">
+As a result, I found these 16 places (duplicates are excluced) that seem the entire images are embed:
+</p>
+<details>
+<summary>
+<span class="language-selector-ja" lang="ja">画像全体が埋め込まれていると考えられるファイル中の位置</span>
+<span class="language-selector-en" lang="en">The places in the files that look like whole image files are embed</span>
+</summary>
+<code-block data-extension="txt">
+disk01
+00d1b00c IHDR - 00d3b8c6 IEND
+0421900c IHDR - 0423a994 IEND
+0423b00c IHDR - 0425cd0b IEND
+0425d00c IHDR - 0427ec04 IEND
+
+disk02
+00d1b00c IHDR - 00d3b8c6 IEND
+0422200c IHDR - 04242f82 IEND
+0424300c IHDR - 04263b6c IEND
+0426400c IHDR - 04286bcd IEND
+0428700c IHDR - 042a9bcd IEND
+042aa00c IHDR - 042ccbcd IEND
+042cd00c IHDR - 042efbdc IEND
+0610000c IHDR - 06121d5c IEND
+0612200c IHDR - 06143210 IEND
+0614400c IHDR - 06164f82 IEND
+
+disk-xored
+0428700c IHDR - 042a9bcd IEND
+042aa00c IHDR - 042ccbcd IEND
+042cd00c IHDR - 042efbdc IEND
+0610700c IHDR - 06128c97 IEND
+0612900c IHDR - 0614a210 IEND
+0614b00c IHDR - 0616dbcd IEND
+</code-block>
+</details>
+
+<p class="language-selector-ja" lang="ja">
+また、画像の一部が埋め込まれていそうな部分が、重複を除いて以下の4箇所あった。
+</p>
+<p class="language-selector-en" lang="en">
+Also I found these 4 places (duplicates are excluced) that seem parts of image are embed:
+</p>
+<details>
+<summary>
+<span class="language-selector-ja" lang="ja">画像の一部が埋め込まれていると考えられるファイル中の位置</span>
+<span class="language-selector-en" lang="en">The places in the files that look like parts of image files are embed</span>
+</summary>
+<code-block data-extension="txt">
+disk01
+0427f00c IHDR
+
+disk02
+04207092 IDAT - 042217cb IEND
+0616500c IHDR - 0617509e IDAT
+
+disk-xored
+061050b6 IDAT - 061066fe IEND
+</code-block>
+</details>
+
+<p class="language-selector-ja" lang="ja">
+これらを踏まえ、以下のプログラムで画像データを取り出した。
+画像の一部が埋め込まれていそうな部分については、周辺を調べ、データが <code>00</code> ばかりになる手前までの部分を抽出対象とした。
+</p>
+<p class="language-selector-en" lang="en">
+Based on these findings, I used this program to extract the image data.
+I decided to investigate data near there and extract data before being filled up with <code>00</code> for the places with parts of images.
+</p>
+<p><a href="extract.pl" class="code-link" data-collapse="true">extract.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+以下が、抽出対象を指定するこのプログラムの入力である。
+</p>
+<p class="language-selector-en" lang="en">
+This is the input for this program to specify what to extract:
+</p>
+<p><a href="targets.txt" class="code-link" data-collapse="true">targets.txt</a></p>
+
+<p class="language-selector-ja" lang="ja">
+抽出結果のうち <code>0427f00c.png</code> と <code>04200000.png</code> を結合して <code>0427f00c-04200000.png</code> を、
+<code>0616500c.png</code> と <code>06100000.png</code> を結合して <code>0616500c-06100000.png</code> を作成した。<br>
+その結果、以下の画像ファイル群が得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I concatenated <code>0427f00c.png</code> and <code>04200000.png</code> to create <code>0427f00c-04200000.png</code>,
+and concatenated <code>0616500c.png</code> and <code>06100000.png</code> to create <code>0616500c-06100000.png</code>.<br>
+As a result, I obtained these image files:
+</p>
+<p><a href="extracted_files.png"><img src="extracted_files_thunb.jpg" alt="extracted files"></a></p>
+
+<p class="language-selector-ja" lang="ja">
+これで18個の画像ファイルが得られたが、順番がバラバラなようであり、
+どの順番で <code>01.png</code> ～ <code>18.png</code> に対応しているかを調べないといけなそうである。<br>
+そこで、<code>disk02</code> 内の文字列 <code>01.png</code> の周辺を調べると、以下のように連番が並んでいた。
+</p>
+<p class="language-selector-en" lang="en">
+Now I have 18 image files, but their order looks shuffled and finding which images correspond to which of <code>01.png</code> to <code>18.png</code> looks required.<br>
+I investigated around the string <code>01.png</code> in <code>disk02</code>, finding that there are some serial numbers like this:
+</p>
+
+<details>
+<summary>
+<span class="language-selector-ja" lang="ja"><code>disk02</code> 内の文字列 <code>01.png</code> の周辺</span>
+<span class="language-selector-en" lang="en">Around the string <code>01.png</code> in the file <code>disk02</code></span>
+</summary>
+<code-block data-extension="txt">
+00515000  02 00 00 00 0c 00 01 02 2e 00 00 00 02 00 00 00  |................|
+00515010  0c 00 02 02 2e 2e 00 00 0b 00 00 00 14 00 0a 02  |................|
+00515020  6c 6f 73 74 2b 66 6f 75 6e 64 00 00 0c 00 00 00  |lost+found......|
+00515030  10 00 06 01 30 31 2e 70 6e 67 00 00 0d 00 00 00  |....01.png......|
+00515040  10 00 06 01 30 32 2e 70 6e 67 00 00 0e 00 00 00  |....02.png......|
+00515050  10 00 06 01 30 33 2e 70 6e 67 00 00 0f 00 00 00  |....03.png......|
+00515060  10 00 06 01 30 34 2e 70 6e 67 00 00 10 00 00 00  |....04.png......|
+00515070  10 00 06 01 30 35 2e 70 6e 67 00 00 11 00 00 00  |....05.png......|
+00515080  10 00 06 01 30 36 2e 70 6e 67 00 00 12 00 00 00  |....06.png......|
+00515090  10 00 06 01 30 37 2e 70 6e 67 00 00 13 00 00 00  |....07.png......|
+005150a0  10 00 06 01 30 38 2e 70 6e 67 00 00 14 00 00 00  |....08.png......|
+005150b0  10 00 06 01 30 39 2e 70 6e 67 00 00 15 00 00 00  |....09.png......|
+005150c0  10 00 06 01 31 30 2e 70 6e 67 00 00 16 00 00 00  |....10.png......|
+005150d0  10 00 06 01 31 31 2e 70 6e 67 00 00 17 00 00 00  |....11.png......|
+005150e0  10 00 06 01 31 32 2e 70 6e 67 00 00 18 00 00 00  |....12.png......|
+005150f0  10 00 06 01 31 33 2e 70 6e 67 00 00 19 00 00 00  |....13.png......|
+00515100  10 00 06 01 31 34 2e 70 6e 67 00 00 1a 00 00 00  |....14.png......|
+00515110  10 00 06 01 31 35 2e 70 6e 67 00 00 1b 00 00 00  |....15.png......|
+00515120  10 00 06 01 31 36 2e 70 6e 67 00 00 1c 00 00 00  |....16.png......|
+00515130  10 00 06 01 31 37 2e 70 6e 67 00 00 1d 00 00 00  |....17.png......|
+00515140  b8 0e 06 01 31 38 2e 70 6e 67 00 00 00 00 00 00  |¸...18.png......|
+00515150  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+00515160  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+00515170  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+00515180  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+00515190  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+005151a0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+005151b0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+005151c0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+005151d0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+005151e0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+005151f0  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+</code-block>
+</details>
+
+<p class="language-selector-ja" lang="ja">
+そこで、<code>disk02</code> から <code>F</code> が書かれているファイル <code>00d1b00c.png</code> のサイズ <code>133326</code> (4バイト、リトルエンディアン) を検索すると、<code>0x021d584</code> などに見つかった。<br>
+さらに、<code>0x021d584</code> から <code>0x80</code> バイトおきに他のファイルのサイズを表すデータもあった。<br>
+ここで示されているファイルサイズの順番にファイルに書かれている文字を並べると、flagが得られた。<br>
+(同じファイルサイズのファイルもあったが、それらは書かれている文字も同じようだった)
+</p>
+<p class="language-selector-en" lang="en">
+I searched for ths size of the file <code>00d1b00c.png</code>, which has the character <code>F</code>, <code>133326</code> (4 bytes, little endian) and it was found at <code>0x021d584</code> and some other places.<br>
+Also, there are data that represents sizes of other files from <code>0x021d584</code> at the interval of <code>0x80</code> bytes.<br>
+I obtained the flag by ordering the characters on the files according to the order of sizes recorded here.<br>
+(There are files with the same sizes, but it looked characters written there are also same.)
+</p>
+
+<div class="flag">FLAG{ra1dr4idxxxx}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2021</a>
+</p>
+</body>
+</html>
