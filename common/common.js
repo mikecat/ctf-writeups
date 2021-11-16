@@ -268,6 +268,17 @@ function getLanguage(ext) {
 
 // コードのハイライトを行う
 function highlightCode() {
+	const highlighter = (function() {
+		try {
+			if (hljs) return hljs;
+		} catch (e) {
+			console.warn(e);
+		}
+		// highlight.js が読み込めなかった時用のフォールバック
+		return {
+			highlightElement: function(){}
+		};
+	})();
 	// コードへのリンクの下に、コードを展開する
 	const codeLinks = document.getElementsByClassName("code-link");
 	for (let i = 0; i < codeLinks.length; i++) {
@@ -336,7 +347,7 @@ function highlightCode() {
 						if (binMode) {
 							e.parentNode.insertBefore(document.createTextNode(" (binary)"), e.nextSibling);
 						}
-						hljs.highlightElement(codeElement);
+						highlighter.highlightElement(codeElement);
 					} else {
 						const p = document.createElement("p");
 						p.appendChild(document.createTextNode("code fetch error: " + req.status));
@@ -370,7 +381,7 @@ function highlightCode() {
 		}
 		pre.appendChild(code);
 		elem.replaceWith(pre);
-		hljs.highlightElement(code);
+		highlighter.highlightElement(code);
 	}
 }
 
