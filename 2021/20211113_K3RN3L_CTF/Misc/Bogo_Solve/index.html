@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bogo Solve (K3RN3L CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Bogo Solve</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、サーバのプログラム <code>main.py</code> が与えられた。<br>
+<code>main.py</code> は、0から9999までの整数の順列を生成し、無限ループで以下の操作を受け付けるものだった。
+</p>
+<ul>
+<li>順列内の位置のリストの入力を受け取り、指定された位置の整数のリストをシャッフルして出力する。</li>
+<li>整数のリストの入力を受け取り、入力されたリストが生成した順列と一致すれば <code>flag.txt</code> の内容を出力する。</li>
+</ul>
+<p>
+あるビットが立っている添字を全部入力することで、添字のそのビットが立っている整数のリストを得ることができる。<br>
+これを繰り返すことで、それぞれの整数の添字のそれぞれのビットを得ることができる。<br>
+これらを組み合わせることでそれぞれの整数の添字を得ることができ、これを用いて順列を得ることができる。<br>
+そこで、これを行う以下のプログラムを作成した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server and a server program <code>main.py</code> were given.<br>
+The <code>main.py</code> firstly generates a permutation of integers from 0 to 9999, and then accepts these operations in an infinite loop:
+</p>
+<ul>
+<li>Accept a list of indice in the permitation, and output a shuffled list of integers at the specified indice.</li>
+<li>Accept a list of integers, and output the contents in <code>flag.txt</code> if the list is the same as the generated permutation.</li>
+</ul>
+<p>
+By selecting a bit and sending a list of all indice the bit of that is `1`, we can obtain a list of integers the bit of whose indice is `1`.<br>
+Repeating this, we can obtain each bits for the indice of each integers.<br>
+We can obtain the indice of each integers by combining the bits, and this can be useful to reconstruct the permutation.<br>
+I created this program to perform this process:
+</p>
+</span>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムで指定のサーバに接続することで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by having this program connect to the specified server.
+</p>
+
+<div class="flag">flag{alg0r1thms_ar3_s0_c00l!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">K3RN3L CTF</a>
+</p>
+</body>
+</html>

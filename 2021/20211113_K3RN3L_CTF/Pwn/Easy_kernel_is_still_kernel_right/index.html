@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Easy kernel is still kernel right? (K3RN3L CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Easy kernel is still kernel right?</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>easy_kernel.tar.gz</code> が与えられた。<br>
+<code>easy_kernel.tar.gz</code> を展開すると、以下のファイルなどが得られた。
+</p>
+<ul>
+<li><code>bzImage</code> : <common-tool data-lang="ja">QEMU</common-tool>で用いるファイル</li>
+<li><code>initramfs.cpio.gz</code> : VMに配置するファイルが格納されているファイル</li>
+<li><code>launch.sh</code> : QEMUの起動オプションが書かれているテキストファイル</li>
+<li><code>vuln.ko</code> : ELFファイル</li>
+</ul>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server and a file <code>easy_kernel.tar.gz</code> were given.<br>
+These files and some other files are extracted from <code>easy_kernel.tar.gz</code>:
+</p>
+<ul>
+<li><code>bzImage</code> : A file used from <common-tool data-lang="en">QEMU</common-tool></li>
+<li><code>initramfs.cpio.gz</code> : A file that contains files to place in the VM</li>
+<li><code>launch.sh</code> : A text file that has the options used on launching QEMU</li>
+<li><code>vuln.ko</code> : A ELF file</li>
+</ul>
+</span>
+
+<h2>
+<span class="language-selector-ja" lang="ja">逆コンパイルしての解析</span>
+<span class="language-selector-en" lang="en">Decompiling and analysing</span>
+</h2>
+<span class="language-selector-ja" lang="ja">
+<p>
+<code>vuln.ko</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、以下の関数などがあった。
+</p>
+<dl>
+<dt><code>init_func</code></dt>
+<dd>第1引数を <code>"pwn_device"</code> として、<code>proc_create</code>関数を呼び出す。</dd>
+<dt><code>sread</code></dt>
+<dd>スタック上のデータを引数で指定された場所にコピーする。コピーする長さに制限は無い。</dd>
+<dt><code>swrite</code></dt>
+<dd>引数で指定された場所のデータをスタックにコピーする。コピーする長さは変数で制限されている。</dd>
+<dt><code>sioctl</code></dt>
+<dd>第2引数が 0x20 のとき、<code>swrite</code>でコピーする長さの上限を第3引数の値に設定する。</dd>
+</dl>
+<p>
+<code>sioctl</code>関数で設定する値に制限は無いため、<code>swrite</code>でコピーする長さの制限も実質無いといえそうである。<br>
+したがって、<code>sread</code>関数のリターンアドレス以降のデータの取得や、<code>swrite</code>関数のリターンアドレス以降のデータの設定ができそうである。
+</p><p>
+また、<code>sread</code>関数および<code>swrite</code>関数においては、スタック上のコピーを開始する場所から 0x80 バイト先にcanaryがあり、0x90 バイト先にリターンアドレスがあることが読み取れた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Decompiling <code>vuln.ko</code> via <common-tool data-lang="en">Ghidra</common-tool>, I found some functions including these ones:
+</p>
+<dl>
+<dt><code>init_func</code></dt>
+<dd>Call the function <code>proc_create</code> with the first argument <code>"pwn_device"</code>.</dd>
+<dt><code>sread</code></dt>
+<dd>Copy data on the stack to the address specified by the argument. There are no limits on the length to copy.</dd>
+<dt><code>swrite</code></dt>
+<dd>Copy data on the address specified by the argument to the stack. The length to copy is limited by a variable.</dd>
+<dt><code>sioctl</code></dt>
+<dd>Set the maximum length to copy in the function <code>swrite</code> to the value of 3rd argument if the 2nd argument is 0x20.</dd>
+</dl>
+<p>
+There are no limits on the value to set in the function <code>sioctl</code>, so there virtually looks no limit on the length to copy in the function <code>swrite</code>.<br>
+Therefore, reading data from the return address of the function <code>sread</code> and writing data from the return address of the function <code>swrite</code> looks possible.
+</p><p>
+Also, I found that there are the canary at the 0x80 bytes ahead from the point on the stack where copying starts and the return address at the 0x90 bytes ahead in the functions <code>sread</code> and <code>swrite</code>.
+</p>
+</span>
+
+<h2>
+<span class="language-selector-ja" lang="ja">関数の実行</span>
+<span class="language-selector-en" lang="en">Executing the functions</span>
+</h2>
+<span class="language-selector-ja" lang="ja">
+<p>
+脆弱性を持っていそうな関数が見つかったので、次はそれらを実行する方法を探す。
+</p><p>
+<common-tool data-lang="ja">Tera Term</common-tool>で指定のサーバに接続すると、以下のような出力がされた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Now I found functions that look vulnable, so nextly I searched for a way to execute these functions.
+</p><p>
+Connecting to the specified server using <common-tool data-lang="en">Tera Term</common-tool>, the server gave me a message like this:
+</p>
+</span>
+<code-block data-extension="txt">
+Send the output of: hashcash -mb26 mKSAjemlgRq/1lig
+</code-block>
+<span class="language-selector-ja" lang="ja">
+<p>
+指定のコマンドで<common-tool data-lang="ja">Hashcash</common-tool>を実行し、得られた出力のうち <code>hashcash stamp:</code> を除く部分を貼り付け、
+Enterキーを押してLFを送信すると、シェルが起動した。
+</p><p>
+観察の結果、以下のことがわかった。
+</p>
+<ul>
+<li>ルートディレクトリに <code>flag.txt</code> があるが、これを <code>cat</code> コマンドで読もうとすると「Permission denied」と出て読めない。</li>
+<li>ルートディレクトリに <code>vuln.ko</code> がある。これは <code>easy_kernel.tar.gz</code> に含まれているものと同じようである。</li>
+<li><code>/bin</code>、<code>/sbin</code>、<code>/usr/bin</code>、<code>/usr/sbin</code> 内のファイルは <code>/bin/busybox</code> へのリンクである。 (<code>/bin/busybox</code> 自身は除く)</li>
+<li>ファイル <code>/proc/pwn_device</code> がある。このファイルの名前は <code>proc_create</code> 関数に渡されていた文字列と同じである。</li>
+</ul>
+<p>
+このファイル <code>/proc/pwn_device</code> を読み書きすることで、<code>sread</code>関数や<code>swrite</code>関数を実行できるようである。<br>
+<code>cat /proc/pwn_device</code> コマンドで読もうとすると「Bad address」と出て失敗したが、<code>dd</code> コマンドを用いると読むことができた。<br>
+読み込むブロック数を表す <code>count</code> は 1 に設定し、ブロックサイズを表す <code>bs</code> で読み込むサイズを指定した。<br>
+すると、以下のように480バイトまでは読み込むことができたが、これを超えると「Bad address」が出てしまった。
+</p><p>
+また、読み込んだデータは<code>od</code> コマンドでテキストとして出力できるが、パイプで直接 <code>dd</code> コマンドの出力を <code>od</code> コマンドに渡すと出力が混ざってしまった。<br>
+そのため、以下の例では、<code>dd</code> コマンドで読み込んだデータを一旦ファイルに保存し、それを <code>od</code> コマンドで出力している。<br>
+さらに、<code>od</code> コマンドの <code>-v</code> オプションで重複行の省略を抑止し、わかりやすくしている。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I executed <common-tool data-lang="en">Hashcash</common-tool> with the specified command, copy-and-pasted its output except for <code>hashcash stamp:</code>,
+and pressed the Enter key to send LF. As a result, a shell started.
+</p><p>
+After some observation, I found these things:
+</p>
+<ul>
+<li>There is a file <code>flag.txt</code> in the root directory. Trying to read this file via <code>cat</code> command failed with a message "Permission denied".</li>
+<li>There is a file <code>vuln.ko</code> in the root directory. This file looks like the same as the file in <code>easy_kernel.tar.gz</code>.</li>
+<li>The files in <code>/bin</code>, <code>/sbin</code>, <code>/usr/bin</code>, and <code>/usr/sbin</code> are links to <code>/bin/busybox</code>. (except for <code>/bin/busybox</code> itself)</li>
+<li>There is a file <code>/proc/pwn_device</code>. The name of this file is the same as the string passed to the function <code>proc_create</code>.</li>
+</ul>
+<p>
+Reading and writing this file <code>/proc/pwn_device</code> looks meaning to execute the functions <code>sread</code> and <code>swrite</code>.<br>
+Reading the file via <code>cat /proc/pwn_device</code> failed with a mesasge "Bad address", but I succeeded to read the file using <code>dd</code> command.<br>
+I set the number of blocks to read <code>count</code> to 1, and set the size of blocks <code>bs</code> as the size to read.<br>
+As a result, I succeeded to read 480 bytes like shown below, but trying to read more resulted in "Bad address".
+</p><p>
+Also, <code>od</code> command is useful to print the data read as text, but passing the output of <code>dd</code> command to <code>od</code> command directly via pipe resulted in a mixed output.<br>
+To avoid this, I saved the output of <code>dd</code> command to a file and printed the file via <code>od</code> command in this example.<br>
+Moreover, I used <code>-v</code> option for <code>od</code> command to prevent it from omitting duplicate lines and to make it clear.
+</p>
+</span>
+<details>
+<summary>
+<span class="language-selector-ja" lang="ja">ファイル <code>/proc/pwn_device</code> を <code>dd</code> コマンドで読む</span>
+<span class="language-selector-en" lang="en">Reading the file <code>/proc/pwn_device</code> via the <code>dd</code> command</span>
+</summary>
+<code-block data-extension="txt">
+~ $ dd if=/proc/pwn_device of=test bs=480 count=1
+[   33.591784] Device opened
+[   33.595030] 480 bytes read from device
+[   33.595759] All device's closed
+1+0 records in
+1+0 records out
+480 bytes (480B) copied, 0.005442 seconds, 86.1KB/s
+~ $ od -v -Ax -t x8 test
+000000 20656d6f636c6557 2073696874206f74
+000010 70206c656e72656b 6569726573206e77
+000020 ffffa15600130073 00020000035a9020
+000030 ffffa15600133910 0000000100020000
+000040 0000000000000000 ffffa15600000000
+000050 0000000000000000 0000000000000000
+000060 0000000000000000 0000000000000000
+000070 d736361160ee6100 00000000000001e0
+000080 d736361160ee6100 00000000000001e0
+000090 ffffffffa2c3e347 0000000000000001
+0000a0 0000000000000000 ffffffffa2bc89f8
+0000b0 ffffa15600133900 ffffa15600133900
+0000c0 0000000000fd1bb0 00000000000001e0
+0000d0 0000000000000000 0000000000000000
+0000e0 ffffffffa2bc8d1a 0000000000000000
+0000f0 d736361160ee6100 0000000000000000
+000100 ffffadd9001aff58 0000000000000000
+000110 0000000000000000 ffffffffa2a025d3
+000120 0000000000000000 0000000000000000
+000130 ffffffffa360007c 0000000000000000
+000140 0000000000000000 0000000000fd08a0
+000150 00000000000001e0 0000000000fd1bb0
+000160 0000000000000000 0000000000000246
+000170 00000000000001b6 00007ffc6179fb00
+000180 00007ffc617fa090 ffffffffffffffda
+000190 00000000004b99a2 00000000000001e0
+0001a0 0000000000fd1bb0 0000000000000000
+0001b0 0000000000000000 00000000004b99a2
+0001c0 0000000000000033 0000000000000246
+0001d0 00007ffc6179fac8 000000000000002b
+0001e0
+</code-block>
+</details>
+<span class="language-selector-ja" lang="ja">
+<p>
+得られたデータの最初の部分は、Ghidraで<code>sread</code>関数内で設定していることが読み取れた値と一致している。<br>
+さらに、解析結果通り、0x80 バイト目からはcanaryと思われる値が、0x90 バイト目からはリターンアドレスと思われる値が得られていることがわかる。
+</p><p>
+なお、このリターンアドレスは、サーバに接続し直すと変わることがわかった。<br>
+上位の <code>ffffffff</code> と下位3桁の <code>347</code> は変わらず、その間の5桁が変わるようだった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+The first part in the data read matches with the values I found set in the <code>sread</code> function using Ghidra.<br>
+Also, as the analysis suggested, there is a value that looks like the canary from the 0x80-th byte and one that looks like the return address from the 0x90-th byte.
+</p><p>
+I also found that the return address varies between each sessions.<br>
+The upper digits <code>ffffffff</code> and the last 3 digits <code>347</code> looked fixed, and the 5 digits between them changed.
+</p>
+</span>
+
+<h2>
+<span class="language-selector-ja" lang="ja">目的の確認</span>
+<span class="language-selector-en" lang="en">Being aware of the goal</span>
+</h2>
+<p class="language-selector-ja" lang="ja">
+問題文に、このページへのリンクが提示されていた。
+</p>
+<p class="language-selector-en" lang="en">
+The challenge description had a link to this page:
+</p>
+<p><a href="https://lkmidas.github.io/posts/20210123-linux-kernel-pwn-part-1/">Learning Linux Kernel Exploitation - Part 1 - Midas Blog</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+この記事より、以下の処理を実現できればflagを得られそうであることがわかった。
+</p>
+<ol>
+<li>引数 <code>0</code> を与え、関数 <code>prepare_kernel_cred</code> を呼び出す。</li>
+<li>その返り値を引数として、関数 <code>commit_creds</code> を呼び出す。このことによりroot権限が得られる。</li>
+<li>ユーザーモードに戻り、<code>/flag.txt</code> を読むための処理を行う。</li>
+</ol>
+<p>
+さらに、呼び出す関数のアドレスは <code>/proc/kallsyms</code> から読み取れること、<br>
+ユーザーモードに戻るには <code>swapgs</code> 命令を実行した後スタック上に戻り先のデータを配置して <code>iretq</code> 命令を実行すればいいことも、この記事から読み取れた。
+</p><p>
+また、記事では、これらの処理を実行させるため、リターンアドレスにアプリケーション側の関数のアドレスを設定する方法が紹介されている。<br>
+なるほど、このデータを細工してデバイスファイルの操作からアプリケーションで用意した関数を呼び出させるというのは、自分が昔xv6でやったことに似ている。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+From this article, I found that I should do these things to obtain the flag:
+</p>
+<ol>
+<li>Call the function <code>prepare_kernel_cred</code> with an argument <code>0</code>.</li>
+<li>Using the return value as the argument, call the function <code>commit_creds</code>. This will result in gaining the root privilege.</li>
+<li>Return to user-mode and do some operations to read <code>/flag.txt</code>.</li>
+</ol>
+<p>
+I also found that the addresses of functions to call can be read from <code>/proc/kallsyms</code>,<br>
+and that we should execute <code>swapgs</code> instruction and then execute <code>iretq</code> instruction with data about where to return on the stack to return to user-mode.
+</p><p>
+Moreover, the article introduces a way to execute these things by setting an address of a function in the application as the return address.<br>
+Tweaking data to make operations on device files call functions in the application looks like what I did on xv6 before.
+</p>
+</span>
+<p><a href="https://github.com/mit-pdos/xv6-public/pull/8">Fix vulnerabilities in exec() function by mikecat · Pull Request #8 · mit-pdos/xv6-public · GitHub</a></p>
+
+<h2>
+<span class="language-selector-ja" lang="ja">呼び出す関数のアドレスを得る</span>
+<span class="language-selector-en" lang="en">Determining the addresses of functions to call</span>
+</h2>
+
+<p class="language-selector-ja" lang="ja">
+記事を参考に、以下のコマンドで呼び出す関数のアドレスを得ようとした。
+</p>
+<p class="language-selector-en" lang="en">
+Reffering to the article, I tried to obtain the addresses of functions to call by this command:
+</p>
+<code-block data-extension="txt">
+cat /proc/kallsyms | grep cred
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+しかし、出力された各関数のアドレスは <code>0000000000000000</code> となっており、役に立たなそうだった。
+</p><p>
+「/proc/kallsyms zero」でググると、以下のページが見つかった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+However, the printed addresses of each functions were <code>0000000000000000</code> and this looked useless.
+</p><p>
+I googled "/proc/kallsyms zero" and found this page:
+</p>
+</span>
+<p><a href="https://stackoverflow.com/questions/10447491/reading-kallsyms-in-user-mode">linux - Reading kallsyms in user-mode - Stack Overflow</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+この記事によれば、<code>/proc/kallsyms</code> でアドレスを得るにはrootでないといけないようである。
+</p><p>
+ルートディレクトリのファイル <code>init</code> を見ると、最後が以下のようになっていた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+According to this article, the user must be root to obtain addresses from <code>/proc/kallsyms</code>.
+</p><p>
+I checked the file <code>init</code> in the root directory, and found that the last part of the file is:
+</p>
+</span>
+<code-block data-extension="txt">
+exec su -l ctf
+/bin/sh
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+これは、rootから一般ユーザに切り替えた上でシェルを実行する、という意味だろう。<br>
+そこで、配布されたファイルを書き換え、この切り替えを無効化することでrootでシェルを実行させることにした。
+</p><p>
+<code>initramfs.cpio.gz</code> を展開して得られたファイル <code>initramfs.cpio</code> をバイナリエディタで開き、文字列 <code>su -l ctf</code> を検索すると、<code>0x045e22</code> に見つかった。<br>
+そこで、ここの<code>su</code> を <code>#u</code> に書き換えることで、切り替えを無効化した。
+</p><p>
+書き換えた <code>initramfs.cpio</code> を圧縮して新しい <code>initramfs.cpio.gz</code> を作り、これを利用してQEMUを起動した。<br>
+すると、<code>$</code> だったシェルのプロンプトが <code>#</code> になっており、<code>/proc/kallsyms</code> から関数のアドレスを得ることができた。<br>
+アドレスは変わってもアドレスの差は変わらないと予想し、続けて差の計算用に <code>/proc/pwn_device</code> からリターンアドレスを読み出した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+This should be standing for switching from the root to a normal user and launching the shell.<br>
+Seeing this, I decided to disable this switching by modifying the given file and have it launch the shell as the root.
+</p><p>
+I extracted a file <code>initramfs.cpio</code> from <code>initramfs.cpio.gz</code> and opened it with a binary editor. Then, I searched for a string <code>su -l ctf</code> and found that at <code>0x045e22</code>.<br>
+After that, I changed <code>su</code> here to <code>#u</code> to disable the switching.
+</p><p>
+I compressed the modified file <code>initramfs.cpio</code> to create a new <code>initramfs.cpio.gz</code>, and launched QEMU using this new file.<br>
+As a result, the prompt of the shell, which was <code>$</code>, became <code>#</code> and I succeeded to obtain the addresses of functions from <code>/proc/kallsyms</code>.<br>
+Guessing that the differences of addresses won't change while the addresses change, I obtained the return address from <code>/proc/pwn_device</code> in the same session for calculating the differences.
+</p>
+</span>
+
+<h2>
+<span class="language-selector-ja" lang="ja"><code>swrite</code>からアプリケーションのコードに飛ばす試み</span>
+<span class="language-selector-en" lang="en">An attempt to have it jump from <code>swrite</code> to an application code</span>
+</h2>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+これまでの情報をもとに、以下の手順でroot権限を持ったシェルの起動を試みるプログラム <code>attack.asm</code> を作成した。<br>
+なお、サーバ上にlibcが見つからず、C言語でプログラムを書いても実行できない可能性があると考えたため、アセンブリ言語で書くことにした。
+</p>
+<ol>
+<li>セグメントレジスタとフラグレジスタの値を保存する。</li>
+<li>ファイル <code>/proc/pwn_device</code> を開く。</li>
+<li><code>ioctl</code> システムコールを用い、<code>swrite</code> で書き込む長さの制限を十分大きくする。</li>
+<li><code>sread</code> から、canaryとリターンアドレスの値を読み込む。</li>
+<li><code>swrite</code> でcanaryとroot権限を得るプログラムのアドレスを書き込む。</li>
+<li>root権限を得てユーザーモードに戻るプログラムを実行する。</li>
+<li><code>execve</code> システムコールを用い、<code>/bin/sh</code> を実行する。</li>
+</ol>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Based on these information, I created a program <code>attack.asm</code> to try to launch a shell with the root privilege in these steps.<br>
+I decided to write in an assembly language because I couldn't find any libc on the server and thought that C program may be unable to be executed.
+</p>
+<ol>
+<li>Save values of the segment registers and the flag register.</li>
+<li>Open the file <code>/proc/pwn_device</code>.</li>
+<li>Increase the write length limit for <code>swrite</code> enough via the system call <code>ioctl</code>.</li>
+<li>Read the values of the canary and the return address via <code>sread</code>.</li>
+<li>Write the canary and the address of the program to gain the root privilege via <code>swrite</code>.</li>
+<li>Execute the program to gain the root privilege and return to user-mode.</li>
+<li>Execute <code>/bin/sh</code> via the system call <code>execve</code>.</li>
+</ol>
+</span>
+<p><a href="attack.asm" class="code-link" data-collapse="true">attack.asm</a></p>
+
+<p class="language-selector-ja" lang="ja">
+これをサーバで実行するため、まず<common-tool data-lang="ja">NASM</common-tool>を用いてオブジェクトファイルに変換した。
+</p>
+<p class="language-selector-en" lang="en">
+To execute this program on the server, firstly I converted this program to an object file using <common-tool data-lang="en">NASM</common-tool>.
+</p>
+<code-block data-extension="txt">
+nasm -f elf64 attack.asm
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+するとファイル <code>attack.o</code> ができるので、これを<common-tool data-lang="ja">CS50 IDE</common-tool>にアップロードし、以下のコマンドで実行可能ファイルに変換した。
+</p>
+<p class="language-selector-en" lang="en">
+This command yielded a file <code>attack.o</code>, so I uploaded this file to <common-tool data-lang="en">CS50 IDE</common-tool> and executed this command to convert this to an executable file.
+</p>
+<code-block data-extension="txt">
+ld -o attack attack.asm
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+これを以下の<common-tool data-lang="ja">CyberChef</common-tool>のRecipeで圧縮し、76文字ごとに改行を入れたBase64に変換した。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I compressed this and encoded to Base64 with newline characters added after each 76 characters using this Recipe on <common-tool data-lang="ja">CyberChef</common-tool>.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Gzip('Dynamic%20Huffman%20Coding','','',false)To_Base64('A-Za-z0-9%2B/%3D')Find_/_Replace(%7B'option':'Regex','string':'(.%7B76%7D)'%7D,'$1%5C%5Cn',true,false,true,false)">Gzip, To Base64, Find / Replace - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+サーバに接続してHashcatの出力を貼り付けた後、シェルで以下のコマンドを実行した。<br>
+そして、変換したBase64データを貼り付け、Ctrl+D で入力を終了すした。
+</p>
+<p class="language-selector-en" lang="en">
+After connectiong to the server and pasting an output of Hashcat, I executed this command on the shell.<br>
+Then, I pasted the Base64-encoded data and pressed Ctrl+D to finish the input.
+</p>
+<code-block data-extension="txt">
+base64 -d | gunzip &gt; attack
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+すると、ファイル <code>attack</code> ができた。<br>
+<code>chmod +x attack</code> コマンドでこれを実行可能にし、<code>./attack</code> コマンドで実行できた。
+</p><p>
+実行した結果は、以下のエラーとなった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+This operation created a file <code>attack</code>.<br>
+I executed <code>chmod +x attack</code> command to make this file executable, and executed the program using <code>./attack</code> command.
+</p><p>
+Executing this program resulted in this error:
+</p>
+</span>
+<p><a href="attack_result.txt" class="code-link" data-collapse="true">attack_result.txt</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+どうやら、今回の環境では、記事で紹介されていたアプリケーションのコードのアドレスを指定して飛ばす方法は使えないようである。
+</p><p>
+しかし、この試みによって、<code>swrite</code>関数の実行時にエラーを起こすとレジスタの値を出力してくれることがわかった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+It looks like the way on the article that is specifying an address of an application code and having it jump there doesn't work in the environment for this challenge.
+</p><p>
+Not reaching to the goal, this try revealed that the system prints values of the registers when an error occurs while executing the function <code>swrite</code>.
+</p>
+</span>
+
+<h2>
+<span class="language-selector-ja" lang="ja">ROP gadget の探索と<code>iretq</code>命令の実行</span>
+<span class="language-selector-en" lang="en">Searching for ROP gadgets and executing the <code>iretq</code> instruction</span>
+</h2>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+アプリケーションのプログラムのアドレスを指定して実行しようとしても失敗するようなので、<br>
+「root権限を得る関数を実行してユーザーモードに戻る」処理をROP (Return-Oriented Programming) で実行することが求めらているようである。<br>
+ROPを行うためには既存のプログラムから ROP gadget と呼ばれる行いたい処理のパーツを見つけることが必要であり、これを探すために既存のプログラムのデータを取得したい。
+</p><p>
+そこで、<code>vuln.ko</code> 内の <code>sread</code>関数のプログラムを書き換えて、リターンアドレスをコピー元として使うようにした。<br>
+具体的には、Ghidra上の表示で <code>0010010a</code> から命令 <code>mov rsi, [rsp + 0x90]</code> を書き込むことにした。<br>
+この部分のプログラムを <code>initramfs.cpio</code> から探すと <code>0x232</code> から見つかったので、<br>
+ここから命令の区切りを考えてNOPを加えた10バイト <code>48 8b b4 24 90 00 00 00 90 90</code> を上書きした。
+</p><p>
+書き換えた <code>initramfs.cpio</code> から新しい <code>initramfs.cpio.gz</code> を作り、これを用いてQEMUを起動した。<br>
+QEMUの標準出力をファイルにリダイレクトし、以下のコマンドを実行した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Since specifying an address in an application program for execution looks failing,<br>
+It looks like the process to "call functions to gain the root privilege and return to user-mode" should be executed using ROP (Return-Oriented Programming).<br>
+Finding parts of what to do, which are called "ROP gadget", from existing program is required for ROP, so now I want to retrieve the data of the existing program.
+</p><p>
+To achieve this, I decided to modify the program of the function <code>sread</code> in <code>vuln.ko</code> to have it use the return address as the source of copying.<br>
+Specifically, I decided to put an instruction <code>mov rsi, [rsp + 0x90]</code> from <code>0010010a</code> on Ghidra.<br>
+I searched for the program in this part from <code>initramfs.cpio</code>, and found from <code>0x232</code>.<br>
+Therefore, considering the boundaries of instructions, I added some NOPs and modified 10 bytes from there to <code>48 8b b4 24 90 00 00 00 90 90</code>.
+</p><p>
+I created new <code>initramfs.cpio.gz</code> from modified <code>initramfs.cpio</code> and launched QEMU using this.<br>
+I redirected the standard output of QEMU to a file, and executed this command:
+</p>
+</span>
+<code-block data-extension="txt">
+dd if=/proc/pwn_device count=1 bs=1024000 | gzip -9 | base64
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+その結果出力されたBase64エンコードされたデータを以下のCyberChefのRecipeでデコードすることで、リターンアドレスが表す場所以降のプログラムのデータを得た。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I decoded the Base64-encoded data in the result using this Recipe for CyberChef to obtain the data of the program from the return address.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)Gunzip()">From Base64, Gunzip - CyberChef</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+得られたプログラムのデータは、<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpで <code>-b binary -m i386 -M x86-64 -D</code> オプションを使うことで、逆アセンブルできた。
+</p><p>
+得られたプログラムのデータからバイナリエディタで <code>pop rdi; ret</code> を表すデータ <code>5f c3</code> を検索すると、<code>0xac9</code> に見つかった。<br>
+また、<code>iretq</code> を表すデータ <code>48 cf</code> を検索すると、<code>0x5e1f</code> に見つかった。<br>
+しかし、<code>%rax</code> (返り値) の値を <code>%rdi</code> (第1引数) に移すのに役立ちそうなgadgetや、<code>swapgs</code> を表すデータ <code>0f 01 f8</code> は見つけられなかった。
+</p><p>
+最初に <code>/proc/pwn_device</code> からスタックの内容を <code>dd</code> コマンドで読み取った結果を見直すと、<br>
+データの最後の部分は<code>iretq</code>で使う各レジスタの値のようになっており、それに近い <code>0x130</code> にもプログラムのアドレスのような値があることがわかった。<br>
+そこで、先ほど <code>initramfs.cpio</code> に書き込んだデータのうち <code>90 00 00 00</code> の部分を <code>30 01 00 00</code> に書き換え、同様にこのアドレス以降のプログラムのデータを得た。<br>
+得たデータを調べると、<code>0xe2e</code> に<code>swapgs</code>命令を実行するgadgetとして使えそうな以下の部分があった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I disassembled the obtained program using "objdump" in <common-tool data-lang="en">TDM-GCC</common-tool> with options <code>-b binary -m i386 -M x86-64 -D</code>.
+</p><p>
+I searched for <code>5f c3</code>, which stands for <code>pop rdi; ret</code>, from the program data using a binary editor and found that at <code>0xac9</code>.<br>
+I also searched for <code>48 cf</code>, which stands for <code>iretq</code>, and found that at <code>0x5e19</code>.<br>
+However, I coundn't found gadgets for copying the value of <code>%rax</code> (the return value) to <code>%rdi</code> (the first argument), nor <code>0f 01 f8</code>, which stands for <code>swapgs</code>.
+</p><p>
+Looking at the contents of stack obtained from <code>/proc/pwn_device</code> via <code>dd</code> command in the early step again,<br>
+I found that the last part looks like values of registers for use with <code>iretq</code>, and that <code>0x130</code>, which is near the part, also has a value that looks like a program address.<br>
+Seeing this, I changed <code>90 00 00 00</code> in the data written to <code>initramfs.cpio</code> in the previous step to <code>30 01 00 00</code>, and obtained the program data from this address in the same way.<br>
+Investigating the obtained data, I found this part, which looks useful as a gadget to execute the <code>swapgs</code> instruction, from <code>0xe2e</code>.
+</p>
+</span>
+<code-block data-extension="txt">
+     e2e:	0f 01 f8             	swapgs 
+     e31:	9d                   	popfq  
+     e32:	c3                   	retq   
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+そこで、これらのデータを組み合わせ、ROPによりroot権限を得るための関数を実行するプログラム <code>attack2.asm</code> を作成した。<br>
+ROPで直接返り値を引数にするのは難しそうだったので、ユーザーモードに戻っても <code>%rax</code> の値が維持されることを期待し、各関数をそれぞれ <code>swrite</code> から呼び出させることにした。
+</p>
+<p class="language-selector-en" lang="en">
+Finding these things, I combined them and created a program <code>attack2.asm</code> which is supposed to execute the functions to gain the root privilege via ROP.<br>
+Since it looked difficult to directly use the return value as an argument in ROP, I decided to call each functions from separate invocations of <code>swrite</code>, hoping that the value of <code>%rax</code> doesn't change on returning to user-mode.
+</p>
+<p><a href="attack2.asm" class="code-link" data-collapse="true">attack2.asm</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+ここで、なぜか CS50 IDE にログインすると 403 Forbidden と出てしまい、使えなくなってしまった。<br>
+そこで、かわりに <common-tool data-lang="ja">AWS</common-tool> のEC2インスタンス (<code>t2.micro</code>、Ubuntu 20.04 (<code>ami-036d46416a34a611c</code>)) 上で<code>ld</code> コマンドを実行した。<br>
+初期状態では <code>ld</code> コマンドは使えず、<code>sudo apt-get install binutils</code> コマンドを実行すると使えるようになった。
+</p><p>
+このプログラムの実行結果は、以下のようになった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+At this point, CS50 IDE started to show "403 Forbidden" after logging in and it stopped working for some reason.<br>
+Seeing this, I used an EC2 instance on <common-tool data-lang="en">AWS</common-tool> (<code>t2.micro</code>、Ubuntu 20.04 (<code>ami-036d46416a34a611c</code>)) instead to execute the <code>ld</code> command.<br>
+The <code>ld</code> command didn't work at first. It became available after executing a command <code>sudo apt-get install binutils</code>.
+</p><p>
+This is the result of executing this program:
+</p>
+</span>
+<p><a href="attack2_result.txt" class="code-link" data-collapse="true">attack2_result.txt</a></p>
+
+<p class="language-selector-ja" lang="ja">
+エラーの詳細は出力されず、単に「Segmentation fault」と出力されている。<br>
+解析の結果、ユーザーモードに戻った直後として設定した位置に<code>exit</code>システムコールの呼び出しを配置しても Segmentation fault になったため、ユーザーモードにうまく戻れていないと考えられる。
+</p>
+<p class="language-selector-en" lang="en">
+Simply "Segmentation fault" is printed without giving the details of the error.<br>
+Some investigation revealed that this "Segmentation fault" happens even if an invocation of <code>exit</code> system call is placed to be executed right after returning to user mode,
+so it looks like returning to user-mode is failing.
+</p>
+
+<h2>
+<span class="language-selector-ja" lang="ja">呼び出し元の関数を利用してシステムコールの呼び出し元に戻る</span>
+<span class="language-selector-en" lang="en">Returning to where the system call is invoked using the caller functions</span>
+</h2>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+記事に従って<code>iretq</code>命令を用い、自力でユーザーモードに戻る試みは、うまくいかなかった。<br>
+ところで、<code>swrite</code> 関数の呼び出し元には、<code>swrite</code>関数から戻った後ユーザーモードに戻るための本来の処理があることが期待できる。<br>
+そこで、この本来の処理を用いてユーザーモードに戻ることを試みることにした。
+</p><p>
+最初に <code>/proc/pwn_device</code> からスタックの内容を <code>dd</code> コマンドで読み取った結果を再び見直すと、<br>
+<code>0xe0</code> にもプログラムのアドレスのような値があり、これは<code>sread</code>の呼び出しに繋がる関数のリターンアドレスであると推測できた。<br>
+さらに、これはあくまで<code>sread</code>が呼び出された時のスタックの内容だが、<code>swrite</code>においても同様の構造になると予想した。
+</p><p>
+これに基づき、ROPによりroot権限を得るための関数を実行した後、<code>pop rdi; ret</code> を用いてスタックをこの値の位置まで進めることでユーザーモードに戻るプログラム <code>attack3.asm</code> を作成した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+My attempts to use the <code>iretq</code> instruction to return to user-mode by myself referring the article didn't succeed.<br>
+By the way, there should be the original program to return to user-mode after returning from the function <code>swrite</code> in the caller of the function <code>swrite</code>.<br>
+Considering this, I decided to try to return to user-mode using this original program.
+</p><p>
+Looking at the contents of stack obtained from <code>/proc/pwn_device</code> via <code>dd</code> command in the early step again,<br>
+I found a value that looks like a program address at <code>0xe0</code>, and I guessed that this is a return address of a function that will lead to the call of <code>sread</code>.<br>
+Moreover, though this is the contents of the stack when <code>sread</code> is called, I guessed that the structure will also be like this when <code>swrite</code> is called.
+</p><p>
+Based on this, I created a program <code>attack3.asm</code> that executes functions to gain the root privilege using ROP and then executes <code>pop rdi; ret</code> to advance the stack to this value to return to user-mode.
+</p>
+</span>
+<p><a href="attack3.asm" class="code-link" data-collapse="true">attack3.asm</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムの実行結果は、以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+This is the result of executing this program:
+</p>
+<p><a href="attack3_result.txt" class="code-link" data-collapse="true">attack3_result.txt</a></p>
+
+<p class="language-selector-ja" lang="ja">
+再び「Segmentation fault」が出てしまったが、<code>swrite</code>が呼び出されたことを示すメッセージが1個から2個になっており、1回はユーザーモードに戻ることに成功していると考えられる。
+</p>
+<p class="language-selector-en" lang="en">
+"Segmentation fault" is printed again, but there are two messages that indicate that <code>swrite</code> is called instead of one, so it looks succeeded to return to user-mode at least once.
+</p>
+
+<h2>
+<span class="language-selector-ja" lang="ja">エラー時の出力の利用</span>
+<span class="language-selector-en" lang="en">Utilizing what is printed on errors</span>
+</h2>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+ここで、<code>swrite</code>関数の実行中にエラーが起こるとレジスタの値が出力されることを利用した調査をすることにした。
+</p><p>
+まず、以下のプログラムを実行し、<code>swrite</code>関数のリターンアドレスを得た。<br>
+これは、<code>swrite</code>関数のリターンアドレスを<code>RSI</code>レジスタにコピーした後、ゼロ除算でエラーを起こすプログラムなので、
+<code>swrite</code>関数のリターンアドレスが<code>RSI</code>として出てくる。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I decided to perform some investigation using the feature that prints the values of registers when an error occurs while executing the function <code>swrite</code>.
+</p><p>
+Firstly, I executed this program to obtain the return address of the function <code>swrite</code>.<br>
+This program copies the return address of the function <code>swrite</code> to the <code>RSI</code> register, and then causes an error by divding by zero.<br>
+Therefore, the return address of the function <code>swrite</code> will be printed as <code>RSI</code>.
+</p>
+</span>
+<code-block data-extension="asm">
+bites 64
+mov rsi, [rsp + 0x90]
+xor eax, eax
+xor edx, edx
+xor ecx, ecx
+div ecx
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+アセンブルすると以下のようになる。これをGhidraにおける <code>00100048</code> に相当する、<code>initramfs.cpio</code> の <code>0x170</code> から書き込んだ。
+</p>
+<p class="language-selector-en" lang="en">
+Assembling this program yields this. I put this program from <code>0x170</code> of <code>initramfs.cpio</code>, which corresponds to <code>00100048</code> on Ghidra.
+</p>
+<code-block data-extension="txt">
+48 8b b4 24 90 00 00 00 31 c0 31 d2 31 c9 f7 f1
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+そして、以下のコマンドでこのプログラムを実行した。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I executed this program via this command:
+</p>
+<code-block data-extension="txt">
+dd if=/init of=/proc/pwn_device count=1 bs=16
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+次に、この<code>swrite</code>関数のリターンアドレスを利用して <code>prepare_kernel_cred</code> 関数のアドレスを求め、呼び出した後ゼロ除算を行う、以下のプログラムを用意した。<br>
+このプログラムは、<code>prepare_kernel_cred</code> 関数の返り値を <code>RCX</code> に入れた状態でエラーを起こす。
+</p>
+<p class="language-selector-en" lang="en">
+After that, I created this program to obtain the address of the function <code>prepare_kernel_cred</code> from the return address of <code>swrite</code>, call the function and finally divide by zero.<br>
+This program causes an error with the return value of the function <code>prepare_kernel_cred</code> in <code>RCX</code>.
+</p>
+<code-block data-extension="asm">
+bits 64
+mov rax, [rsp + 0x90]
+add rax, -0x1b6127
+xor edi, edi
+call rax
+push rax
+pop rcx
+xor esi, esi
+div esi
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+これをアセンブルして <code>swrite</code> 関数に書き込みたいが、書き換える前のプログラムで <code>00 00 00 00</code> となっている部分を書き換えるとモジュールが読み込めなくなってしまった。<br>
+そこで、これを避け、以下の配置で <code>initramfs.cpio</code> に書き込んだ。<code>xx</code> は書き換える前のプログラムの値を残すことを意味する。
+</p>
+<p class="language-selector-en" lang="en">
+Trying to write this program after assembling to the function <code>swrite</code>, I found that modifying <code>00 00 00 00</code> in the original program makes it fail to read the module.<br>
+Therefore, I avoided this and wrote the program to <code>initramfs.cpio</code> in this placement. <code>xx</code> stand for preserving the original values.
+</p>
+<code-block data-extension="txt">
+000170  48 8b 84 24 90 00 00 00 48 05 d9 9e e4 ff 31 ff
+000180  ff d0 50 xx xx xx xx xx xx xx 59 31 f6 f7 f6
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+このプログラムを何回か実行した結果、<code>prepare_kernel_cred(0)</code> の返り値はQEMUを起動しなおすと返り値は変わるが、起動しなおさず連続で実行すると返り値は変わらなそうだった。<br>
+</p><p>
+このことから、処理を以下の2個のプロセスに分けることを思いついた。
+</p>
+<ul>
+<li><code>prepare_kernel_cred(0)</code> を呼び出した後エラーを起こし、返り値を出力させるプロセス</li>
+<li>出力された返り値を受け取り、<code>commit_creds</code>関数を呼び出してroot権限を得るプロセス</li>
+</ul>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Executing this program several times, I found that the return value of <code>prepare_kernel_cred(0)</code> changes after re-launching QEMU, but it didn't change when I executed the program in a row.
+</p><p>
+Seeing this, I came up with a way where I use these two processes:
+</p>
+<ul>
+<li>A process to cause an error after calling <code>prepare_kernel_cred(0)</code> to have it print the return value</li>
+<li>A process to read the printed return value and call the function <code>commit_creds</code> to gain the root privilege</li>
+</ul>
+</span>
+
+<h2>
+<span class="language-selector-ja" lang="ja">flagを得る</span>
+<span class="language-selector-en" lang="en">Obtaining the flag</span>
+</h2>
+
+<p class="language-selector-ja" lang="ja">
+まず、エラーを起こして <code>prepare_kernel_cred(0)</code> の返り値を得るため、メモリアクセスができるgadgetを探した。<br>
+すると、以下のものが見つかった。
+</p>
+<p class="language-selector-en" lang="en">
+Firstly, to cause an error to obtain the return value of <code>prepare_kernel_cred(0)</code>, I searched for a gadget that can access to the memory.<br>
+As a result, I found this:
+</p>
+<code-block data-extension="txt">
+    c0a9:	c7 07 01 00 00 00    	movl   $0x1,(%rdi)
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+なお、このgadgetは実行することで強制終了することを意図しているので、<code>ret</code> は不要である。
+</p><p>
+次に、<code>prepare_kernel_cred(0)</code> を呼び出した後、このgadgetを利用して0番地への書き込みを行うプログラム <code>attack4_reveal.asm</code> を作成した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Note that <code>ret</code> isn't needed here because this gadget is for forcing to exit by being executed.
+</p><p>
+After that, I created a program <code>attack4_reveal.asm</code> that calls <code>prepare_kernel_cred(0)</code> and writes to the address 0 using this gadget.
+</p>
+</span>
+<p><a href="attack4_reveal.asm" class="code-link" data-collapse="true">attack4_reveal.asm</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+このプログラムを実行すると、<code>RAX</code>として <code>prepare_kernel_cred(0)</code> の返り値が出力される。
+</p><p>
+次に、この返り値を利用するプログラムを作るにあたり、テキストで表された数値をバイナリに変換するのは大変そうなので、既存のコマンドを利用することにした。<br>
+<code>xxd</code>コマンドを利用するとバイト列を表す文字列をバイト列に変換できるが、それだけだとバイトオーダーが逆になってしまう。<br>
+そこで、<code>bswap</code> 命令を利用してバイトオーダーを反転させ、値として利用できる形にすることにした。
+</p><p>
+これを踏まえ、<code>prepare_kernel_cred(0)</code> の返り値を入力として受け取り、flagを出力するプログラム <code>attack4_flag.asm</code> を作成した。<br>
+<code>/bin/sh</code> を実行しようとするとエラーになってしまったので、<code>/flag.txt</code> の内容を直接読み取ることにした。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+The return value of <code>prepare_kernel_cred(0)</code> should be printed as <code>RAX</code> after executing this program.
+</p><p>
+To create a program that uses this return value, I decided to utilize existing commands because converting numbers represented as text to binary looks tough.<br>
+The <code>xxd</code> command can convert strings that represents sequences of bytes to sequences of bytes, but this will yield the number with the order of bytes reversed.<br>
+Therefore, I decided to use the <code>bswap</code> instruction to reverse the order of bytes and make it usable as a value.
+</p><p>
+Based on this, I created a program <code>attack4_flag.asm</code> that takes the return value of <code>prepare_kernel_cred(0)</code> and prints the flag.<br>
+I decided to read <code>/flag.txt</code> directly because trying to launch <code>/bin/sh</code> resulted in errors.
+</p>
+</span>
+<p><a href="attack4_flag.asm" class="code-link" data-collapse="true">attack4_flag.asm</a></p>
+
+<p class="language-selector-ja" lang="ja">
+この2個のプログラムを用い、以下のようにflagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag in this way, using these two programs:
+</p>
+<p><a href="attack4_result.txt" class="code-link" data-collapse="true">attack4_result.txt</a></p>
+
+<h2>
+<span class="language-selector-ja" lang="ja">flag</span>
+<span class="language-selector-en" lang="en">The flag</span>
+</h2>
+<div class="flag">flag{c0ngr4t5_on_ur_f1r5t_k3rn3l}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">K3RN3L CTF</a>
+</p>
+</body>
+</html>

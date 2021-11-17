@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Badseed (K3RN3L CTF) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Badseed</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+テキストファイル <code>pwntools_intro</code> と、ELFファイル <code>badseed</code> が与えられた。
+</p><p>
+<code>badseed</code> を<common-tool data-lang="ja">Ghidra</common-tool> で逆コンパイルすると、以下の関数を順に実行していることがわかった。
+</p>
+<ol>
+<li><code>init()</code>
+<ul>
+<li>バッファリングとタイムアウトの設定を行う。
+</ul></li>
+<li><code>question_one()</code>
+<ol>
+<li>計算を行い、何らかの値を生成する。</li>
+<li><code>scanf</code>関数の書式 <code>%d</code> を用い、値を読み込む。</li>
+<li>生成した値と読み込んだ値が違っていれば、実行を終了する。</li>
+</ol></li>
+<li><code>question_two()</code>
+<ol>
+<li><code>time</code>関数を用い、時刻を取得する。</li>
+<li><code>scanf</code>関数の書式 <code>%d</code> を用い、値を読み込む。</li>
+<li>取得した時刻を引数として <code>srand</code>関数を呼び出す。</li>
+<li><code>rand</code>関数を2回呼び出す。</li>
+<li>2回目に呼び出された時の<code>rand</code>関数の返り値と読み込んだ値を比較し、違っていたら実行を終了する。</li>
+</ol></li>
+<li><code>question_three()</code>
+<ol>
+<li><code>time</code>関数で時刻を取得し、それを引数として <code>srand</code>関数を呼び出す。</li>
+<li><code>rand</code> 関数を呼び出し、その返り値を引数として <code>srand</code> 関数を呼び出す。</li>
+<li><code>rand</code> 関数を呼び出す。</li>
+<li>最初の<code>rand</code>関数の返り値を2番目の<code>rand</code>関数の返り値で割り、さらにその結果を <code>1000</code> で割った余りを求める。</li>
+<li><code>scanf</code>関数の書式 <code>%d</code> を用い、値を読み込む。</li>
+<li>求めた余りと読み込んだ値を比較し、違っていたら実行を終了する。</li>
+</ol></li>
+<li><code>gz()</code>
+<ul>
+<li><code>system("/bin/sh");</code> を実行する。
+</ul></li>
+</ol>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+A text file <code>pwntools_intro</code> and a ELF file <code>badseed</code> were given.
+</p><p>
+Decompiling <code>badseed</code> via <common-tool data-lang="en">Ghidra</common-tool>, I found it executing these functions in this order:
+</p>
+<ol>
+<li><code>init()</code>
+<ul>
+<li>Configure buffering and timeout.</li>
+</ul></li>
+<li><code>question_one()</code>
+<ol>
+<li>Generate a value by some calculation.</li>
+<li>Read a value using the function <code>scanf</code> with the format specifier <code>%d</code>.</li>
+<li>Terminate execution if the generated value and the value read differ.</li>
+</ol></li>
+<li><code>question_two()</code>
+<ol>
+<li>Obtain the time using the function <code>time</code>.</li>
+<li>Read a value using the function <code>scanf</code> with the format specifier <code>%d</code>.</li>
+<li>Call the function <code>srand</code> using the time obtained as the argument.</li>
+<li>Call the function <code>rand</code> twice.</li>
+<li>Compare the second return value of the function <code>rand</code> and the value read, and terminate execution if they differ.</li>
+</ol></li>
+<li><code>question_three()</code>
+<ol>
+<li>Obtain the time using the function <code>time</code>, and call the function <code>srand</code> using that as the argument.</li>
+<li>Call the function <code>rand</code>, and call the function <code>srand</code> using the return value of as the argument.</li>
+<li>Call the function <code>rand</code>.</li>
+<li>Divide the first return value of <code>rand</code> by the second return value, and divide the quotient by 1000 to obtain the remainder.</li>
+<li>Read a value using the function <code>scanf</code> with the format specifier <code>%d</code>.</li>
+<li>Compare the remainder and the value read, and terminate execution if they differ.</li>
+</ol></li>
+<li><code>gz()</code>
+<ul>
+<li>Execute <code>system("/bin/sh");</code>.</li>
+</ul></li>
+</ol>
+</span>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+まず、<code>question_one</code> 関数で入力するべき値を調べるため、<code>badseed</code> を<common-tool data-lang="ja">CS50 IDE</common-tool>にアップロードし、GDB上で実行した。<br>
+この値をメモリに保存した直後である <code>0x40132b</code> にブレークポイントを設定し、メモリに保存した値が入っている<code>RAX</code>レジスタの値を出力させると、この値は <code>662</code> であるとわかった。
+</p><p>
+<code>question_two</code>関数と<code>question_three</code>関数に関しては、同様の処理で値を求める以下のプログラムを用意した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Firstly, to determine the value to input for the function <code>question_one</code>, I uploaded <code>badseed</code> to <common-tool data-lang="en">CS50 IDE</common-tool> and ran on GDB.<br>
+I set a breakpoint to <code>0x40132b</code>, which is just after storing the value to the memory, and checked the value of the <code>RAX</code> register, which has the value stored to the memory. As a result, I found that the value is <code>662</code>.
+</p><p>
+To determine the values for the function <code>question_two</code> and <code>question_three</code>, I created this program to obtain values via the process used in the functions.
+</p>
+</span>
+<p><a href="solve.c" class="code-link" data-collapse="true">solve.c</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+サーバに前の関数用の値を入力する際に時計を見て時刻を確認し、以下のページでUNIX時間に変換した。
+</p>
+<p><a href="https://keisan.casio.jp/exec/system/1526003938">日付⇒UNIX時間変換 - 高精度計算サイト</a></p>
+<p>
+得られたUNIX時間をコマンドライン引数とし、CS50 IDE上でこのプログラムを実行することで、サーバに入力すると処理を進めることができる値が得られた。
+</p><p>
+処理を進めるとシェルが起動するので、<code>ls -al</code> コマンドを実行すると、ファイル <code>flag.txt</code> があることがわかった。<br>
+<code>cat flag.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I checked the time on a clock when I enter the values for functions executed before the targets to the server, and converted the time to UNIX timestamp using this page:
+</p>
+<p><a href="https://keisan.casio.com/exec/system/15276413743130">Convert Date &amp; Time to Unix timestamp Calculator - High accuracy calculation</a></p>
+<p>
+I succeeded to obtain the values to have the server move on the next steps by executing the program on CS50 IDE using the UNIX timestamps as the command-line argument.
+</p><p>
+The shell is launched after some proceeding. I executed a command <code>ls -al</code> and found that there is a file <code>flag.txt</code>.<br>
+I obtained the flag by executing a command <code>cat flag.txt</code>.
+</p>
+</span>
+
+<div class="flag">flag{i_0_w1th_pwn70ols_i5_3a5y}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">K3RN3L CTF</a>
+</p>
+</body>
+</html>
