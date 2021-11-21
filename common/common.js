@@ -253,6 +253,9 @@ const commonToolList = {
 	},
 	"QEMU": {
 		"": "https://www.qemu.org/"
+	},
+	"CS50 Sandbox": {
+		"": "https://sandbox.cs50.io/"
 	}
 };
 

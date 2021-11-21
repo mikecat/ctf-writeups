@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Huge Primes (SquareCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Huge Primes</h1>
+<p class="language-selector-en" lang="en">
+Prime factors of
+</p>
+<code-block data-extension="txt">
+22952152323332505688670761214671498225451684330137990990356473040741684014997701799009910066964917896400501477
+</code-block>
+<span class="language-selector-ja" lang="ja">
+<p>
+の素因数を要求された。
+</p><p>
+<common-tool data-lang="ja">Msieve</common-tool>で <code>-e</code> オプションを用いて解析すると、数分で以下の素因数が求まった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+was asked.
+</p><p>
+I used <common-tool data-lang="en">Msieve</common-tool> with <code>-e</code> option, and it gave these prime factors after a few minutes:
+</p>
+</span>
+<code-block data-extension="txt">
+618706242907094285939447607839
+37097011039500744117766681095100420923783393727502071430377140015810453843499643
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+<code>flag{618706242907094285939447607839}</code> を試すと、incorrectとなった。<br>
+<code>flag{37097011039500744117766681095100420923783393727502071430377140015810453843499643}</code> を試すと、「flag does not meet expected format.」と出てきた。
+</p><p>
+しばらくすると問題文が変わり、テキストファイル <code>sourcecode.js</code> とWebページのURLが与えられた。<br>
+Webページにアクセスすると、<code>a</code> と <code>b</code> を入力する欄と送信ボタンがあった。<br>
+<code>618706242907094285939447607839</code> を <code>a</code>、
+<code>37097011039500744117766681095100420923783393727502071430377140015810453843499643</code> を <code>b</code> として送信すると、flagが得られた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I tried <code>flag{618706242907094285939447607839}</code> and it was judged as incorrect.<br>
+Trying <code>flag{37097011039500744117766681095100420923783393727502071430377140015810453843499643}</code>, the system said "flag does not meet expected format.".
+</p><p>
+After a while, the challenge description changed, and a text file <code>sourcecode.js</code> and an URL of a web page were given.<br>
+Opening the web page, I found a form to enter <code>a</code> and <code>b</code>, and a submit button.<br>
+I obtained the flag by sending <code>618706242907094285939447607839</code> as <code>a</code>
+and <code>37097011039500744117766681095100420923783393727502071430377140015810453843499643</code> as b.
+</p>
+</span>
+
+<div class="flag">flag{984ur9q83ndj934jd}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SquareCTF 2021</a>
+</p>
+</body>
+</html>

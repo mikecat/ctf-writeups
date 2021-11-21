@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Im a credential ghoul (SquareCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Im a credential ghoul</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+WebページのURLが与えられた。<br>
+このWebページを開くと、SSHサーバがあるという情報と、ファイル <code>u0000.pub</code> ～ <code>u0511.pub</code> へのリンクが載っているページがあった。<br>
+このファイル群は多くが799バイトで、795バイトのものもあった。
+</p><p>
+そこで、ファイル群のページに対して <code>wget -r -l 1</code> コマンドを使用し、ファイル群をダウンロードした。<br>
+<code>u0000.pub</code> を開いてみると、<code>-----BEGIN PUBLIC KEY-----</code> と <code>-----END PUBLIC KEY-----</code> に挟まれたBase64データがあった。<br>
+<common-tool data-lang="ja">CyberChef</common-tool>で16進数に変換し、Parse ASN.1 hex string をかけた結果と見比べると、<br>
+0x20バイト目 (0-origin) から大きい数値のデータが始まり、最後から6バイト目まで続きそうであることがわかった。
+</p><p>
+これを踏まえ、各ファイルから大きい数値を表すと予想できる部分を取り出す以下のプログラムを作成した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+An URL of a web page was given.<br>
+Opening the web page, I found information saying there is a SSH server, and a page with links to files <code>u0000.pub</code>to <code>u0511.pub</code>.<br>
+Most of the files are 799-byte long, and some of the files are 795-byte long.
+</p><p>
+Seeing this, I used a command <code>wget -r -l 1</code> to the page with the links to files to download the files.<br>
+Opening <code>u0000.pub</code>, I found Base64-encoded data between <code>-----BEGIN PUBLIC KEY-----</code> and <code>-----END PUBLIC KEY-----</code>.<br>
+With <common-tool data-lang="en">CyberChef</common-tool>, I converted the data to hexadecimal and compared with the results of "Parse ASN.1 hex string".<br>
+As a result, I found that the data standing for the large integer begins from the 0x20-th byte (the first byte is 0th), and that the data continues until the 6th byte from the last.
+</p><p>
+Based on this, I created this program to extract the part that looks standing for the large integer from each files:
+</p>
+</span>
+<p><a href="zatu_ni_toridasu.pl" class="code-link" data-collapse="true">zatu_ni_toridasu.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+さらに、このプログラムをそれぞれのファイルに対して実行する以下のプログラムを作成・実行した。
+</p>
+<p class="language-selector-en" lang="en">
+Also, I created and executed this program to execute the program for each files:
+</p>
+<p><a href="run_zatutori.pl" class="code-link" data-collapse="true">run_zatutori.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+そして、得られた数値群から2個を選ぶ組み合わせ全てについて最大公約数を求め、1より大きかったらその値を出力する以下のプログラムを作成・実行した。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I created and executed this program to calculate the greatest common divisors of all combinations of 2 numbers and output the result if it ls larger than 1:
+</p>
+<p><a href="get_gcd.py" class="code-link" data-collapse="true">get_gcd.py</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+約4分で実行が完了し、<code>u0170.pub</code> から取り出した数値と <code>u0340.pub</code> から取り出した数値の最大公約数が1より大きいことがわかった。
+</p><p>
+そこで、この値に基づき、Pythonのインタラクティブモードを用いて以下のようにRSA秘密鍵ファイルを作るのに用いる値を計算した。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+After about 4 minutes, the execution completed and it indicated that the greatest common divisor of numbers extracted from <code>u0170.pub</code> and <code>u0340.pub</code> is larger than 1.
+</p><p>
+Seeing this, I calculated values to create a RSA private key file from this value using the interactive mode of Python.
+</p>
+</span>
+<p><a href="get_values.txt" class="code-link" data-collapse="true">get_values.txt</a></p>
+
+<p class="language-selector-ja" lang="ja">
+さらに、これらの値を用い、以下のようにRSA秘密鍵のデータを構築した。
+</p>
+<p class="language-selector-en" lang="en">
+Then, using these values, I created data for a RSA private key.
+</p>
+<p><a href="build_key.txt" class="code-link" data-collapse="true">build_key.txt</a></p>
+
+<p class="language-selector-ja" lang="ja">
+なお、RSA秘密鍵の構造については、以下のページを参考にした。
+</p>
+<p class="language-selector-en" lang="en">
+I referred to this page to know the structure of RSA private keys.
+</p>
+<p><a href="https://bearmini.hatenablog.com/entry/2014/02/05/143510">RSA 秘密鍵/公開鍵ファイルのフォーマット - bearmini's blog</a></p>
+
+<p class="language-selector-ja" lang="ja">
+構築したデータをCyberChefでBase64に変換した。
+</p>
+<p class="language-selector-en" lang="en">
+I converted the data to Base64 using CyberChef.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%23.*$'%7D,'',true,false,true,false)From_Hex('Auto')Parse_ASN.1_hex_string(0,32/disabled)To_Base64('A-Za-z0-9%2B/%3D')Find_/_Replace(%7B'option':'Regex','string':'(.%7B76%7D)'%7D,'$1%5C%5Cn',true,false,true,false)&amp;input=IyBTRVFVRU5DRQozMAojIGxlbmd0aCBvZiBTRVFVRU5DRQo4MiAwOSAyNgojIHZlcnNpb24KMDIKMDEKMDAKIyBtb2R1bHVzCjAyCjgyIDAyIDAwCjQ5NDdhMDZmYmQ3NzFkN2UxZjE5OWI1ZjNmMzVmOWQwMjc5NTA0YzRiYjVmN2I2NDg4NWI5YjhiNDViNzRiZTYxM2IwYmIxYzNkZGRmYmJkZjlhZmVkN2MwYjVjY2FjM2U1MThjMTY4MDBlY2Y5NGJhNDQ4YWFmYTZkYjNkNjFiMTU5OTVjNGQ3ZGJjY2JkMDk2MTNiZGU0ZjNlMjdmYTI0ZmZjYzEwZTA1MWJmMjE2ZDQwYWIzZTc4ZGU0ZWIxNDg0OTgzN2RmZWM3ZDcyMWJjMGVjM2M0ZDIxNDNhZTEzM2U5MGZlYTBhYTMyYmQ4MjA3M2Q0ZWZmZWI2OThhYTkyMDgxZGYxMDgyNzJiMTE2NWJkYjI2YTg0Y2Q3MGU5MDI3NGFhMDU2MTM4NGM3OTIxY2JmM2I1MmYzNGUyYzMxMzMyMDg0YTE5YTFmOWM0ZmY0YjU3NGJjMTM3ZWY4MTk3ZjA2ODZjZTY4ZGIyYTBlZjc4ODQzZmZhNGQ4N2M2ZDMzNzhlY2I4NmNmMjE0MGU4YTVhMjAwNmEzMmRjOGI3YWE4Y2MwYjVmZWVhNjJjNDZkMDA1MzUwOTkwMjBhMDAxZjdjOWI5NmYwMGM4MjlkOWQ1MjJhZjk5YTc5MGM1MzgyYmU3MTBmMGQ0OTk3MGEyYzRhYmQwMjlkYTM3NDE4Y2Y5N2RkOTFjZDRlNmFiODY1YjNhZDNjMzZmY2IxZWI2MjU0YTg4NjljY2JiODNhOTZjOTUwODFkM2ZjOWQyZjAxNjc3NTJkOGFlYjE1ODkyZDhjODhlYmFkYTE1YTQ0YTk1M2I0ZWExYjVmMDUyYWM2Y2MyZTdiZWI4NmUzYTVhMTk5OTI0NDUyYmMyYTYwMjQxNzVkYjhiYWVhMWJiNjdhNWE5ZjBlNDk5NDRhMjYxNDMyNmY0YWM4MjUzZWRmZDI1MWI2MGU1YzVlNmNlMzE0Mzc5ZGFjN2VkOGM1N2ZkNDNjYTMzYWZhYjZhN2VkOTFiOTE5ZjBhM2M2Y2I0MzJhYmEyNTY4MTVmZDFiYzIwNjkwMWJlYzEzNjQ2OGM4OTY1ZjVmMGVlZGI4N2EzY2FmMjcyZDJjZmNjNTcwMzEwZDY4ODY4NTMwZDA3Zjc4NWMxMTczODdjZmU3YmE3MWRkOTZjZWJiNDVjMGQzZGMzMTdjNzU5ZDdiYTgwYWRjMzY1NjYxZDdkY2U5MjA3OGMyN2E5N2YzY2FkMmM0MzMzMzk4MzZkZmNlMTZlYzJjNWFhMWZmMTk2ZWNmYjE4MjZmYWE4MzQ1NTQ5ZDUxY2NlOTA3OTNiYjA2NjhkMjI0MmEwNTMxZWM0YzI5MGJjMmYwYjJiNDU0ZmFkZTc4YTUKIyBwdWJsaWNFeHBvbmVudAowMgowMwowMSAwMCAwMQojIHByaXZhdGVFeHBvbmVudAowMgo4MiAwMiAwMAo0MjA2Nzg2NmQ1OTY0MjhiODVhODAzZDcyMGQ0MTgzZWQ1YmIyZGVkYjg0OWMyOWIwNTQ1NGNmMzgyYTAzMTkxOWYwMjI4YzRiYzc1OGI0MjUzN2I5MTA1YTgxMzM2NWFhNGNiZDY0ZjQ4MmUzYzNjNGM0YzcxNDk2Yzk4OTE3YzFiY2NlZjVlOWVjMTAxZmVmMTg5ZGUxYTMxMjg0ZTA5YzdmYTFiNTNlZjg0OGI2ZWM4MjRkMDhkZmNjYTVhODk0NTIzMDU4ZDBiYmVjNzk2N2MxMDFlMTBmY2JjYzc1NjZkOTQyNGU4NGMxMWE1YjA0N2E3OTRjYjdmYTdiYjk4YzE0MjYyZTJiNDM2NzQ5YTg5YWVmZWI4YmI2YjM1YTJlYWQ0MTE3ZDFjZGYxMTE1ZjQzMmQ1NTdkYjAyZmY0YzYxMWQ5NjgzMjhhM2ZjYWEwOWY5ODhiMTgwZmI3MGJkNDAzNzc4MzRmODQzMjgzNTBlMTBjN2ZiYzllMjg4ZDFiNzgzZTdmZTBmYTM1YTMwZjNiNTVhOGZjMDZkMWIyMTY5NThhMmI2MTg3NWM1MDFlODk4NTc3OTEyMzNjNTIwZjEzZGNiY2U4NjgxMmYxYWE2NGEwNzkwOTdmZjIyZmQwNzliNjFiMGM3MmYxYzE4YmQ2OWE1YmQ3YTlkNzA5Nzg3NzdiOTU0MzJmYjI1NjYwZmI4OWU1NWQzOWI2YzVkNjJhN2Q0NzBmMGUyNWRkMGZkMDgyYjc3NDRjZmM1OTYxMTk1MjYzOGY2MDQ4ZmQxYTEwODJlNDU2Mjg5NTViZmU3MGIyMmI4NzNkZWM2YmFkZjAxZmUxZjA1MzA4ODExNDhiMTIyZWIxNTQzNGY3YWEyZGM5MGY2OGEzMWM2NGVhNTZhNTEyM2IxMWU2YWJkMWUwZTFjZGY2ZjZjYmM2NDZlYTIyOTIzMTFjNTJmZjZkMjQyZDAyM2U3M2Y5MGJlMzQ5NWZiZjgxM2YyYTU5MTQwMDFjMjQwNjY0OTQyYWNiZWI4OWFkNzg0MGViY2RiYTAxNjRmNWI3N2VmNjJiYWU3ZGMyOTBhNDI5NTFkNzE2OTg0ZjBlMDA3NDE3NWRhNDk2MzdhMzIwMmM1ZjY0MTk3NTBmMWRjZGFjNzhmN2Q0NDRlZjc3YTYwZGY0Y2UyZmRlOGEzNjViOTc1OGYyZGE0NmU4ODljMzZkOTZkZmVjMWI0NmMxYmNjMGVhYjk2ZjUzMWZkOWI3NjgwYzQ2NzA0ZTNiZTY5NThmZTM1MTNmMTIwMTc3N2M5NzBlZjcyZGU1MjZlYWIyYTU0YWFhMGEyODJiNDlmZTFkM2FjZDgyNjE1OWIxYTk0M2UxMWUxCiMgcHJpbWUxCjAyCjgyIDAxIDAxCjAwIDhhNTYyODk1MDY0NjY2NjVmMThlODAyOWNkOGM1NzE3NDNmMTM3MGIzNzNkMzk4ZmZhYzQ1OTE4ODg5ZTZmZGYyMGE3ZDhiOTJkYTlhZTU1MThmYTk0MTY4ZjNiNGM5MGRmMjRjZmUwYTkwMDVlMmYxNzRmZmUwZmIyYTZlNzg0MGUxZjRkYjFjMjMyNDEzY2FkNWFkZDA3MDBhZGMzNWY5MDA3OWEyZGVmOWQ0YjI0ZTQyOWIwNTc0ODljN2MzM2QzNDk0MmY5ZDk5YmI4MGNiNjAyZGZmODY1OTE2YTA0OGMwOTNiOTZkYTdlODUwM2RjM2QzNDM3N2Q4OTRlZDQ2ZTI1ODNkMTYxZWIwMmZiYTVkZmExMTJmOGRjOGYxYmE4YWE0YmVkM2IzNGJmY2ZkY2UxYTlmZTVlMzA2NzRlZWQ0MjJmY2U1ZDJjODYwZjg2Zjg1ZTA5M2JhOWU4NDNiZjExNjBkMGEyODU0MDk5ZmRlZTY3ZDcwZmY3NTA1MGMzNTZjMmJiMzM2YWJmNDkzMDU1MzA4ZGJjOWQxNGRhN2M3NjU1ZTllOGYzN2Q2MTU1ZDk0ZmUzZTc3MzZkM2E2YjBhZmYwYjMxMDFhZGI1NTUxYzY1OTc2Y2IyYjlkZjIxYmU3MWU1MjE0NGU1OTUxMmQyZWU5OGMyOWJhYzdkCiMgcHJpbWUyCjAyCjgyIDAxIDAxCjAwIDg3OWJjZDJiYTY3ODk5Y2QwM2IyMDk2NzFkZTgyMjAzYTRhMGQ4NGFkMjU4ZWQ5ODI2NjlhY2RiYjBlMTc0N2E1ZjYzNmRjMzEyNzU4ZGRkOTRkOWMwZGE2Nzg3NzI5ZWNjN2IxM2I4ZGE5MGI5MmQwYTY2MGY5MDk4M2NlYWMyOTQ4OWI3NmRjOTY5YjMyZTNiM2VjZWM3NDJiOWE3MWRhZDJkOWZiYzc3NjI1ZjAzODIwOTczZjAyMGQ4MjllYzJmOGY4YTgxZWQ3NTIyNzFjOTQwYTYwOWIyZmRmNTk4YzNmYWJmNjZlOTFlMjVkYTRlYTE5ZTRmNjRlMTE3MmYxYmRkY2Y1ZDhmMjUyN2NkZGEyNTM4OWJkNDk1OTA4NzE1MWE0N2M0MDQwMzg3ZTVmM2JlNTU1ZmU1MTUwMDcwNjczMmYzYzBhYjBkODNjMjAxMjE1MGVhODNhOTQzN2Q4ZWFjMTVhNThjMjVmMDM5YWI5NGUxNzYyOTBjYzlhYjg1MGNkZmU2YTg5N2VjYTQyOWUzNTc5NzQ1MjFmNGM2NjQ4ZTc4ZTY5NGZmNzQyZmViNGFmYmE3OGQ0OGQzOTk4OTBlNGYxOGY3MTM3ZDIwNjQ4M2E4ZjY1MjViMjE0NmZiOGYyOGI5OTU3YjliNmUyYjVkYTUyNDFhNGFiZDQ5CiMgZXhwb25lbnQxCjAyCjgyIDAxIDAwCjRhODRhNGYxYjllMjljNzA1N2QxZTI1YTIyNWU3MWRmOTc3YWNkYTJkZTBiYmUwMTQwMWQxYWJkNmI4MmE1NTJiNTdkOTRmMjEzOTVlZWQxZWE1NWI5MDVmOWZjMDA3ZjlkYTQ2ZmQyNWU1NzUzNjRkYzkyZmI5MWFiMzNkYjRjYjg2YWM2Njg3NWVhYWE1N2FjMmU2MTE3Y2Y5NmNhYzJhNDhjNjNkMjUwZGMxMzQ5NzkxYWI3ZTIxY2JjMjZlZmE3ZTYzNDBjZjBkYWMwMjcyMGI4YTViYjYxYzMxNjMwMDJkYjRhNWQzNWFmYTdhOTZmYWYwYzdjYzNjM2ZlNTFkMjRmYTUxNTVhNDBjNTY3OTc2ZmMyOGRiY2JlZGFkYzE0NWMzZmYwMzdjZjZmNmZlMjU1MzE0NDUzYWE5MTRiZTNlNDllNjlmNGE4ZjI0MjU0ZmI1Zjc0NmJjZTU3Y2U3ZTkzMzZlYWNjNTEyOTdlOGE1YTJkNTc5ZDQzMjRlMThjODgyNGY3YzA3N2M1MzkwMGFmMzMyYjc2YTljYjNjZjI4NGIwM2QwMzdlN2U1MGJiNzUwNzYzMDYxZjk4N2MzYTgzM2VlNWUxNmQzZDBjOGMxZjcyZGU0MWYwNzhjZGE4OThiNTMzYWY1YjM0YWNiYmVhMjIxYWU5ZTFmZmU1CiMgZXhwb25lbnQyCjAyCjgyIDAxIDAwCjM0MzMxMWYwMGE3ZDgzZGU3OWRjYWY2N2U1MDgzNTA3YTdmODRlMjljNmZjN2E0MGM2MTA4OTdjNmI4MmVkN2UyOTc3YjE4OTk0NzI3MWIwNjg5YWM1NzQ4Y2MzODNhODgyZDdhMTg4ZDc4MTNiZjY4ZDc5MjllNmEzZTM1NzBlOWQ3NGMxODlkZTJjZjRjZjA3ZjkyZTQ5NWY3MmVkNTQyYzE0NTJkNzhlMzBlYzk4MDIxNzM3NmNhODg3ZWNlMzQwOGY4NTY2NmMwYzU5YmNlOTE2MWM5M2MxMzVhNmIzMmU0NTM4MjYxOWY4MDNlNDFiYmU3NDljZTUxZDBiZmE5MzQ0Nzc4Y2YxMGMwMTVkNjhlYTQ4ZjcxYjA2OTM4MjliZTllOGQ0MTgyMzZmY2Q2MTVjZDNhYTNkMTkyZjc5MTUxMDc0ZTlhNjJlNjY5ODY4MmNmNWUzYmZkODg4ZTUyY2U1MmFkM2Y1YjVhOGQ5ZGEyNTRlMDA1OGRlZDY0NjUyYzlkOGVhMDVkZGFkMzZhN2Y1MWUwMzU5OTYyZjhkYWFhOTc4ZmE3MTQyM2ZlYzJlMmI0N2UxODAyZTE3NWQ5Mzc3NTE5NTJmOGU2ZGVjZTkyNDExMDZmODNlYTFmOTliZGRjODc0NWY4OTFjMTQ3NTU2ZWZiOThjZjE1NjE5CiMgY29lZmZpY2llbnQKMDIKODIgMDEgMDAKMzBiOGQ3ZjRhZTQxOGYzZDYzNjk3ZTYyNjY3MWYyNmNkMjJhMmZkODU4MDIwMzI1MzZkZDcwYjRiNjI1YWU0MzAzMDI2ZTAyMjM5MzIzMzU2MTU0MDc5NDc1Y2RlY2Q2MDFmMGY2YzA0ZGZjMWRhMTIzNjIwZDFlODU5MjgxY2UwOGUwN2Y5Njc3N2I5YjM2MDEzYjQ2Y2VhNmY2MTkwNTVmNTVjODIzOWUzOWE1NjJjNTcwMDI0NWM4NmZmOGZlZTlkNTlhYzQyNmI4MTAzZjE0ODNjYjFkYmQ0ZGY3NTFhYjQ2MmEzOTRiMGUzNzc0OGE3ODU3NDQ3MTI0ODQwYWYyMjQzOGE2NDk0ZjM1NjlkYmJhYTE1NTkyYjk3NDA2Y2MyMzkwNzQ5ZmExOTllMGQ2OTUzYzM0NDRlYjRmNDE1NmUwZjVkNzMzMDlkODlkMGYzNjA5OGMwZDc1MDViNGJmMGM5M2NlNWRhZDkwMGVlNjU5YjFhZWJhZTQ5OGJjNjI4Mzc3ODkyNjQ3M2U1Nzk3NDJlYjY0NzdiODdiZjUxOWUzNDc1Zjc5ZGUyOGRjZTQ0ZjQ4ZDdlMjdmOGQ0MDcyOTI2ZjM5NTVlMmFiMmUxMTc3ODkwZmI2MmEyZTcxODU2MTliM2Y3ODU0OGI3MDU3MjQ5M2MzNjIyMmJjZDkK">Find / Replace, 4 more - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+変換結果を <code>-----BEGIN RSA PRIVATE KEY-----</code> と <code>-----END RSA PRIVATE KEY-----</code> で挟み、テキストファイルに保存した。<br>
+保存したファイルを秘密鍵として用い、数値を取り出したファイル名からわかるユーザ名 <code>u0170</code> を用いて<common-tool data-lang="ja">Tera Term</common-tool> でSSHサーバに接続した。<br>
+すると、flagが出力され、接続が切れた。
+</p>
+<p class="language-selector-en" lang="en">
+I put the converted data between <code>-----BEGIN RSA PRIVATE KEY-----</code> and <code>-----END RSA PRIVATE KEY-----</code>, and saved to a text file.<br>
+Using the saved file as the private key, I connected to the SSH server using <common-tool data-lang="en">Tera Term</common-tool> with the username <code>u0170</code>, that can be obtained from the name of the file from which I extracted the number.<br>
+Then, the flag was printed and the connection was closed.
+</p>
+
+<div class="flag">flag{HEADLINE:new_prime_found_today_at_the_lage_integer_collider}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SquareCTF 2021</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Memory Safe Strcmp (SquareCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Memory Safe Strcmp</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+ELFファイル <code>strcmp.bin</code> が与えられた。
+</p><p>
+このファイルを<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、以下の<code>main</code>関数があった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+An ELF file <code>strcmp.bin</code> was given.
+</p><p>
+Decompiling the file using <common-tool data-lang="en">Ghidra</common-tool>, I found this function <code>main</code>:
+</p>
+</span>
+<p><a href="main.c" class="code-link" data-collapse="true">main.c</a></p>
+
+<p class="language-selector-ja" lang="ja">
+この中の <code>0x108930</code> をダブルクリックすると、以下の <code>rust_rev_1::main</code> 関数が出てきた。
+</p>
+<p class="language-selector-en" lang="en">
+Double-clicking <code>0x108930</code> in this function, this function <code>rust_rev_1::main</code> appeared:
+</p>
+<p><a href="rust_rev_1_main.c" class="code-link" data-collapse="true">rust_rev_1_main.c</a></p>
+
+<p class="language-selector-ja" lang="ja">
+この中に、<code>this</code>から始まる文字列の各文字を固定の値と比較しているような部分があった。<br>
+前半と後半でそれぞれ後ろの文字から比較しているようだったので、重複しないように抜き出した。<br>
+そして、<common-tool data-lang="ja">CyberChef</common-tool>で比較対象の文字を抽出し、順番を反転した。
+</p>
+<p class="language-selector-en" lang="en">
+In this function, I found a part that looks like comparing each characters of the string beginning from <code>this</code> with fixed values.<br>
+It looked like it is comparing each of the former and latter part from the characters on the end, so I extracted the parts excluding the duplicated part.<br>
+Then, I used <common-tool data-lang="en">CyberChef</common-tool> to extract the characters to compare, and reversed the order.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Regular_expression('User%20defined','%5C'(.)%5C'',true,true,false,false,false,false,'List%20capture%20groups')Remove_whitespace(false,true,true,false,false,false)Reverse('Character')&amp;input=ICAgICAgICAgICAgICAgICAgICAmIENPTkNBVDExNSgtKCooY2hhciAqKSgobG9uZyl0aGlzICsgMHgxYikgPT0gJ2EnKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBDT05DQVQxMTQoLSgqKGNoYXIgKikoKGxvbmcpdGhpcyArIDB4MWEpID09ICcyJyksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENPTkNBVDExMygtKCooY2hhciAqKSgobG9uZyl0aGlzICsgMHgxOSkgPT0gJ2EnKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENPTkNBVDExMigtKCooY2hhciAqKSh0aGlzICsgNikgPT0gJzAnKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBDT05DQVQxMTEoLSgqKGNoYXIgKikoKGxvbmcpdGhpcyArCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMHgxNykgPT0gJzEnKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQ09OQ0FUMTEwKC0oKihjaGFyICopKChsb25nKQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgKyAweDE2KSA9PSAnMicpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENPTkNBVDE5KC0oKihjaGFyICopKChsb25nKXRoaXMgKyAweDE1KSA9PSAnMycpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENPTkNBVDE4KC0oKihjaGFyICopKHRoaXMgKyA1KSA9PSAnNycpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENPTkNBVDE3KC0oKihjaGFyICopKChsb25nKXRoaXMKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICsgMHgxMykgPT0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgJ2QnKSxDT05DQVQxNigtKCooY2hhcgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAqKSgoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbG9uZyl0aGlzICsgMHgxMikgPT0gJzcnKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBDT05DQVQxNSgtKCooY2hhciAqKSgobG9uZyl0aGlzICsgMHgxMSkgPT0gJzcnKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBDT05DQVQxNCgtKCooY2hhciAqKSh0aGlzICsgNCkgPT0gJzUnKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBDT05DQVQxMygtKCooY2hhciAqKSgobG9uZyl0aGlzCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICArIDB4ZikgPT0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgJzEnKSxDT05DQVQxMigtKCooY2hhcgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAqKSgoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbG9uZyl0aGlzICsgMHhlKSA9PSAnOScpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENPTkNBVDExKC0oKihjaGFyICopKChsb25nKXRoaXMgKyAweGQpID09ICc2JyksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLSgqKGNoYXIgKikodGhpcyArIDMpID09ICc5JykpKSkpKSkpKSkpKSkKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICApKSksCgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENPTkNBVDE2KC0oKihjaGFyICopKChsb25nKXRoaXMgKyAweGIpID09ICdjJyksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQ09OQ0FUMTUoLSgqKGNoYXIgKikoKGxvbmcpdGhpcyArIDEwKSA9PQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAnZCcpLENPTkNBVDE0KC0oKihjaGFyICopKChsb25nCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKXRoaXMgKyA5KSA9PSAnNCcpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENPTkNBVDEzKC0oKihjaGFyICopKHRoaXMgKyAyKSA9PSAnZScpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIENPTkNBVDEyKC0oKihjaGFyICopKChsb25nKXRoaXMgKyA3KSA9PQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAnNicpLENPTkNBVDExKC0oKihjaGFyICopKChsb25nCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKXRoaXMgKyA2KSA9PSAnOScpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0oKihjaGFyICopKChsb25nKXRoaXMgKyA1KSA9PSAnMycpKSkpKSkpKSkpKSkpKSkpCg">Regular expression, 2 more - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+この結果より、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag from this result.
+</p>
+
+<div class="flag">flag{396e4dc9691577d73210a2a}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SquareCTF 2021</a>
+</p>
+</body>
+</html>

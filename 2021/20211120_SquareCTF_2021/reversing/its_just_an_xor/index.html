@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>its just an xor (SquareCTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>its just an xor</h1>
+<span class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ELFファイル <code>itsjustanxor</code> が与えられた。
+</p><p>
+<code>itsjustanxor</code> を<common-tool data-lang="ja">Ghidra</common-tool>で逆コンパイルすると、以下の<code>main</code>関数があった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server and an ELF file <code>itsjustanxor</code> were given.
+</p><p>
+Decompiling <code>itsjustanxor</code> via <common-tool data-lang="en">Ghidra</common-tool>, I found this function <code>main</code>:
+</p>
+</span>
+<p><a href="main.c" class="code-link" data-collapse="true">main.c</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+これは、<code>fgets</code> で入力を読み込んだ後、最初の8バイトと <code>xor_key</code> のXORをとり、その結果が <code>"yoteyeet"</code> と一致すれば <code>flag.txt</code> の内容を出力する、というプログラムである。
+</p><p>
+Ghidraで見ると <code>xor_key</code> の値は <code>0539053905390539h</code> だったので、以下の<common-tool data-lang="ja">CyberChef</common-tool>のRecipeで入力するべき値を求めた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+This program reads some input via <code>fgets</code>, calculates an exclusive-or of the first 8 bytes of the input and <code>xor_key</code>, and prints the contents of <code>flag.txt</code> if the result matches with <code>"yoteyeet"</code>.
+</p><p>
+Ghidra revealed that the value of <code>xor_key</code> is <code>0539053905390539h</code>, so I obtained the value to input using this Recipe for <common-tool data-lang="en">CyberChef</common-tool>:
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Reverse('Character')XOR(%7B'option':'Hex','string':'0539053905390539'%7D,'Standard',false)Reverse('Character')&amp;input=eW90ZXllZXQ">Reverse, XOR, Reverse - CyberChef</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+得られた <code>@jM`@`\q</code> をサーバに入力したところ、「that aint it dawg」が出力されてしまった。
+</p><p>
+そこで、ファイル <code>itsjustanxor</code> を<common-tool data-lang="ja">CS50 Sandbox</common-tool>にアップロードし、調査を行った。<br>
+すると、GDB上で実行した時は <code>@jM`@`\q</code> を入力すると <code>flag.txt</code> の内容を出力するが、
+そのまま実行した時は <code>@jM`@`\q</code> を入力すると「that aint it dawg」が出力されることがわかった。
+</p><p>
+そこで、プログラムを書き換えて実行時の <code>xor_key</code> の内容を出力させることにした。<br>
+<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpで逆アセンブルした結果のうち、以下の部分で <code>xor_key</code> の値を読み出している。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+However, entering the resulting <code>@jM`@`\q</code> to the server just had it print "that aint it dawg".
+</p><p>
+Seeing this, I uploaded the file <code>itsjustanxor</code> to <common-tool data-lang="en">CS50 Sandbox</common-tool> to investigate.<br>
+I found that entering <code>@jM`@`\q</code> has it print the contents of <code>flag.txt</code> when executed on GDB,
+but entering <code>@jM`@`\q</code> has it print "that aint it dawg" when executed directly.
+</p><p>
+Therefore, I decided to modify the program to have it print the value of <code>xor_key</code> when it is executed.<br>
+Among the result of disassembling via "objdump" in <common-tool data-lang="en">TDM-GCC</common-tool>, this part retrieves the value of <code>xor_key</code>:
+</p>
+</span>
+<code-block data-extension="txt">
+    1342:	48 8b 05 c7 2c 00 00 	mov    0x2cc7(%rip),%rax        # 4010 &lt;xor_key&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+さらに、<code>printf</code>関数を呼び出す以下の部分もある。
+</p>
+<p class="language-selector-en" lang="en">
+It also has this part that calls the function <code>printf</code>:
+</p>
+<code-block data-extension="txt">
+    13d0:	48 89 c6             	mov    %rax,%rsi
+    13d3:	48 8d 3d 6e 0c 00 00 	lea    0xc6e(%rip),%rdi        # 2048 &lt;_IO_stdin_used+0x48&gt;
+    13da:	b8 00 00 00 00       	mov    $0x0,%eax
+    13df:	e8 0c fd ff ff       	callq  10f0 &lt;printf@plt&gt;
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+そこで、この <code>xor_key</code> の値を <code>%rax</code> に読み出すコードの次の部分を、この <code>%rax</code> の値を <code>printf</code> 関数で出力するコードに飛ぶコードに書き換えた。<br>
+すなわち、<code>0x1349</code> ～ <code>0x1e4e</code> をnop (<code>0x90</code>) で埋め、<code>0x134f</code> にjmp命令 (<code>0xeb 0x7f</code>) を書き込んだ。<br>
+さらに、<code>0x2048</code> に配置されている書式文字列を、<code>"%016llx\n"</code> に書き換えた。<br>
+なお、直接jmp命令を置かずにnop命令を入れたのは、直接jmp命令を置こうとするとオフセットが1バイトのjmp命令では届かないためである。
+</p><p>
+書き換えたファイルをCS50 Sandboxにアップロードして実行すると、<code>0420042004200420</code> と出力された。<br>
+そこで、これに基づいて入力するべき文字列を求めた。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I changed the next part of the code to load the value of <code>xor_key</code> to <code>%rax</code> to a code to jump to the code to print the value of <code>%rax</code> via the function <code>printf</code>.<br>
+In other words, I filled <code>0x1349</code> to <code>0x1e4e</code> with nop (<code>0x90</code>) and put a jmp instruction (<code>0xeb 0x7f</code>) to <code>0x134f</code>.<br>
+I also changed the format string placed at <code>0x2048</code> to <code>"%016llx\n"</code>.<br>
+Note that I added nop instructions because the part to print is beyond the limit of the jmp instruction with 1-byte offset placed just after the part to load <code>xor_key</code>.
+</p><p>
+I uploaded the modified file to CS50 Sandbox and executed that. As a result, it printed <code>0420042004200420</code>.<br>
+Then, I obtained the string to enter using this value.
+</p>
+</span>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Reverse('Character')XOR(%7B'option':'Hex','string':'0420042004200420'%7D,'Standard',false)Reverse('Character')&amp;input=eW90ZXllZXQ">Reverse, XOR, Reverse - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+得られた文字列 <code>YkTaYaEp</code> をサーバに入力すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by entering the resulting string <code>YkTaYaEp</code> to the server.
+</p>
+
+<div class="flag">flag{ok_maybe_there_was_a_little_more_than_an_xor}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SquareCTF 2021</a>
+</p>
+</body>
+</html>
