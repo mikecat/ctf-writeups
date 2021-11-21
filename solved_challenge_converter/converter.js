@@ -109,11 +109,47 @@ function parse_WaniCTFd(solves, challenges) {
 	return result;
 }
 
+function parse_SquareCTF(solves, challenges) {
+	const challengeData = challenges[0], solveData = challenges[1];
+	const categories = {}, solveCounts = {};
+	for (let i = 0; i < challengeData.challenges.length; i++) {
+		const challenge = challengeData.challenges[i];
+		if (challenge.topics.length > 0) {
+			categories[challenge.name] = challenge.topics[0];
+		}
+	}
+	for (let i = 0; i < solveData.standings.length; i++) {
+		const stats = solveData.standings[i].taskStats;
+		for (name in stats) {
+			if (name in solveCounts) {
+				solveCounts[name]++;
+			} else {
+				solveCounts[name] = 1;
+			}
+		}
+	}
+	const result = [];
+	for (let i = 0; i < solves.solves.length; i++) {
+		const info = solves.solves[i];
+		const challengeCategory = info.challenge in categories ? categories[info.challenge] : null;
+		const solveCount = info.challenge in solveCounts ? solveCounts[info.challenge] : 0;
+		result.push({
+			category: challengeCategory,
+			name: info.challenge,
+			solves: solveCount,
+			value: info.points,
+			time: (new Date(info.timestamp * 1000)).toJSON()
+		});
+	}
+	return result;
+}
+
 const parsers = [
 	parse_RACTF,
 	parse_rCTF,
 	parse_CTFd,
-	parse_WaniCTFd
+	parse_WaniCTFd,
+	parse_SquareCTF
 ];
 
 function parseJSON(jsonStr) {
