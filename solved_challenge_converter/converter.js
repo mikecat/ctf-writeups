@@ -144,12 +144,44 @@ function parse_SquareCTF(solves, challenges) {
 	return result;
 }
 
+function parse_TFC_CTF(solves, challenges) {
+	const challengeInfo = {};
+	if (challenges && challenges.pageProps.challenges) {
+		const clist = challenges.pageProps.challenges;
+		for (let i = 0; i < clist.length; i++) {
+			challengeInfo[clist[i].id] = {
+				category: clist[i].category,
+				name: clist[i].name,
+				solves: clist[i].nrSolves
+			};
+		}
+	}
+	const result = [];
+	const slist = solves.pageProps.team.solves;
+	for (let i = 0; i < slist.length; i++) {
+		const sid = slist[i].challengeId;
+		const parsed = {};
+		if (sid in challengeInfo) {
+			parsed.category = challengeInfo[sid].category;
+			parsed.name = challengeInfo[sid].name;
+			parsed.solves = challengeInfo[sid].solves;
+		} else {
+			parsed.name = sid;
+		}
+		parsed.value = slist[i].challenge.points;
+		parsed.time = slist[i].solvedAt;
+		result.push(parsed);
+	}
+	return result;
+}
+
 const parsers = [
 	parse_RACTF,
 	parse_rCTF,
 	parse_CTFd,
 	parse_WaniCTFd,
-	parse_SquareCTF
+	parse_SquareCTF,
+	parse_TFC_CTF
 ];
 
 function parseJSON(jsonStr) {
