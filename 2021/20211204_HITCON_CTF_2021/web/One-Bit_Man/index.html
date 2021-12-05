@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>One-Bit Man (HITCON CTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>One-Bit Man</h1>
+<p class="language-selector-ja" lang="ja">
+WebページのURLが与えられた。<br>
+このページには、「Download Dockerfile」というリンクと、Filename、Position、Flipping-bitを入力するフォームがあった。<br>
+「Download Dockerfile」からは、以下のファイルを含むアーカイブファイルが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+An URL of a web page was given.<br>
+The page had a link saying "Download Dockerfile" and a form that accepts Filename, Position, and Flipping-bit.<br>
+An archive file that contains these files was available from the "Download Dockerfile" link:
+</p>
+<code-block data-extension="txt">
+one-bit-man
+|-- Dockerfile
+`-- files
+    |-- entrypoint.sh
+    |-- flag
+    |-- hack.php
+    |-- htaccess
+    |-- init.sql
+    `-- readflag
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+これらのファイルから、以下のことが読み取れた。
+</p>
+<ul>
+<li>ELFファイルが <code>/readflag</code> に配置される。(<code>Dockerfile</code>、<code>readflag</code>)</li>
+<li>テキストファイルが <code>/var/www/html/.htaccess</code> に配置される。(<code>Dockerfile</code>、<code>htaccess</code>)</li>
+<li><code>admin</code> というアカウントが用意される。(<code>init.sql</code>)</li>
+</ul>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I found these things from these files:
+</p>
+<ul>
+<li>An ELF file will be placed to <code>/readflag</code>. (<code>Dockerfile</code>, <code>readflag</code>)</li>
+<li>A text file will be placed to <code>/var/www/html/.htaccess</code>. (<code>Dockerfile</code>, <code>htaccess</code>)</li>
+<li>An account <code>admin</code> will be provided. (<code>init.sql</code>)</li>
+</ul>
+</span>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+Filenameに <code>/var/www/html/.htaccess</code>、Positionに <code>67</code>、Flipping-bitに <code>0</code> を入力して送信してみると、「bad filename」と出た。<br>
+この「bad filename」という文字列は、得られたアーカイブ中のファイルには入っていないようだった。
+</p><p>
+プレースホルダーの通り、Filenameに <code>/var/www/html/index.php</code>、Positionに <code>0</code>、Flipping-bitに <code>0</code> を入力して送信してみると、<br>
+新しいWebページへのリンクと、そこを閲覧するためのユーザ名とパスワードが表示された。<br>
+このWebページにアクセスすると、PHPのソースコードが表示され、Wordpressが入っているらしいことがわかった。<br>
+<code>index.php</code>の Position 0 を書き換えたため、<code>&lt;?php</code> が <code>=?php</code> になり、ソースコードが表示されたようである。
+</p><p>
+Positionを <code>20</code> にすることで書き換えるのをコメントにし、Wordpressを普通に動かしてみた。<br>
+左下の検索欄から適当に打った <code>k</code> を検索すると、Sample Page が見つかった。<br>
+そこにあった「your dashboard」というリンクをクリックすると、ログイン画面 (<code>wp-login.php</code>) が出てきた。
+</p><p>
+そこで、<code>admin</code>としてログインできるようにする方法を探すため、以下のページから <code>wordpress-5.8.2-ja.zip</code> をダウンロードした。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I tried entering <code>/var/www/html/.htaccess</code> to Filename, <code>67</code> to Position, and <code>0</code> to Flipping-bit and sending, resulted in seeing "bad filename".<br>
+This string "bad filename" was not in the files in the archive.
+</p><p>
+According to the placeholder, I tried entering <code>/var/www/html/index.php</code> to Filename, <code>0</code> to Position, and <code>0</code> to Flipping-bit and sending.<br>
+As a result, a link to a new web page and a pair of username and password for the page appeared.<br>
+Visiting the web page, a PHP source code appeared and I found that Wordpress is installed there.<br>
+It looks like the source code is shown because the Position 0 of <code>index.php</code> is modified and <code>&lt;?php</code> became <code>=?php</code>.
+</p><p>
+I changed the Position to enter to <code>20</code> to set what to modify to the comment to have the Wordpress operate normally.<br>
+I searched <code>k</code>, which I randomly typed, from the search box in the left bottom, finding "Sample Page".<br>
+I clicked a link "your dashboard" there and found a form for logging in (<code>wp-login.php</code>).
+</p><p>
+I downloaded <code>wordpress-5.8.2-ja.zip</code> from this page to search for a way to enable me to login as <code>admin</code>:
+</p>
+</span>
+<p><a href="https://ja.wordpress.org/download/">ダウンロード | WordPress.org 日本語</a></p>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+<code>wp-login.php</code> の <code>'login'</code> の処理 (1104行目～) を見ると、<code>get_user_by</code> という関数を用いていることがわかった。<br>
+<code>grep</code> を用いてこの関数の定義を探すと、<code>wp-includes/pluggable.php</code> の102行目に見つかり、<code>WP_User::get_data_by</code> を用いていることがわかった。<br>
+<code>get_data_by</code> を<code>grep</code>で探すと、<code>wp-includes/class-wp-user.php</code> の191行目に見つかったが、今回の目的にはあまり役に立たなそうだった。
+</p><p>
+<code>wp-login.php</code> に戻って読み進めると、1142行目で <code>wp_signon</code> という関数を用いていることがわかった。<br>
+<code>grep</code> を用いてこの関数の定義を探すと、<code>wp-includes/user.php</code> の33行目に見つかった。<br>
+さらに、その下 (124行目) に <code>wp_authenticate_username_password</code> という関数が定義されており、その中に以下の部分 (174行目) があった。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+I read the part to process <code>'login'</code> in <code>wp-login.php</code> (from the 1104th line), and found that it uses a function <code>get_user_by</code>.<br>
+I searched for a definition of this function using <code>grep</code>, and found it at the 102nd line of <code>wp-includes/pluggable.php</code>. The function is using <code>WP_User::get_data_by</code>.<br>
+I searched for <code>get_data_by</code> via <code>grep</code> and found it at the 191st line of <code>wp-includes/class-wp-user.php</code>. It didn't look useful for current purpose.
+</p><p>
+I returned to <code>wp-login.php</code> and looked further. As a result, I found that it uses a function <code>wp_signon</code> on the 1142nd line.<br>
+I searched for a definition of this function using <code>grep</code> and found that at the 33rd line of <code>wp-includes/user.php</code>.<br>
+I also found a function <code>wp_authenticate_username_password</code> below the function (the 124th line), and found this part (the 174th line) in the function:
+</p>
+</span>
+<code-block data-extension="php">
+	if ( ! wp_check_password( $password, $user-&gt;user_pass, $user-&gt;ID ) ) {
+</code-block>
+
+<span class="language-selector-ja" lang="ja">
+<p>
+この <code>!</code> をビット反転により空白に書き換えれば、判定が逆転し、間違ったパスワードを入力することでログインできるようになりそうである。<br>
+バイナリエディタでこの <code>!</code> の位置を調べると、<code>5389</code> (<code>0x150d</code>) であることがわかった。
+</p><p>
+フォームのFilenameに <code>/var/www/html/wp-includes/user.php</code>、Positionに <code>5389</code>、Flipping-bitに <code>0</code> を入力し、Wordpressにアクセスした。<br>
+Sample Page にある「your dashboard」のリンク先は <code>http://xxx.xxx.xxx.xxx:yyyyy//wp-admin/</code> のように <code>wp-admin</code> の前にスラッシュが2個入っており、このまま操作してもうまくいかなかった。<br>
+スラッシュを1個消した <code>http://xxx.xxx.xxx.xxx:yyyyy/wp-admin/</code> にアクセスし、現れたログイン画面の「Username or Email Address」に <code>admin</code>、「Password」に <code>a</code> を入力して「Log In」ボタンを押すと、Dashboardが現れた。
+</p><p>
+このDashboardにおいて、Appearance → Theme Editor を開いた。<br>
+そして、「Theme Header (header.php)」を開き、<code>&lt;?php wp_body_open(); ?&gt;</code> を <code>&lt;?php wp_body_open(); passthru("/readflag"); ?&gt;</code> に書き換え、「Update File」を押した。<br>
+その後Wordpressのトップページにアクセスすると、flagが表示された。
+</p>
+</span>
+<span class="language-selector-en" lang="en">
+<p>
+Changing <code>!</code> here to a space via a bit flipping should reverse the condition and enable to login by entering a wrong password.<br>
+I checked the place of this <code>!</code> using a binary editor. It was <code>5389</code> (<code>0x150d</code>).
+</p><p>
+I entered <code>/var/www/html/wp-includes/user.php</code> as Filename, <code>5389</code> as Position, and <code>0</code> as Flipping-bit to the form, and opened Wordpress.<br>
+The destination of the "your dashboard" link on the "Sample Page" had two slashed before <code>wp-admin</code> like <code>http://xxx.xxx.xxx.xxx:yyyyy//wp-admin/</code>, and using this as-is didn't work well.<br>
+I accessed a URL with one slash removed like <code>http://xxx.xxx.xxx.xxx:yyyyy/wp-admin/</code>. Then, I entered <code>admin</code> as "Username or Email Address" and <code>a</code> as "Password" to the login form appeared.<br>
+Hitting the "Log In" button, the Dashboard appeared.
+</p><p>
+On the Dashboard, I opened "Theme Editor" in "Appearance".<br>
+Then, I opened "Theme Header (header.php)", changed <code>&lt;?php wp_body_open(); ?&gt;</code> to <code>&lt;?php wp_body_open(); passthru("/readflag"); ?&gt;</code>, and hit the "Update File" button.<br>
+After that, I opened the top page of Wordpress. As a result, the flag appeared.
+</p>
+</span>
+
+<div class="flag">hitcon{if your solution is l33t, please share it!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">HITCON CTF 2021</a>
+</p>
+</body>
+</html>
