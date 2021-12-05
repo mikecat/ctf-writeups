@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>a</title>
+</head>
+<body>
+<p style="width: 1920px; height: 1080px; object-fit: none;">
+<div style="transform: translate(-<?php
+
+$key = "xpos";
+$xpos = 12720;
+
+if (array_key_exists($key, $_GET)) {
+	$xpos_in = $_GET[$key];
+	if (preg_match("/\A[0-9]+\z/", $xpos_in)) {
+		$xpos = $xpos_in;
+	}
+}
+echo $xpos;
+
+?>px, -9200px); padding: 0;">
+<iframe src="http://localhost:8000/flag" width="1920" height="1080" style="transform: scale(25,25); transform-origin:0 0; margin: 0;"></iframe>
+</div>
+</p>
+</body>
+</html>
