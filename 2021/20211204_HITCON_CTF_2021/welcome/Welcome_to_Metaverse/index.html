@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Welcome to Metaverse (HITCON CTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Welcome to Metaverse</h1>
+<p class="language-selector-ja" lang="ja">
+以下の問題文が与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+This challenge description was given:
+</p>
+<blockquote>
+<p>Activate the source code, let's meet in the <em>meta</em> verse.</p>
+<p>Hint: The entrance is right here.</p>
+</blockquote>
+<p class="language-selector-ja" lang="ja">
+問題文があるDashboardのソースを表示すると、以下の部分があった。
+</p>
+<p class="language-selector-en" lang="en">
+Viewing the source of the Dashboard, which has the challenge description, I found this part:
+</p>
+<code-block data-extension="html">
+&lt;meta name="flag" content="hitcon{HITCON-verse let's gooooooo}"&gt;
+</code-block>
+<p class="language-selector-ja" lang="ja">
+この部分より、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag from this part.
+</p>
+
+<div class="flag">hitcon{HITCON-verse let's gooooooo}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">HITCON CTF 2021</a>
+</p>
+</body>
+</html>
