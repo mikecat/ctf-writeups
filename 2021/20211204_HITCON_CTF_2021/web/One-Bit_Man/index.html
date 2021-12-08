@@ -119,8 +119,8 @@ I also found a function <code>wp_authenticate_username_password</code> below the
 バイナリエディタでこの <code>!</code> の位置を調べると、<code>5389</code> (<code>0x150d</code>) であることがわかった。
 </p><p>
 フォームのFilenameに <code>/var/www/html/wp-includes/user.php</code>、Positionに <code>5389</code>、Flipping-bitに <code>0</code> を入力し、Wordpressにアクセスした。<br>
-Sample Page にある「your dashboard」のリンク先は <code>http://xxx.xxx.xxx.xxx:yyyyy//wp-admin/</code> のように <code>wp-admin</code> の前にスラッシュが2個入っており、このまま操作してもうまくいかなかった。<br>
-スラッシュを1個消した <code>http://xxx.xxx.xxx.xxx:yyyyy/wp-admin/</code> にアクセスし、現れたログイン画面の「Username or Email Address」に <code>admin</code>、「Password」に <code>a</code> を入力して「Log In」ボタンを押すと、Dashboardが現れた。
+Sample Page にある「your dashboard」のリンク先は <code>http://198.51.100.51:12345//wp-admin/</code> のように <code>wp-admin</code> の前にスラッシュが2個入っており、このまま操作してもうまくいかなかった。<br>
+スラッシュを1個消した <code>http://198.51.100.51:12345/wp-admin/</code> にアクセスし、現れたログイン画面の「Username or Email Address」に <code>admin</code>、「Password」に <code>a</code> を入力して「Log In」ボタンを押すと、Dashboardが現れた。
 </p><p>
 このDashboardにおいて、Appearance → Theme Editor を開いた。<br>
 そして、「Theme Header (header.php)」を開き、<code>&lt;?php wp_body_open(); ?&gt;</code> を <code>&lt;?php wp_body_open(); passthru("/readflag"); ?&gt;</code> に書き換え、「Update File」を押した。<br>
@@ -133,8 +133,8 @@ Changing <code>!</code> here to a space via a bit flipping should reverse the co
 I checked the place of this <code>!</code> using a binary editor. It was <code>5389</code> (<code>0x150d</code>).
 </p><p>
 I entered <code>/var/www/html/wp-includes/user.php</code> as Filename, <code>5389</code> as Position, and <code>0</code> as Flipping-bit to the form, and opened Wordpress.<br>
-The destination of the "your dashboard" link on the "Sample Page" had two slashed before <code>wp-admin</code> like <code>http://xxx.xxx.xxx.xxx:yyyyy//wp-admin/</code>, and using this as-is didn't work well.<br>
-I accessed a URL with one slash removed like <code>http://xxx.xxx.xxx.xxx:yyyyy/wp-admin/</code>. Then, I entered <code>admin</code> as "Username or Email Address" and <code>a</code> as "Password" to the login form appeared.<br>
+The destination of the "your dashboard" link on the "Sample Page" had two slashed before <code>wp-admin</code> like <code>http://198.51.100.51:12345//wp-admin/</code>, and using this as-is didn't work well.<br>
+I accessed a URL with one slash removed like <code>http://198.51.100.51:12345/wp-admin/</code>. Then, I entered <code>admin</code> as "Username or Email Address" and <code>a</code> as "Password" to the login form appeared.<br>
 Hitting the "Log In" button, the Dashboard appeared.
 </p><p>
 On the Dashboard, I opened "Theme Editor" in "Appearance".<br>
