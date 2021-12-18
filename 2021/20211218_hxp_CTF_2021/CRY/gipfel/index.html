@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>gipfel (hxp CTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>gipfel</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、サーバのプログラム <code>vuln.py</code> およびテキストファイル <code>pow-solver.cpp</code> が与えられた。<br>
+<code>vuln.py</code> は、以下の処理をするものだった。
+</p>
+<ol>
+<li>素数の定数 <code>q</code> を用意する。</li>
+<li>0以上<code>10**6</code>未満の乱数 <code>password</code> を生成する。</li>
+<li>以下を3回繰り返す。
+<ol>
+<li><code>password</code> のSHA-256値を整数として <code>g</code> に格納する。</li>
+<li>40の倍数である乱数 <code>privA</code> を生成する。</li>
+<li><code>g</code> を <code>privA</code> 乗して <code>q</code> で割った余り <code>pubA</code> を求め、出力する。</li>
+<li>1より大きく <code>q</code> 未満の整数 <code>pubB</code> を読み込む。</li>
+<li><code>pubB</code> を <code>privA</code> 乗して <code>q</code> で割った余り <code>shared</code> を求める。</li>
+<li><code>g</code> を <code>shared**3</code> 乗して <code>q</code> で割った余り <code>verA</code> を求め、出力する。</li>
+<li>整数 <code>verB</code> を読み込む。</li>
+<li>読み込んだ整数 <code>verB</code> が <code>g</code> を <code>shared**5</code> 乗して <code>q</code> で割った余りと一致した場合、以下の処理を行う。
+<ol>
+<li><code>password</code> の十進数表現、<code>"\0"</code>、<code>shared</code> の十進数表現をこの順番で連結した文字列のSHA-256値 <code>key</code> を求める。</li>
+<li>ファイル <code>flag.txt</code> の内容を読み込み、<code>flag</code> に格納する。</li>
+<li><code>flag</code> の内容を、鍵 <code>key</code> とnonce <code>b''</code> を用いて <code>AES.MODE_CTR</code> で暗号化し、出力する。</li>
+</ol></li>
+</ol></li>
+</ol>
+<p>
+この処理は、BuckeyeCTF 2021 の <a href="../../../20211023_BuckeyeCTF_2021/crypto/Key_exchange_2/" class="language-aware-link">Key exchange 2</a> に似ているようだった。
+</p><p>
+今回の定数 <code>q</code> を小さい値で割って余りをチェックした結果、4で割ると余りが1になった。<br>
+そこで、以下のコードを<common-tool data-lang="ja">Sage Cell Server</common-tool>に入力し、mod <code>q</code> における1の4乗根を求めた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connecting to a TCP server, a program for the server <code>vuln.py</code>, and a text file <code >pow-solver.cpp</code> were given.<br>
+What <code>vuln.py</code> does is:
+</p>
+<ol>
+<li>Prepare a constant prime number <code>q</code>.</li>
+<li>Generate a non-negative random number <code>password</code> which is smaller than <code>10**6</code>.</li>
+<li>Repeat this 3 times:
+<ol>
+<li>Store the SHA-256 value of <code>password</code> to <code>g</code> as an integer.</li>
+<li>Generate a random number <code>privA</code> which is a multiple of 40.</li>
+<li>Calculate <code>pubA</code> which is <code>g</code> to the <code>privA</code>-th power modulo <code>q</code> and print that.</li>
+<li>Read an integer <code>pubB</code> which is greater than 1 and smaller than <code>q</code>.</li>
+<li>Calculate <code>shared</code> which is <code>pubB</code> to the <code>privA</code>-th power modulo <code>q</code>.</li>
+<li>Calculate <code>verA</code> which is <code>g</code> to the <code>shared**3</code>-th power modulo <code>q</code> and print that.</li>
+<li>Read an integer <code>verB</code>.</li>
+<li>If <code>verB</code> equals to <code>g</code> to the <code>shared**5</code>-th power modulo <code>q</code>, perform this:
+<ol>
+<li>Calculate <code>key</code> which is a SHA-256 value of a string created by concatenating a decimal representation of <code>password</code>, <code>"\0"</code>, and a decimal representation of <code>shared</code> in this order.</li>
+<li>Read the contents of a file <code>flag.txt</code> and store that to <code>flag</code>.</li>
+<li>Encrypt <code>flag</code> via <code>AES.MODE_CTR</code> using a key <code>key</code> and nonce <code>b''</code> and print that.</li>
+</ol></li>
+</ol></li>
+</ol>
+<p>
+This process looks similar to what was used in <a href="../../../20211023_BuckeyeCTF_2021/crypto/Key_exchange_2/" class="language-aware-link">Key exchange 2</a> (BuckeyeCTF 2021).
+</p><p>
+I divided the constant value <code>q</code> with smaller values and checked the remainders. As a result, I found that the remainder becomes 1 when <code>q</code> is divided by 4.<br>
+Seeing this, I calculated the 4th root of 1 modulo <code>q</code> by putting this code to <common-tool data-lang="en">Sage Cell Server</common-tool>.
+</p>
+</div>
+<code-block data-extension="py">
+n=0x3a05ce0b044dade60c9a52fb6a3035fc9117b307ca21ae1b6577fef7acd651c1f1c9c06a644fd82955694af6cd4e88f540010f2e8fdf037c769135dbe29bf16a154b62e614bb441f318a82ccd1e493ffa565e5ffd5a708251a50d145f3159a5
+
+F = IntegerModRing(n)
+print(F(1).nth_root(4, all=True))
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+その結果、以下の4乗根が求まった。
+</p>
+<p class="language-selector-en" lang="en">
+Here are the 4th roots:
+</p>
+<code-block data-extension="txt">
+1
+21992493417575896428286087521674334179336251497851906051131955410904158485314789427947788692030188502157019527331785823395914742996088304304555885698180826189819001027801777676309939507353142989960235700998476739551309053606306431
+21992493417575896428286087521674334179336251497851906051131955410904158485314789427947788692030188502157019527331790513011401920585195969087140918256569620608732530453375717414098148438918130733211117668960801178110820764957628836
+4689615487177589107664782585032558388794418913529425573939737788208931564987743250881967962324438559511711351322406
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+求めた4乗根のうち1でないもの(どれか1個)を <code>pubB</code> として入力すると、<code>privA</code> は40の倍数、すなわち4の倍数なので、<code>shared</code> は必ず1になる。<br>
+すると、1を3乗しても1なので、<code>g</code> の1乗、すなわち <code>g</code> の値が <code>verA</code> として出力される。<br>
+同様に <code>g</code> の <code>shared**5</code> 乗も <code>g</code> になるので、<code>verB</code> には出力された <code>verA</code> の値をそのまま入力するとよい。
+</p><p>
+<common-tool data-lang="ja">Tera Term</common-tool>で指定のサーバに接続すると、以下の出力がされた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Putting one of the 4th roots except for 1 as <code>pubB</code> will have <code>shared</code> become 1 because <code>privA</code> is a multiple of 40, which is a multiple of 4.<br>
+Then, since 1 to the 3rd power is 1, <code>g</code> to the 1st power, which is <code>g</code>, is printed as <code>verA</code>.<br>
+Since <code>g</code> to the <code>shared**5</code>-th power is also <code>g</code>, entering the printed value of <code>verA</code> as <code>verB</code> will work.
+</p><p>
+Connecting to the specified server via <common-tool data-lang="en">Tera Term</common-tool>, the server printed this:
+</p>
+</div>
+<code-block data-extension="txt">
+please give S such that sha256(unhex("ee82fd8332a66055" + S)) ends with 32 zero bits (see pow-solver.cpp).
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+そこで、この問題を解くため、以下のプログラムを作成した。
+</p>
+<p class="language-selector-en" lang="en">
+Seeing this, I created this program to solve this question.
+</p>
+<p><a href="get_S_mp.py" class="code-link" data-collapse="true">get_S_mp.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムを12並列に設定して実行した結果、5分程度で<code>S</code>が求まった。<br>
+(なお、今回短時間で求まったのは解が探索範囲の最初の方にあったからであり、求まるまで30分程度かかることもありそうである)<br>
+求まった <code>b88c3eee</code> をサーバに送信すると、<code>vuln.py</code> が実行されたようで、以下のデータ (送信したデータを含む) が得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I ran this program, setting it to use 12 processes, and it found the <code>S</code> after about 5 minutes.<br>
+(It looks like the answer was found early in this case because it was in the early part of the search space. It may take about 30 minutes to obtain <code>S</code>.)<br>
+After sending the answer <code>b88c3eee</code> to the server, it looked like <code>vuln.py</code> was executed and I obtained this data (including data I sent):
+</p>
+<code-block data-extension="txt">
+pubA = 0x37ee2185ff6b6beb6e8a42dc609889f47e232d7884669644fdd87f2fabe836b81b7efa8e9f82a8beb98e833f2c43be8bfd10d7c7aa15fe32332c715e299cda900a2588c35b27b9598814479ffb8df9b8506fea70904c96cb6bb9967f13b8b68
+21992493417575896428286087521674334179336251497851906051131955410904158485314789427947788692030188502157019527331785823395914742996088304304555885698180826189819001027801777676309939507353142989960235700998476739551309053606306431
+verA = 0x91defc8d7a3f9fc49d54795b661d82cd45baa118fc14295c90896353c34deee5
+0x91defc8d7a3f9fc49d54795b661d82cd45baa118fc14295c90896353c34deee5
+flag: 634387009c90e6fc151e73b8296c439176bfb5a00ab1307775ac46637bfdddc03e14283dd65b66b5
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+<code>verA</code> の値(<code>0x</code>は除く)が <code>password</code> のSHA-256値になっているので、これをファイル <code>hashcat_target.txt</code> に保存し、
+以下のように<common-tool data-lang="ja">hashcat</common-tool>を用いて <code>password</code> の値を求めた。
+</p>
+<p class="language-selector-en" lang="en">
+The value of <code>verA</code> (excluding <code>0x</code>) is the SHA-256 value of <code>password</code>.<br>
+I saved the SHA-256 value to a file <code>hashcat_target.txt</code> and obtained the value of <code>password</code> via <common-tool data-lang="en">hashcat</common-tool> in this way:
+</p>
+<code-block data-extension="txt">
+hashcat -m 1400 -a 3 -w 4 D:\...\hashcat_target.txt --increment ?d?d?d?d?d?d?d
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+得られた <code>password</code> の値 <code>919081</code> と、<code>shared</code> の値 <code>1</code> を用い、以下のように<common-tool data-lang="ja">CyberChef</common-tool>を用いて <code>key</code> を求めた。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I obtained the value of <code>key</code> via <common-tool data-lang="en">CyberChef</common-tool> using the obtained value of <code>password</code> (<code>919081</code>) and the value of <code>shared</code> (<code>1</code>) in this way:
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Simple%20string','string':'.'%7D,'%5C%5C0',true,false,true,false)SHA2('256',64,160)&amp;input=OTE5MDgxLjE">Find / Replace, SHA2 - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+この <code>key</code> を用いて <code>flag</code> を復号しようとすると、16バイトのIVを要求された。<br>
+IVとして全部ゼロのデータを入力すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+CyberChef asked a 16-byte IV when I tried to decode <code>flag</code> using this <code>key</code>.<br>
+I obtained the flag by entering 16 byts of zero as IV.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=AES_Decrypt(%7B'option':'Hex','string':'14aaff9aabd01152f7ce60d9620e50f9fba933ef510ec91381f57776ea212fda'%7D,%7B'option':'Hex','string':'0000000000000000000000000000000'%7D,'CTR','Hex','Raw',%7B'option':'Hex','string':''%7D,%7B'option':'Hex','string':''%7D)&amp;input=NjM0Mzg3MDA5YzkwZTZmYzE1MWU3M2I4Mjk2YzQzOTE3NmJmYjVhMDBhYjEzMDc3NzVhYzQ2NjM3YmZkZGRjMDNlMTQyODNkZDY1YjY2YjU">AES Decrypt - CyberChef</a></p>
+
+<div class="flag">hxp{ju5T_k1ddIn9_w3_aLl_kn0w_iT's_12345}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">hxp CTF 2021</a>
+</p>
+</body>
+</html>
