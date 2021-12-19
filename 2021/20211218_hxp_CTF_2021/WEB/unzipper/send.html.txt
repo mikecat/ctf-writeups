@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>unzipper send</title>
+</head>
+<body>
+<form action="http://65.108.176.76:8200/" method="POST" enctype="multipart/form-data">
+<p>
+<input type="file" name="file"><br>
+<input type="submit" value="submit">
+</p>
+</form>
+</body>
+</html>
