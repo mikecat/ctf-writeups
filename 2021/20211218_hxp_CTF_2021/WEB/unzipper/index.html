@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>unzipper (hxp CTF 2021) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>unzipper</h1>
+<p class="language-selector-ja" lang="ja">
+WebページのURLと、以下のファイルが与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+An URL of a web page and these files were given:
+</p>
+<code-block data-extension="txt">
+unzipper
+|-- Dockerfile
+|-- docker-stuff
+|   |-- cleanup
+|   |-- default
+|   `-- www.conf
+`-- index.php
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+<code>index.php</code> は、以下の処理をするものだった。
+</p>
+<ul>
+<li>セッションごとにランダムな名前の作業用ディレクトリを用意する。</li>
+<li><code>$_FILES['file']</code> が設定されている場合は、そのファイルをzipファイルとして展開する。</li>
+<li>そうでなく、<code>$_GET['file']</code> が設定されている場合は、
+<ol>
+<li>指定されたパスを <code>realpath</code> 関数で処理した結果が、空でも文字列 <code>flag</code> を含むものでもないかをチェックする。</li>
+<li>チェックを通れば、指定されたパスを <code>readfile</code> 関数に渡す。	
+</ol></li>
+</ul>
+<p>
+また、<code>Dockerfile</code> より、ファイル <code>/flag.txt</code> が用意されることが読み取れた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+What <code>index.php</code> does is:
+</p>
+<ul>
+<li>For each sessions, prepare a working directory having a random name.</li>
+<li>If <code>$_FILES['file']</code> is set, unzip the file.</li>
+<li>If it is not set and <code>$_GET['file']</code> is set:
+<ol>
+<li>Apply the function <code>realpath</code> to the path and check if the result is not empty nor contains a string <code>flag</code>.</li>
+<li>If it passes the check, call the function <code>readfile</code> with the path.</li>
+</ol></li>
+</ul>
+<p>
+Also, from the file <code>Dockerfile</code>, I found that there will be a file <code>/flag.txt</code>.
+</p>
+</div>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+ここで、各関数の以下の性質を用いる。
+</p>
+<ul>
+<li><code>realpath</code> 関数は、渡されたパス中のシンボリックリンクを展開する。</li>
+<li><code>readfile</code> 関数は、読み込むファイルをURLで指定できる。</li>
+</ul>
+<p>
+読み込むファイルのパスとして <code>file:///flag.txt</code> を指定すると、<br>
+<code>readfile</code> 関数はこれをURLと解釈してファイル <code>/flag.txt</code> を読みに行く一方、
+<code>realpath</code> 関数はこれをディレクトリ <code>file:</code> 内のファイル <code>flag.txt</code> と解釈する。<br>
+この <code>flag.txt</code> をシンボリックリンクにしておくことで、<code>realpath</code> の処理結果から文字列 <code>flag</code> を消し、<code>readfile</code> 関数を実行させることができる。
+</p><p>
+これを実行するため、まずWebページにファイルを送信するための以下のファイルを用意した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+I decided to use these characteristics of the functions:
+</p>
+<ul>
+<li>The function <code>realpath</code> will expand symbolic links in the given path.</li>
+<li>The function <code>readfile</code> accepts an URL as the path of the file to read.</li>
+</ul>
+<p>
+When I specify <code>file:///flag.txt</code> as the path of the file to read,
+the functon <code>readfile</code> will treat this as an URL and read the file <code>/flag.txt</code>.<br>
+On the other hand, the function <code>realpath</code> will interpret this as the file <code>flag.txt</code> in the directory <code>file:</code>.<br>
+We can remove a string <code>flag</code> from the result of the function <code>realpath</code> to have it call the function <code>readfile</code> by preparing this <code>flag.txt</code> as a symbolic link.
+</p><p>
+To realize this, firstly I created this file for sending files to the web page:
+</p>
+</div>
+<p><a href="send.html.txt" class="code-link" data-collapse="true" data-extension="html">send.html</a></p>
+
+<p class="language-selector-ja" lang="ja">
+さらに、<common-tool data-lang="ja">CS50 Sandbox</common-tool>を開き、以下のコマンドでファイル <code>file_flag.zip</code> を作成した。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I opened <common-tool data-lang="en">CS50 Sandbox</common-tool> and created a file <code>file_flag.zip</code> using these connamds:
+</p>
+<code-block data-extension="txt">
+mkdir file:
+cd file:
+touch meow.txt
+ln -s meow.txt flag.txt
+cd ..
+zip -ry file_flag.zip file:
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+作成した <code>file_flag.zip</code> を <code>send.html</code> から送信した後、<code>http://65.108.176.76:8200/?file=file:///flag.txt</code> にアクセスすることで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by sending the file <code>file_flag.zip</code> via <code>send.html</code> and accessing <code>http://65.108.176.76:8200/?file=file:///flag.txt</code> after that.
+</p>
+
+<div class="flag">hxp{at_least_we_have_all_the_performance_in_the_world..._lolphp_:/}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">hxp CTF 2021</a>
+</p>
+</body>
+</html>
