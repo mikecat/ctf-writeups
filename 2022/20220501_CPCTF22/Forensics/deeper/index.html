@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>deeper (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>deeper</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>flag</code> が与えられた。
+</p><p>
+ファイルの中身をバイナリエディタで見るとPNGファイルっぽかったので、<common-tool data-lang="ja">TweakPNG</common-tool>で開くと、以下のメッセージが出た。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>flag</code> was given.
+</p><p>
+Seeing the file via a binary editor and finding that it looks like a PNG file, I opened the file on <common-tool data-lang="en">TweakPNG</common-tool>. As a result, it gave me this message:
+</p>
+</div>
+<blockquote>
+Invalid chunk type found at file position 32233. This may indicate garbage at the end of the file.
+</blockquote>
+<div class="language-selector-ja" lang="ja">
+<p>
+メッセージを受けてファイルの最後の方をバイナリエディタでみると、<code>PK</code>という文字列が見えたので、ファイルを<common-tool data-lang="ja">7-Zip</common-tool>で開いた。<br>
+何回か階層を下ると、ファイル <code>flag~</code> にたどり着いた。
+</p><p>
+このファイルの中身はBase64エンコードされたデータっぽかったので、<common-tool data-lang="ja">CyberChef</common-tool>で From Base64 をかけた。<br>
+すると、<code>PK</code> という文字列が見えたので、さらに Unzip をかけた。<br>
+その結果、ファイル <code>flag.svg</code> が得られた。
+</p><p>
+このファイル <code>flag.svg</code> を<common-tool data-lang="ja">Firefox</common-tool>で開くと、flagが書かれているようだったが、後半が塗りつぶされていた。<br>
+しかし、テキストをコピーすることができ、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Seeing this message, I viewed the last part of the file via a binary editor. Finding a string <code>PK</code>, I opened the file via <common-tool data-lang="en">7-Zip</common-tool>.<br>
+Going down several times, I found a file <code>flag~</code>.
+</p><p>
+The contents of this file looked like a Base64-encoded data, so I applied "From Base64" on <common-tool data-lang="en">CyberChef</common-tool>.<br>
+Finding a string <code>PK</code> in the result, I applied "Unzip" to the result.<br>
+As a result, I obtained a file <code>flag.svg</code>.
+</p><p>
+Opening the file <code>flag.svg</code> on <common-tool data-lang="en">Firefox</common-tool>, I found the flag with the latter part blacked out.<br>
+I obtained the flag by copy-and-pasting the text from there.
+</p>
+</div>
+
+<div class="flag">CPCTF{4_10t_of_f1l3_typ35}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

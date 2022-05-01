@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dive! (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Dive!</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>image.tar</code> が与えられた。<br>
+<common-tool data-lang="ja">7-Zip</common-tool> で開くと、中に何個かtarファイルが入っているようだった。
+</p><p>
+tarだけで圧縮はされていないようだったので、<code>strings</code> コマンドをかけ、結果からテキストエディタで「ctf」を検索すると、以下の部分が見つかった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>image.tar</code> was given.<br>
+Seeing what are in via <common-tool data-lang="en">7-Zip</common-tool>, I found that there are several tar files in the file.
+</p><p>
+Finding that the files don't seem compressed, I applied <code>strings</code> command and searched for "ctf" from the result via a text editor, finding this part:
+</p>
+</div>
+<code-block data-extension="txt">
+cpctf/flag.txt
+0100644
+0000000
+0000000
+00000000050
+14233252574
+012020
+ustar
+0000000
+0000000
+Q1BDVEZ7ZDF2M18xbjcwX2QwY2szcl8xbTQ2M30=
+</code-block>
+<p class="language-selector-ja" lang="ja">
+この部分の最後に<common-tool data-lang="ja">CyberChef</common-tool>で From Base64 をかけると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I applied "From Base64" on <common-tool data-lang="en">CyberChef</common-tool> to the last part of this data to obtain the flag.
+</p>
+<p>
+<a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)&amp;input=UTFCRFZFWjdaREYyTTE4eGJqY3dYMlF3WTJzemNsOHhiVFEyTTMwPQ">From Base64 - CyberChef</a>
+</p>
+
+<div class="flag">CPCTF{d1v3_1n70_d0ck3r_1m463}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

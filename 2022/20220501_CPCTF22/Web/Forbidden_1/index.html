@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Forbidden 1 (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Forbidden 1</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+Webページへのリンクが与えられた。
+</p><p>
+ページには旗の画像があり、クリックすると「fetch failed with status code 403」と表示された。
+</p><p>
+<common-tool data-lang="ja">Firefox</common-tool>の開発者ツールで確認すると、
+このとき <code>admin=false</code> というCookieを伴って <code>/private/flag.txt</code> を要求していることがわかった。
+</p><p>
+この <code>admin=false</code> を <code>admin=true</code> に書き換え、「編集して再送信」することで、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A link to a web page was given.
+</p><p>
+The page had an image of a flag. Clicking the image yielded a message "fetch failed with status code 403".
+</p><p>
+Using the Developer Tool on <common-tool data-lang="en">Firefox</common-tool>,
+I found that <code>/private/flag.txt</code> is requested with a Cookie <code>admin=false</code>.
+</p><p>
+I used "Edit and Resend" with changing this <code>admin=false</code> to <code>admin=true</code>, and obtained the flag.
+</p>
+</div>
+
+<div class="flag">CPCTF{D3v70015_15_v3ry_p0w3rfu1}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

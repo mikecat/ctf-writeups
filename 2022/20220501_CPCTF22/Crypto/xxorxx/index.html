@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>xxorxx (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>xxorxx</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+暗号文とソースコードが与えられた。<br>
+ソースコードでは、リスト <code>text</code> の各要素に何かをxorしている様子が読み取れた。
+</p><p>
+暗号文に<common-tool data-lang="ja">CyberChef</common-tool>で XOR Brute Force をかけると、Key = 15 でflagが出てきた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A ciphertext and a source code were given.<br>
+I found that exclusive-or of something and elements of a list <code>text</code> is calculated in the source code.
+</p><p>
+I applied "XOR Brute Force" on <common-tool data-lang-"en">CyberChef</common-tool>, and found the flag at Key = 15.
+</p>
+</div>
+<p>
+<a href="https://gchq.github.io/CyberChef/#recipe=XOR_Brute_Force(1,100,0,'Standard',false,true,false,'')&amp;input=VkVWQVNubSVnSiQgSnYleHhgIiEiJGMmaA">XOR Brute Force - CyberChef</a>
+</p>
+
+<div class="flag">CPCTF{x0r_15_c0mmu7471v3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

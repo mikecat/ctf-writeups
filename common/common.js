@@ -256,6 +256,9 @@ const commonToolList = {
 	},
 	"CS50 Sandbox": {
 		"": "https://sandbox.cs50.io/"
+	},
+	"KiCad": {
+		"": "https://www.kicad.org/"
 	}
 };
 

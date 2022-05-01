@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Veeeeeeery Long Text (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Veeeeeeery Long Text</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+SSHサーバの情報が与えられた。
+</p><p>
+<common-tool data-lang="ja">Tera Term</common-tool>でサーバに接続し、<code>ls -l</code>コマンドと<code>pwd</code>コマンドを用いると、
+ファイル <code>/home/user/flag.txt</code> があることがわかった。<br>
+そこで、Tera TermのSCP機能を用いてこのファイルをダウンロードした。<br>
+テキストエディタでこのファイルから「CPCTF」を検索すると、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information of a SSH server was given.
+</p><p>
+I connected to the server via <common-tool data-lang="en">Tera Term</common-tool> and executed <code>ls -l</code> command and <code>pwd</code> command,
+finding a file <code>/home/user/flag.txt</code>.<br>
+I downloaded this file via SCP function of Tera Term.<br>
+I obtained the flag by searching for "CPCTF" from the file via a text editor.
+</p>
+</div>
+
+<div class="flag">CPCTF{p1pe_15_u53fu1}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

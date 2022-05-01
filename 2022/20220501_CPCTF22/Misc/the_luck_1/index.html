@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>the luck 1 (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>the luck 1</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、プログラム <code>main.c</code> が与えられた。<br>
+<code>main.c</code> は、<code>srand(time(NULL));</code> を実行した後、数値を読み込み、その数値が <code>rand()</code> の返り値と一致すればflagを出力するというものであった。
+</p><p>
+そこで、<code>time(NULL)</code>の返り値に適当な値を足したものを <code>srand</code> に渡した後の <code>rand()</code> の返り値を出力する以下のプログラムを用意し、
+<common-tool data-lang="ja">CS50 Sandbox</common-tool>で実行した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connecting to a TCP server and a program <code>main.c</code> were given.<br>
+What <code>main.c</code> does is reading an integer after executing <code>srand(time(NULL));</code> and printing the flag if the number read equals to the return value of <code>rand()</code>.
+</p><p>
+Seeing this, I created following program to print the return values of <code>rand()</code> after passing the return value of <code>time(NULL)</code> plus some values to <code>srand</code>,
+and executed that on <common-tool data-lang="en">CS50 Sandbox</common-tool>.
+</p>
+</div>
+<p><a href="test.c" class="code-link">test.c</a></p>
+
+<p class="language-selector-ja" lang="ja">
+実行後、時計を見ながら<common-tool data-lang="ja">Tera Term</common-tool>でサーバに接続し、出力された値から適当なものを選んで送信すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+After executing this program, I connected to the server using <common-tool data-lang="en">Tera Term</common-tool> with watching a clock, and sent proper value from what is printed to obtain the flag.
+</p>
+
+<div class="flag">CPCTF{y0u_124n_v312y_f45t}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>the luck 2 (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>the luck 2</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、プログラム <code>main.py</code> が与えられた。<br>
+<code>main.py</code> の処理内容は、以下のものだった。
+</p>
+<ol>
+<li><code>random.getrandbits(32)</code> により、正解の値を生成する。</li>
+<li>数値を読み込む。</li>
+<li>読み込んだ数値が正解なら、flagを出力する。正解でなければ、正解の値を出力し、最初に戻る選択肢を与える。</li>
+</ol>
+<p>
+<code>random.getrandbits(32)</code> はメルセンヌ・ツイスタの <code>genrand_int32()</code> の返り値を返すはずである。<br>
+さらに、メルセンヌ・ツイスタは、十分な数の出力を集めれば次の値を予測できることが知られている。<br>
+そこで、<a href="https://qiita.com/mikecat_mixc/items/33179b28cce05cdd525b#twist-and-shout">Zh3r0 CTF V2 の Twist and Shout</a> で用いたコードを利用し、<common-tool data-lang="ja">Z3</common-tool>を用いて次の値を予測して送信する以下のプログラムを作成した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connecting to a TCP server and a program <code>main.py</code> were given.<br>
+What <code>main.py</code> does is:
+</p>
+<ol>
+<li>Choose the answer value via <code>random.getrandbits(32)</code>.</li>
+<li>Read an integer.</li>
+<li>If the integer read is the answer, print the flag. Otherwise, print the answer and let the user to perform this process again.</li>
+</ol>
+<p>
+<code>random.getrandbits(32)</code> should return what is returned from <code>genrand_int32()</code> of Mersenne Twister.<br>
+Also, it is known that we can predict the next output of Mersenne Twister from enough number of output values.<br>
+Using a program I wrote for <a href="https://qiita.com/mikecat_mixc/items/0ad6c1314f99e71a50df#twist-and-shout">"Twist and Shout" in Zh3r0 CTF V2</a>, I created this program to predict the next value via <common-tool data-lang="en">Z3</common-tool> and send the value.
+</p>
+</div>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+<details><summary>
+<span class="language-selector-ja" lang="ja">メルセンヌ・ツイスタ (移植元) のライセンス</span>
+<span class="language-selector-en" lang="en">License of Mersenne Twister (original for porting)</span>
+</summary>
+<p><a href="mt_license.txt" class="code-link">mt_license.txt</a></p>
+</details>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムに指定のサーバとの通信をさせることで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by having this program communicate with the specified server.
+</p>
+
+<div class="flag">CPCTF{y0u_4r3_a_1ucky_6uy}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

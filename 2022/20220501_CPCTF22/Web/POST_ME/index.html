@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>POST ME! (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>POST ME!</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+Webページへのリンクが与えられた。<br>
+また、ソースコードが提示されており、以下のリクエストを送れば良さそうであることが読み取れた。
+</p>
+<ul>
+<li>JSONデータ <code>{"password":"pass"}</code> を伴う <code>POST</code> メソッドのリクエスト
+<li><code>DELETE</code> メソッドのリクエスト</li>
+</ul>
+<p>
+ページを読み込むリクエストに対し<common-tool data-lang="ja">Firefox</common-tool>の開発者ツールで以下の変更を加えて「編集して再送信」することで、flagの前半部分が得られた。
+</p>
+<ul>
+<li>メソッドを <code>POST</code> にする</li>
+<li>要求ヘッダーに <code>Content-Type: application/json</code> を追加する</li>
+<li>要求ボディに <code>{"password":"pass"}</code> を入れる</li>
+</ul>
+<p>
+また、Firefoxの開発者ツールでページを読み込むリクエストのメソッドを <code>DELETE</code> に「編集して再送信」することで、flagの後半部分が得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A link to a web page was given.<br>
+Also a source code was given and it suggested that we should send these requests:
+</p>
+<ul>
+<li>A <code>POST</code> request with JSON data <code>{"password":"pass"}</code></li>
+<li>A <code>DELETE</code> request</li>
+</ul>
+<p>
+Based on a request to load the page, I made these changes with the Developer Tool on <common-tool data-lang="en">Firefox</common-tool> and performed "Edit and Resend", obtaining the former part of the flag.
+</p>
+<ul>
+<li>Change the method to <code>POST</code>.</li>
+<li>Add <code>Content-Type: application/json</code> to the request header.</li>
+<li>Put <code>{"password":"pass"}</code> to the request body.</li>
+</ul>
+<p>
+Also I obtained the latter part of the flag by using "Edit and Resend" to change the method to <code>DELETE</code> with the Developer Tool on Firefox.
+</p>
+</div>
+
+<div class="flag">CPCTF{POST_AND_DELETE_MASTER}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

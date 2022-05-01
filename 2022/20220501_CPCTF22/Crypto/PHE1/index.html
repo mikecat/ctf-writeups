@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PHE1 (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>PHE1</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、Pythonのプログラムが与えられた。
+</p><p>
+ソースコードは、<code>encrypt(a)</code>と<code>encrypt(b)</code>の値を出力し、<code>encrypt(a*b)</code>の値の入力を要求するものだった。<br>
+<code>encrypt(x)</code>は、xをe乗してNで割った余りを求める操作だった。
+</p><p>
+<code>N</code>の値も出力されていたので、<code>encrypt(a)</code>と<code>encrypt(b)</code>を掛けて<code>N</code>で割った余りを送信すると、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server, and a Python program were given.
+</p><p>
+What the source code was doing was printing values of <code>encrypt(a)</code> and <code>encrypt(b)</code>, and then requiring to enter the value of <code>encrypt(a*b)</code>.<br>
+<code>encrypt(x)</code> is x to the e-th power modulo N.
+</p><p>
+The value of <code>N</code> was also printed, so I obtained the flag by sending <code>encrypt(a)</code> times <code>encrypt(b)</code> modulo <code>N</code>.
+</p>
+</div>
+
+<div class="flag">CPCTF{Is_the_RSA_a_happy_tool_pe0lws}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

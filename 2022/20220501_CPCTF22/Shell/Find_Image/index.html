@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Find Image (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Find Image</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>image.png</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">CyberChef</common-tool>で Extract Files をかけると、以下の表示が出た。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>image.png</code> was given.
+</p><p>
+Applying "Extract Files" to the file on <common-tool data-lang="en">CyberChef</common-tool>, this message appeared:
+</p>
+</div>
+<blockquote>
+Found potential signature for Portable Network Graphics image at pos 33030144
+</blockquote>
+
+<p class="language-selector-ja" lang="ja">
+そこで、 Drop bytes でこの位置を先頭に持ってきて、Render Image をかけると、flagが書かれた画像が現れた。
+</p>
+<p class="language-selector-en" lang="en">
+I applied "Drop bytes" to the position and then applied "Render Image", seeing an image with the flag.
+</p>
+<p>
+<a href="https://gchq.github.io/CyberChef/#recipe=Drop_bytes(0,33030144,false)Render_Image('Raw')">Drop bytes, Render Image - CyberChef</a>
+</p>
+
+<div class="flag">CPCTF{im4ge_1n_im4ge}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

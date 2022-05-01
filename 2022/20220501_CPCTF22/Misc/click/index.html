@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>click (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>click</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+WebページのURLが与えられた。
+</p><p>
+<common-tool data-lang="ja">Firefox</common-tool>でページを開くと、unity WebGL が設置されており、
+以下のテキストと、1回押すとScoreが1増える「Get Score!」というボタンがあった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL of a web page was given.
+</p><p>
+I opened the page on <common-tool data-lang="en">Firefox</common-tool>,
+finding unity WebGL that has following text and a "Get Score!" button pressing that increments the Score.
+</p>
+</div>
+<code-block data-extension="txt">
+if (score == 1000000000) {
+    targetText.text = flag;
+}
+</code-block>
+<p class="language-selector-ja" lang="ja">
+そこで、<common-tool data-lang="ja">Cheat Engine</common-tool>でFirefoxにアタッチし、
+Scoreの値が4バイトの整数として格納されている場所を探した。<br>
+Firefoxのプロセスは複数あったので、見つかるまで試していった。<br>
+値を見つけた後、そこの値を <code>999999999</code> に書き換えて「Get Score!」ボタンを押すと、flagが表示された。
+</p>
+<p class="language-selector-en" lang="en">
+I attached <common-tool data-lang="en">Cheat Enging</common-tool> to Firefox and searched for a place where the value of Score is stored as a 4-byte integer.<br>
+There are several processes of Firefox, so I tried them one-by-one until I found the value.<br>
+After finding the value, I changed the value to <code>999999999</code> and pressed the "Get Score!" button. As a result, the flag appeared.
+</p>
+
+<div class="flag">CPCTF{15_y0u2_f1n632_v1br4t1n6}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

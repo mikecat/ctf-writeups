@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>png...? (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>png...?</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>flag.png</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">TSXBIN</common-tool>で開くと、中身はPNGファイルのようだったが、<code>IDAT</code>チャンクの長さが0になっていた。<br>
+この長さの部分に <code>0x1354</code> を書き込むと、画像として開くことができるようになり、画像中にflagが書かれていた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>flag.png</code> was given.
+</p><p>
+Opening on <common-tool data-lang="en">TSXBIN</common-tool>, I found that it looked like a PNG file, but the length of th <code>IDAT</code> chunk is set to 0.<br>
+Overwriting <code>0x1354</code> as the length, the file became able to be opened as an image, and the flag was in the image.
+</p>
+</div>
+
+<div class="flag">CPCTF{15_th15_f113_png}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

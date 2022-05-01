@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Hello Webshell (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Hello Webshell</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+Webshellの説明が与えられた。
+</p><p>
+説明に従ってWebshellを開き、<code>ls -l</code>コマンドを実行すると、ファイル <code>flag_HelloWebshell.txt</code> があることがわかった。<br>
+このファイルを <code>cat</code> コマンドで出力すると、flagが得られた。<br>
+右クリックからのコピーはできないようだったが、Ctrl+Cでコピーできた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A description of the Webshell was given.
+</p><p>
+I opened the Webshell following the instructions and executed <code>ls -l</code> command, finding a file <code>flag_HelloWebshell.txt</code>.<br>
+I obtained the flag by printing the file via <code>cat</code> command.<br>
+Copying texts via the right-click menu didn't look available, but I succeeded to copy the text using Ctrl+C.
+</p>
+</div>
+
+<div class="flag">CPCTF{h3110_w3b5h311}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

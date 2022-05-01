@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>poweRSA (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>poweRSA</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+以下の処理をするソースコードと、その出力が与えられた。
+</p>
+<ol>
+<li><code>FLAG</code>を <code>bytes_to_long</code> 関数に渡し、その返り値を <code>m</code> とする。</li>
+<li>素数 <code>p, q</code> を生成し、<code>N</code>を<code>p</code>と<code>q</code>の積とする。</li>
+<li>定数 <code>e = 0x10001</code> を用意する。</li>
+<li><code>p</code>の<code>q</code>乗を<code>N</code>で割った余りを求め、<code>r</code>とする。</li>
+<li><code>m</code>の<code>e</code>乗を<code>N</code>で割った余りを求め、<code>c</code>とする。</li>
+<li><code>N, r, c</code>を出力する。</li>
+</ol>
+<p>
+とりあえず<code>N</code>を<code>r</code>で割ってみると割り切れたので、これを用いて<code>c</code>に対しRSA暗号の復号を行った。<br>
+その結果に<common-tool data-lang="ja">CyberChef</common-tool>で To Base と From Hex をかけることで、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A source code and its output were given. What the code does was:
+</p>
+<ol>
+<li>Call <code>bytes_to_long</code> function with <code>FLAG</code> as the argument, and store the return value to <code>m</code>.</li>
+<li>Generate prime numbers <code>p, q</code>, and store product of <code>p</code> and <code>q</code> to <code>N</code>.</li>
+<li>Define a constant value <code>e = 0x10001</code>.</li>
+<li>Store <code>p</code> to the <code>q</code>-th power modulo <code>N</code> to <code>r</code>.</li>
+<li>Store <code>m</code> to the <code>e</code>-th power modulo <code>N</code> to <code>c</code>.</li>
+<li>Print the values of <code>N, r, c</code>.</li>
+</ol>
+<p>
+I tried dividing <code>N</code> by <code>r</code>, and found that <code>N</code> is a multiple of <code>r</code>.
+Then, I performed RSA decryption of <code>c</code> using the values.<br>
+I obtained the flag by applying "To Base" and "From hex" on <common-tool data-lang="en">CyberChef</common-tool> to the result.
+</p>
+</div>
+<p>
+<a href="https://gchq.github.io/CyberChef/#recipe=To_Base(16)From_Hex('Auto')&amp;input=MjE5MzkyMTIzMDg4ODEyMzk4OTQyMjQ1MDkzMTg2NzE3NTU0MTA2MDY3OTQzMzAwNzU2MzM5Mzg1Njc1ODY2ODY5MTMyMDkxNzU4NDc2NjEyMzc2MTk5OTI0NTk0OQ">To Base, From Hex - CyberChef</a>
+</p>
+
+<div class="flag">CPCTF{c0mm0n_d1v1s0r_1s_c0mm0n_tr1gg3r}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

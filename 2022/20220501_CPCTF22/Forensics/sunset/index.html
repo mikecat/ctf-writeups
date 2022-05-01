@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>sunset (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>sunset</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+「flag.png」というリンクで、画像ファイル <code>flag.jpg</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">ImageMagick</common-tool> の <code>identify -verbosse</code> コマンドをかけると、<code>comment:</code> に続いてflagが書かれた行が出てきた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An image file <code>flag.jpg</code> was given via a link saying "flag.png".
+</p><p>
+I applied <code>identify -verbose</code> command of <common-tool data-lang="en">ImageMagick</common-tool>, and found a line where the flag was after <code>comment:</code>.
+</p>
+</div>
+
+<div class="flag">CPCTF{3x1f_inf0_15_us3fu1}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>

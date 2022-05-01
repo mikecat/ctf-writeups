@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>RSA warmup (CPCTF22) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>RSA warmup</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+RSA暗号の説明とc, e, Nの値が与えられ、平文を要求された。
+</p><p>
+<code>factor</code> コマンドでNを因数分解し、Pythonのインタラクティブモードを用いて復号を行った。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Description of RSA cipher and values of c, e, N were given, and the plaintext was asked.
+</p><p>
+I factorized N using the <code>factor</code> command, and decrypted using the interactive mode of Python.
+</p>
+</div>
+
+<code-block data-extension="txt">
+&gt;&gt;&gt; c = 810
+&gt;&gt;&gt; e = 5
+&gt;&gt;&gt; N = 415411
+&gt;&gt;&gt; p = 487
+&gt;&gt;&gt; q = 853
+&gt;&gt;&gt; phi = (p - 1) * (q - 1)
+&gt;&gt;&gt; d = pow(e, -1, phi)
+&gt;&gt;&gt; pow(c, d, N)
+40613
+&gt;&gt;&gt;
+</code-block>
+
+<div class="flag">CPCTF{40613}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CPCTF22</a>
+</p>
+</body>
+</html>
