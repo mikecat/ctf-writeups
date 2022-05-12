@@ -1,0 +1,337 @@
+== proof-of-work: disabled ==
+
+       o
+      (^)
+     -=H=-          BISHOP DUEL
+      ] [   -- press enter to start --
+     /___\
+
+\__\\\\__\\\\__\WW\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\BB\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > C3
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \WW\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\BB\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\BB\\\\__\       C#  - down right # spaces
+    \WW\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > E2
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\WW\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\BB\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\WW\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > C3
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\WW\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\WW\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > E1
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\WW\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\WW\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > C1
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\WW\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\WW\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\BB\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > Q1
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\WW\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\BB\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\BB\\\\WW\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > C0
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\BB\\\\WW\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\WW\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > C0
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\WW\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\WW\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > Q2
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\WW\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\WW\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\BB\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > Z2
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\WW\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\BB\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\WW\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > E1
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\WW\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\WW\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\BB\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > Z2
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\WW\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\BB\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\BB\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\WW\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > C2
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\BB\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\WW\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\BB\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\WW\\\\__\\\\__\
+
+You are the white bishop. Input move > E4
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\BB\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\WW\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+The black bishop is thinking...
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\BB\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\WW\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move > Q1
+
+\__\\\\__\\\\__\\\\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\WW\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\__\\\\__\\\\__\\\\__\
+
+You have claimed victory! Your flag is sdctf{I_d1dnt_hAND_0u7_th3_s0urC3_c0D3_thIs_TIME}

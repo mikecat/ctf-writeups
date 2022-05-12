@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Google Ransom (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Google Ransom</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+Google ドキュメントのURLが与えられた。<br>
+そのドキュメントを作った人のメールアドレスを特定し、flagを要求することを要求された。
+</p><p>
+指定されたドキュメントを開き、「ヘルプ」にある「不正行為を報告」をクリックすると、Google アカウントでログインすることを要求された。<br>
+ログインすると、報告するファイルの作者だと思える形で「Amy SDCTF」が表示された。<br>
+また、今回のCTFの他の問題では <code>****.sdctf@gmail.com</code> という形式のメールアドレスを扱っているようだった。<br>
+このことから、今回のファイルの作者のメールアドレスは <code>amy.sdctf@gmail.com</code> であると推測した。
+</p><p>
+推測したメールアドレスをGoogle アカウントのログイン欄に入れると、パスワードの入力画面に遷移し、少なくとも存在するメールアドレスでありそうであることがわかった。<br>
+そこで、<common-tool data-lang="ja">捨てメアド【メルアドぽいぽい】</common-tool>を利用し、以下の内容のメールを送信した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL for Google Docs was given.<br>
+We were asked to determine the e-mail address of the author of the document and to demand the flag.
+</p><p>
+I opened the document and tried clicking "Report a violation" in the "Help" menu. Then, I was asked to login using a Google Account.<br>
+After logging-in, I found a name "Amy SDCTF" and it looked like the author of the file to report.<br>
+Also I noted that e-mail addresses in a format <code>****.sdctf@gmail.com</code> were used in other challenges in this CTF.<br>
+Based on them, I guessed that the e-mail address of the author of the file is <code>amy.sdctf@gmail.com</code>. 
+</p><p>
+I put the guessed e-mail address to the login form of Google Account. It asked for a password for the user, so I found that at least the e-mail address exists.<br>
+Then, I sent this e-mail via <common-tool data-lang="en">InstAddr - Instant Email Address</common-tool>.
+</p>
+</div>
+<code-block data-extension="txt">
+Subject: Google Ransom
+
+Are you the author of the letter? If so, please give me the flag.
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+すると、以下の内容のメールが送られてきて、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I received this e-mail and obtained the flag.
+</p>
+<code-block data-extension="txt">
+Subject: Here is the flag... Re: Google Ransom
+
+Oh no, you found me!
+
+sdctf{0p3n_S0uRCE_1S_aMaz1NG}
+</code-block>
+
+<div class="flag">sdctf{0p3n_S0uRCE_1S_aMaz1NG}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

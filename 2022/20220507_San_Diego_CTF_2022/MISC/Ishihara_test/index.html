@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ishihara test++ (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+<style>
+<!--
+table.centered-table td {
+	text-align: center;
+}
+-->
+</style>	
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Ishihara test++</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>flag.svg</code> が与えられた。
+</p><p>
+<code>flag.svg</code> を<common-tool data-lang="ja">Firefox</common-tool>で開くと、大量の丸が表示された。<br>
+テキストエディタで開くと、1行に1個の<code>circle</code>タグが書かれており、<code>c1</code>～<code>c6</code>のクラスに分かれているようだった。
+</p><p>
+そこで、以下のように<code>grep</code>を用い、クラスごとに<code>circle</code>タグを抜き出した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>flag.svg</code> was given.
+</p><p>
+Opening <code>flag.svg</code> on <common-tool data-lang="en">Firefox</common-tool>, a lot of circles were displayed.<br>
+Opening the file with a text editor, I found there were one <code>circle</code> tag per line, and they were separated to classes <code>c1</code> to <code>c6</code>.
+</p><p>
+Seeing this, I used <code>grep</code> to extract <code>circle</code> tags of each classes in this way:
+</p>
+</div>
+<code-block data-extension="txt">
+grep c1 flag.svg &gt; flag-c1.svg
+grep c2 flag.svg &gt; flag-c2.svg
+grep c3 flag.svg &gt; flag-c3.svg
+grep c4 flag.svg &gt; flag-c4.svg
+grep c5 flag.svg &gt; flag-c5.svg
+grep c6 flag.svg &gt; flag-c6.svg
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+<code>grep</code> による抽出を行った後、<code>flag.svg</code> の最初の2行
+</p>
+<p class="language-selector-en" lang="en">
+After extracting via <code>grep</code>, I added the first 2 lines of <code>flag.svg</code>:
+</p>
+<code-block data-extension="xml">
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" version="1.1"&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+と最後の1行
+</p>
+<p class="language-selector-en" lang="en">
+and the last line:
+</p>
+<code-block data-extension="xml">
+&lt;/svg&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+をそれぞれの出力ファイルに書き足した。
+その結果、以下のような画像が得られた。
+</p>
+<p class="language-selector-en" lang="en">
+to each output files.
+These operations resulted in images like these:
+</p>
+<table class="centered-table">
+<tr><td>flag-c1.svg</td><td>flag-c2.svg</td><td>flag-c3.svg</td></tr>
+<tr>
+<td><img src="flag-c1.png" alt="flag-c1.svg"></td>
+<td><img src="flag-c2.png" alt="flag-c2.svg"></td>
+<td><img src="flag-c3.png" alt="flag-c3.svg"></td>
+</tr>
+<tr><td>flag-c4.svg</td><td>flag-c5.svg</td><td>flag-c6.svg</td></tr>
+<tr>
+<td><img src="flag-c4.png" alt="flag-c4.svg"></td>
+<td><img src="flag-c5.png" alt="flag-c5.svg"></td>
+<td><img src="flag-c6.png" alt="flag-c6.svg"></td>
+</tr>
+</table>
+
+<p class="language-selector-ja" lang="ja">
+クラス<code>c1</code>、<code>c3</code>、<code>c6</code>の抽出結果に文字のようなものが見えたので、
+以下のようにこれらをまとめて抽出した。
+</p>
+<p class="language-selector-en" lang="en">
+I found somethings like characters in the results for class <code>c1</code>, <code>c3</code>, and <code>c6</code>.
+So, I extracted all of them at once in this way:
+</p>
+<code-block data-extension="txt">
+grep -E "c[136]" flag.svg &gt; flag-c136.svg
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+同様に最初と最後を書き足すと、以下のような画像が得られた。
+</p>
+<p class="language-selector-en" lang="en">
+Adding the first and last lines in the same way resulted in an image like this:
+</p>
+<p><img src="flag-c136.png" alt="flag-c136.svg"></p>
+
+<p class="language-selector-ja" lang="ja">
+この画像からflagを読み取ることができた。
+</p>
+<p class="language-selector-en" lang="en">
+I read the flag from this image.
+</p>
+
+<div class="flag">sdctf{c0untle55_col0rfu1_c0lors_cov3ring_3veryth1ng}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

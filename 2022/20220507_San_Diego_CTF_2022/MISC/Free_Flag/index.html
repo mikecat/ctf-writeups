@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Free Flag (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Free Flag</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+「freeflag.png」というリンクで、ファイル <code>touched.png</code> が与えられた。
+</p><p>
+画像の内容を確認すると、右下に以下のテキストが書かれていた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>touched.png</code> was given via a link saying "freeflag.png".
+</p><p>
+Checking the image, I found this text in the right bottom:
+</p>
+</div>
+<blockquote>
+Made via "The Ultimate Flag Hider". Try it at flag.sdc.tf!
+</blockquote>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+<code>http://flag.sdc.tf/</code> にアクセスしてみると、画像とテキストを指定し、画像にテキストを隠せるサービスのようだった。
+</p><p>
+真っ白な幅512、高さ512のPNG画像とテキスト <code>flag</code> を指定して処理を行い、処理結果の画像をペイントの塗りつぶし機能を用いて調べると、
+右下にテキストが追加されたほか、左上の数ピクセルの色が変わっていることがわかった。<br>
+詳しく見ると、色が変わったのは4ピクセルであり、これは入力したのが4文字であることに対応していると予想できた。<br>
+実際、1文字の <code>f</code> を指定すると、1ピクセルしか色が変わらなかった。
+</p><p>
+<code>ABCDEFGHIJKLMNO</code> を指定して処理を行い、結果の画像に<common-tool data-lang="ja">CyberChef</common-tool>の Extract RGBA (Include Alpha 有効) をかけた結果の最初の部分は、以下のようになった。 (改行を補っている)
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Opening <code>http://flag.sdc.tf/</code>, I found that it should be a service where we can specify an image file and a text data to have it hide the text in the image.
+</p><p>
+I tried having the service hide a text <code>flag</code> to a all-white PNG image with width 512 and height 512.
+Then, I examined resulting image with the "fill" feature of Microsoft Paint.<br>
+As a result, I found not only that a text is added to the right bottom but also that the colors of a few pixels in the left top are changed.<br>
+Seeing more in detail, I found that colors of 4 pixels are changed, and I guessed that this corresponds to the 4-character input string.<br>
+To support this, I tried hiding 1-character text <code>f</code> and found that the color of only 1 pixel changed.
+</p><p>
+I tried hiding <code>ABCDEFGHIJKLMNO</code> and applying "Extract RGBA" (with "Include Alpha" enabled) on <common-tool data-lang="en">CyberChef</common-tool> to the result.<br>
+Here is the first part of the result with newlines added:
+</p>
+</div>
+<code-block data-extension="txt">
+252,254,252,254,
+252,254,253,252,
+252,254,253,254,
+252,255,252,252,
+252,255,252,254,
+252,255,253,252,
+252,255,253,254,
+252,254,252,253,
+252,254,252,255,
+252,254,253,253,
+252,254,253,255,
+252,255,252,253,
+252,255,252,255,
+252,255,253,253,
+252,255,253,255,
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+見比べた結果、LSBをビット0、MSBをビット7として、
+</p>
+<ul>
+<li>ビット0が1のとき、4番目の数値が2大きくなる</li>
+<li>ビット1が1のとき、3番目の数値が1大きくなる</li>
+<li>ビット2が1のとき、2番目の数値が1大きくなる</li>
+<li>ビット3が1のとき、4番目の数値が1大きくなる</li>
+</ul>
+<p>
+ことがわかった。さらに、<code>2BRbr</code> について同様の処理を行った結果は、以下のようになった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Compareing the result with the input string, I found that:
+</p>
+<ul>
+<li>2 is added to the 4th number when the bit 0 is 1.</li>
+<li>1 is added to the 3rd number when the bit 1 is 1.</li>
+<li>1 is added to the 2nd number when the bit 2 is 1.</li>
+<li>1 is added to the 4th number when the bit 3 is 1.</li>
+</ul>
+<p>
+(the LSB is bit 0 and the MSB is bit 7)<br>
+Also, here is the result of the same process with the input string <code>2BRbr</code>:
+</p>
+</div>
+<code-block data-extension="txt">
+255,252,253,252,
+252,254,253,252,
+253,254,253,252,
+254,254,253,252,
+255,254,253,252,
+</code-block>
+<div class="language-selector-ja" lang="ja">
+<p>
+このことから、
+</p>
+<ul>
+<li>ビット4が1のとき、1番目の数値が1大きくなる</li>
+<li>ビット5が1のとき、1番目の数値が2大きくなる</li>
+<li>ビット6が1のとき、2番目の数値が2大きくなる</li>
+</ul>
+<p>
+ことがわかった。
+</p><p>
+これらに基づき、画像データから隠されたテキストデータを抽出する以下のRecipeを作成した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+From this result, I found that:
+</p>
+<ul>
+<li>1 is added to the 1st number when the bit 4 is 1.</li>
+<li>2 is added to the 1st number when the bit 5 is 1.</li>
+<li>2 is added to the 2nd number when the bit 6 is 1.</li>
+</ul>
+<p>
+Based on these findings, I created this Recipe to extract the hidden text data from the image data.
+</p>
+</div>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Extract_RGBA(',',true)From_Decimal('Comma',false)Drop_bytes(1000,9999999,false)To_Binary('Space',8)Find_/_Replace(%7B'option':'Regex','string':'%5B01%5D%7B6%7D(%5B01%5D)(%5B01%5D)%20%5B01%5D%7B6%7D(%5B01%5D)(%5B01%5D)%20%5B01%5D%7B6%7D(%5B01%5D)(%5B01%5D)%20%5B01%5D%7B6%7D(%5B01%5D)(%5B01%5D)'%7D,'$5$3$1$2$8$4$6$7',true,false,true,false)From_Binary('Space',8)">Extract RGBA, 5 more - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このRecipeに <code>touched.png</code> を入力すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by putting <code>touched.png</code> as the input of this Recipe.
+</p>
+
+<div class="flag">sdctf{St3g0nOgrAPHY_AnD_Cl0s3d_SRC_Are_A_FUN_C0mb0}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

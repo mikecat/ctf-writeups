@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Git Bomb (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Git Bomb</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+Gitのレポジトリをアップロードするとcommitをしてくれるサービスの情報と、
+ファイル <code>gcaas.zip</code> および <code>prepare-git-repo.sh</code> が与えられた。
+</p><p>
+このサービスは、以下の手順で利用が可能である。
+</p>
+<ol>
+<li>適当なディレクトリを用意し、<code>git init</code> コマンドでGitレポジトリにする。</li>
+<li>このディレクトリ内に適当なファイルを用意し、<code>git add</code> コマンドでステージングする。</li>
+<li>このディレクトリの中身全て (<code>.git</code> ディレクトリを含む) を<common-tool data-lang="ja">7-Zip</common-tool>で<code>tar.gz</code>アーカイブにする。<br>
+この時、このディレクトリ自体はアーカイブに入れず、<code>.git</code> ディレクトリなどがアーカイブのルートに配置されるようにする。</li>
+<li>作成したアーカイブファイルを以下のHTMLからサービスに送信する。</li>
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information about a service that makes a commit to uploaded Git repositories,
+and files <code>gcaas.zip</code> and <code>prepare-git-repo.sh</code> were given.
+</p><p>
+We can use this service by these steps:
+</p>
+<ol>
+<li>Create a directory and make the directory a Git repository via <code>git init</code> command.</li>
+<li>Create a file in the directory and stage the file via <code>git add</code> command.</li>
+<li>Put all contents (including the <code>.git</code> directory) of the directory into a <code>tar.gz</code> archive using <common-tool data-lang="en">7-Zip</common-tool>.<br>
+Note that the directory itself shouldn't put into the archive, and that things like the <code>.git</code> directory should be placed in the root of the archive.</li>
+<li>Send the archive file via this HTML:</li>
+</ol>
+</div>
+<p><a href="send.html.txt" class="code-link" data-extension="html">send.html</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+アーカイブファイルをサービスに送信すると、処理結果の標準出力と標準エラー出力の内容が返される。
+</p><p>
+問題文より、flagは <code>/flag</code> にあるということなので、以下の内容をレポジトリ内の <code>.git/hooks/pre-commit</code> ファイルに保存し、
+同様にレポジトリのアーカイブを作成して送信した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Sending archive files to the service, what is printed to the standard output and standard error in the process are returned.
+</p><p>
+As the flag is in <code>/flag</code> according to the challenge description, I put following contents to the <code>.git/hooks/pre-commit</code> file in the repository,
+created an archive of the repository in the same way, and sent the archive.
+</p>
+</div>
+<p><a href="pre-commit" class="code-link" data-extension="txt">pre-commit</a></p>
+
+<p class="language-selector-ja" lang="ja">
+すると、標準エラー出力の内容としてflagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+As a result, the flag was returned as the standard error.
+</p>
+
+<div class="flag">sdctf{4lw4y5_Us3_GIT_cl0nE_n3v3R_sn3ak_R3P0}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

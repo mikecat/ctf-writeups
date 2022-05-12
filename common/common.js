@@ -259,7 +259,13 @@ const commonToolList = {
 	},
 	"KiCad": {
 		"": "https://www.kicad.org/"
-	}
+	},
+	"捨てメアド【メルアドぽいぽい】" : {
+		"": "https://m.kuku.lu/"
+	},
+	"InstAddr - Instant Email Address": {
+		"": "https://m.kuku.lu/en.php"
+	} 
 };
 
 function getLanguage(ext) {

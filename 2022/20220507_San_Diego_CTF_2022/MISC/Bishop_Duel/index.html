@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bishop Duel (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Bishop Duel</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>main.rs</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">Tera Term</common-tool>でサーバに接続すると、以下のような表示になった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server, and a file <code>main.rs</code> were given.
+</p><p>
+Connecting to the server using <common-tool data-lang="en">Tera Term</common-tool>, this was displayed:
+</p>
+</div>
+<code-block data-extension="txt">
+       o
+      (^)
+     -=H=-          BISHOP DUEL
+      ] [   -- press enter to start --
+     /___\
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+送信の改行コードをLFに設定してEnterキーを押すと、以下のような表示になった。
+</p>
+<p class="language-selector-en" lang="en">
+After setting the newline character to send to LF and hitting the Enter key, this was displayed:
+</p>
+<code-block data-extension="txt">
+\__\\\\__\\\\__\WW\__\\\\      Q#      - up left # spaces
+ \\\\__\\\\__\\\\__\\\\__\         E#  - up right # spaces
+  \__\\\\__\\\\__\\\\__\\\\    Z#      - down left # spaces
+   \\\\__\\\\__\\\\__\\\\__\       C#  - down right # spaces
+    \__\\\\__\\\\__\\\\__\\\\
+     \\\\__\\\\__\\\\__\\\\__\       D - offer draw
+      \__\\\\__\\\\__\\\\__\\\\      R - resign
+       \\\\BB\\\\__\\\\__\\\\__\
+
+You are the white bishop. Input move &gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+盤上を斜めに動かせるコマを操作し、勝負をするようである。<br>
+自分のコマは <code>WW</code> で、相手のコマは <code>BB</code> で表されている。
+</p>
+<p class="language-selector-en" lang="en">
+It looks like we are playing a game in which we control pieces that can be moved toward diagonal directions on the board.<br>
+The player's piece is expressed as <code>WW</code>, and the opposite's piece is expressed as <code>BB</code>.
+</p>
+
+<h2>Goal 1 (first flag)</h2>
+<div class="language-selector-ja" lang="ja">
+<p>
+相手のコマに自分のコマがあるマスに来てもらうことで、勝負に負けることが目的である。
+</p><p>
+盤面の範囲内のみを動かす場合、<code>__</code> で表されるマスからは <code>__</code> で表されるマスにのみ行くことができ、
+<code>\\</code> で表されるマスからは <code>\\</code> で表されるマスにのみ行くことができるので、初期状態で違う種類のマスにあるコマを重ねることはできない。<br>
+しかし、右端のマスのさらに一つ右に行こうとすると、左端の違う種類のマスに出ることがわかった。<br>
+これによりコマが居るマスの種類を変えた後、相手がコマを動かせる範囲のマスに行くことで、flagを得ることができた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The goal is losing the game by having the opposite's piece move to the space where the player's piece is.
+</p><p>
+If we make moves only within the board, we can go only spaces represented as <code>__</code> from spaces represented as <code>__</code>,
+and only spaces represented as <code>\\</code> from spaces represented as <code>\\</code>.<br>
+Therefore, we cannot move pieces that are on different kind of spaces in the initial state to a same space.<br>
+Still, I found that the piece moves to a leftmost space that has different kind when I try moving my piece to one step further from the rightmost space.<br>
+I obtained the flag by changing the kind of space on which my piece is in this way and then moving my piece to where the opposite's piece can go.
+</p>
+</div>
+
+<div class="flag">sdctf{L0SiNG_y0uR_S0uRC3_C0d3_sUcKs}</div>
+
+<h2>Goal 2 (second flag)</h2>
+<div class="language-selector-ja" lang="ja">
+<p>
+自分のコマを相手のコマがあるマスに動かすことで、勝負に勝つことが目的である。
+</p><p>
+以下のように操作を行うことで、flagを得ることができた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The goal is winning the game by moving the player's piece to the space where the opposite's piece is.
+</p><p>
+I obtained the flag in this way:
+</p>
+</div>
+<p><a href="goal_2_log.txt" class="code-link" data-collapse="true">goal_2_log.txt</a></p>
+
+<div class="flag">sdctf{I_d1dnt_hAND_0u7_th3_s0urC3_c0D3_thIs_TIME}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

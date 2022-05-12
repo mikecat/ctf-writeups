@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Key Recovery (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Key Recovery</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>id_rsa.corrupted</code> および <code>ransomware.py</code> が与えられ、SSH秘密鍵のSHA-256ハッシュ値を要求された。
+</p><p>
+<code>ransomware.py</code> はBase64エンコードされたデータの一部をゼロ埋めするプログラム、 <code>id_rsa.corrupted</code> はその出力のようであった。
+</p><p>
+まず、<code>id_rsa.corrupted</code> のフォーマットを調べたところ、OpenSSHの新形式のようであり、その構造の情報は例えばここにあった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Files <code>id_rsa.corrupted</code> and <code>ransomware.py</code> were given, and the SHA-256 hash value of the SSH private key was asked.
+</p><p>
+<code>ransomware.py</code> looked like a program that fills some parts of Base64-encoded data with zero. <code>id_rsa.corrupted</code> looked like an output of the program.
+</p><p>
+To begin with, I studied about the format of <code>id_rsa.corrupted</code>.
+As a result, I found that it should be the new format for OpenSSH. Information about the format is here, for example:
+</p>
+</div>
+<p><a href="https://coolaj86.com/articles/the-openssh-private-key-format/">The OpenSSH Private Key Format</a></p>
+
+<p class="language-selector-ja" lang="ja">
+これを踏まえて <code>id_rsa.corrupted</code> のデータをBase64デコードして観察すると、データが以下のように配置されていそうなことがわかった。
+</p>
+<p class="language-selector-en" lang="en">
+Based on this, I decoded the Base64-encoded data in <code>id_rsa.corrupted</code> and investigated that.
+As a result, I found that data is stored in this way:
+</p>
+<code-block data-extension="txt">
+0x1d9 length, pub0
+0x35e length, pub1
+0x365 length, prv0
+0x4ea length, prv1 (zeroed except for last 2 bytes)
+0x5ae length, prv2 (zeroed)
+0x673 length, prv3 (zeroed)
+0x738 length, comment
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+ただし、これだけでは <code>prv1, prv2, prv3</code> に何を入れれば良いかがわからないため、実際に鍵を作ってみて比較することにした。
+</p><p>
+まず、普通に使われるSSHの秘密鍵を生成する。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Since this information is not enough to determine what to put as <code>prv1, prv2, prv3</code>, I decided to create a key and compare.
+</p><p>
+Firstly, I created a normally used SSH private key.
+</p>
+</div>
+<code-block data-extension="txt">
+ssh-keygen -m PEM
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+この鍵の構造はここに書かれている。
+</p>
+<p class="language-selector-en" lang="en">
+The format of this type of key is here:
+</p>
+<p><a href="https://bearmini.hatenablog.com/entry/2014/02/05/143510">RSA 秘密鍵/公開鍵ファイルのフォーマット - bearmini's blog</a></p>
+
+<p class="language-selector-ja" lang="ja">
+<common-tool data-lang="ja">CyberChef</common-tool> を用い、各項目の値を取り出すことができる。
+</p>
+<p class="language-selector-en" lang="en">
+<common-tool data-lang="en">CyberChef</common-tool> is useful to extract the values of each parameters.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'-.*-'%7D,'',true,false,true,false)From_Base64('A-Za-z0-9%2B/%3D',true)To_Hex('Space',0)Parse_ASN.1_hex_string(0,32)&amp;input=LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlHNUFJQkFBS0NBWUVBcEtCVzkvaGpEMCtDNWlsbXloQjdnTWNBRERtNitKSjhLOFZYQklGRXJhRTRZMmJMCklOZHN4a2Vjb0VsV3NqVkFtRHFDWUVtNU54N3gwQ3VyNUNKd1NQU01oZU1IZTRXbmphRkZmOFJuUXJva0lDblkKRkJlSzk4MFowSDNtb2ROMENOYktZWWRqR0NDajVVdmRQTWl4bnNKYWplMUZ5cmRxMDJwSVFCRU5rTVA2V1hvRwp4QUlxZ3ZNODV4WFBPbzhXWS9PNmxaZXdkZmQwem1ZMmUyenhnZDdlbldKQzBPSnhpOTgrdUh0Nkh0TVh3blkrCjBhUzhpMm1MeitSb3ZCNmYvbDhoMFVaeVJ5ZXdHOThicVlRMUh6Q2gvUWlMMEtRUEpuWmZtOHNrYi9aU21IcG0KNW9qRXRrMHpEajU0aG9pb2JmSTU4YWJYV2hJQWM3dVBFZkIvRUxBNm5GRFhwTVBYWUt3ODlRYXJGUjVhWFZMSwpJRHMxTTdEWVpwTElKK280SVN2V2V6QnVRYUMxWE1OYzZqWTdQekZ4R3ZaK1c3WWxZOWlMUDhzVmJoL1AvTUQ3CkQybFgvZ0lXQ3hJU3FwalBlTGdKVk5GR1ZqZXpReDdPSXlXU1kxeHM4UTEvbFBQeVQ3cXFuOEFNWlNHNXdkYzgKc29MUm5wM3drdnp3Zkh2NUFnTUJBQUVDZ2dHQUpZdllLZmdCaDhWbm9sekE3OGJ3ay85TytIcldOTWtiL3RPawpOQWZUaFJJbkRTeXRtVkRvb3hSRUdaNkFZbWFZMDk5TVN1K2xpWGZLU09NYzhnd1V0ZDdvaWNTc3VUUlRjWTdkCmpmVmFZN0tXZUt0eWQ2cWk3RDlmNnRnOEdKNWtjWHVqYnJqMUZkU2o3TER2eFdRMGRuUDNPVFZyWEgrV29wOHoKMlVES2FrRDRRUjMrbXdldmNHeFBjSmpkeVlwRzNnY0JnQXEzbVVBVjZOa1JCZmRqNFczV01lanVPanZiRDc2Ygp6SEdFK2JERlUzbXFmQi9wVEphRzU2UTlhdUpFMTVMZkhLSDBHTFc0SHdLUEdQOFlpRW1hbGwyUUR1SlNhcXNmCjNJMVNuNy9ycXpiUmRxTE9HQW9GOElYbCtWNy9NalRrV0hzRlNOQWdGMmdhUXkyZGFLbFlYT1BCdElWaERJQTIKR1lTYTU3OXBvMlVDVk1vU1Bjb3NtOHg5Z2RsQ05qUTlBQ1hXemhic1doZURQeUU2Qm9pWTNJV3ovRm1ES0tMdQp1QVBxSHdrTXlBdmRxTXFxQjJPaHlpVXZqV2pOM09mVlhGWEpON2dYWEpOTnZuNG10OWRCOUVIUHh3ZUNTMmNOCitVT0JMaWp4akhlZzdRSzdsM0lkU2FzS1dMU0JBb0hCQU5Ga1dvRFE4bFpNZExmUWN2R3hRSnVTMDEvdklIMncKeXJGM1FKaDhXQWpsVzVTVmM0bjVWTkJrSGp2MzVxZENvS0NpNUZFOW5pMmx3RmZNV0ZvTzZvNHY1eU5HNXhpRApwWjRjUERBUjFkbm9nTTE1YzFpOXVVSzdQRmVVVlplcWl2aEYzbzdHaS90K2h1Q3RscGtuSTA3ZERaMWExWDVaClRHQkJySDFBK28xUWoyaWhVU0wycTc3MENTbVk0V2ZxRGQrQmV3M2VtSElDNzdWeVVjeGk3ZWhnRzRBbTZZQUQKbWQrcFpWSDllTVFSb2xxQ0NCZXJNVkpiZWZXNTBjYW5zUUtCd1FESlJTSVFCb0ROajNiWURFc3RVQzRXMG40UQpwMkVUQm0xMXJDR0FmTHNFYStjditLdG5DWndqNkt1dmRYai90b01ZMnp5cWVienJMYXRadFhkdjVkRk9lUjEzCmZzNHJPVXlyT3hmZzZib3VjZldyd1ZUVWlNRFlwaGt3c3RObER0aUVrb25YS1ZsMmwwb3BkMEc5d2RBZzdRbFUKeEdXQXFXNklJcElNVkdSTm9meitPNDFHbFMvclR3dC9UUUpzc0lRRG5NUW9CK2hTR3grRDFOVDFYQjJXUEVIbAoyV0Z2Z0tMczVzbnl4YlFPZ09FQUxEc0VQN0tlOUdiMnVwMjJjc2tDZ2NFQWpsVHN3QXRIN3lsaFhXRXdBT0kvCnpJQnRkaFNSdlY1aktXYXFYZnlIeXVRODhDNzJycDd3N0FaaUZ0bFh5L0lhUlpiMEk5VUNwSHk2MWZOdFN5cEEKZmc1Snkwenk0Vkw3VFJKY1IwQ1lZTnNPVXAxdnJxNm9NNWdhV0YzWUlKUW9pc0xUbWJHVWpZdGdHM0Zqb1E5ZApqTW50Nnp4SFN1OWdYejNGQmc4WlFOMjEzYVZxQlo0dStFbmh3SWpQRDFlbHZudkJMWmhWZjRwSGJzc2FseGZZCko5RE1ZTHdTbEpYZURvNlM5THliVG91K0ZFKzNPSCtCc3ozREZTa09VejdCQW9IQkFNUDRKMEZaUTZKaXRNR0oKdnMwQkM4ODI1bjVLcXU4K1MrZk9VTlJ0SGg4Zy9Qb3RjcDZoc2NFWTg4bWtaTXIrcDBqVmRvMDZlV0szbGVhRQpGU1lEcTdkdm4reFFzR2RQcEVINUNMZjZlMGhydDF1am8zaEpLeFFITGZISHZLTGlRSmxjb1ErNWVCMUxFMitxCmFYMWNyOHpQWDAyRTZKdk0zUTE2TTZBRHI2SVRQbVZBRUwrUDFSZVZZRWx6N3c5ckV5NzlQZFVJVmdGVDNXeWMKRnpwTGxaZEpWcFI1QXpEeEhESDBTTit6OWl4RStrOFR3ZWJTS3BZd3Urd3lLZ3VTV1FLQndHa0pVY2t1L3hVaAo2a1Jid2wvT0lsT1piZElLbDBJcVRoa0Y5QXFDQkdKeENJdWhQOU9mR2pSVy81VHBwb0ZMR2M1T0JDQ2NtcEJWCjEzTFVaZ2N6M0ZMdzZNY3BNZ0ZoYWVXaW1RcFYzMitLUEcvQ1JmR3I1VFZKVE1uS2dIaURVUXNmRG1FbHc3QSsKWE40KzQ0OG5QdzF6V1h3RzltY1VjZGxWc0hFcEhiK3NtRTJsVWtCWGNFM0w4OUxuRkFVSGY0WkFTNm1DR2ZKZwpEUXVQZk5FLzFLdnV6MXlVcHJ3eFpxMklVSmdsTHVyK3ZOV291S0RCMEZoS3NaZTkxUDlhRHc9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo">Find / Replace, 3 more - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+次にこの鍵をOpenSSHの新形式に変換したいが、手元のWindows環境で変換を試みると以下のエラーになってしまった。
+</p>
+<p class="language-selector-en" lang="en">
+What to do next is converting this key to the new format for OpenSSH.
+I firstly tried to convert in my local Windows environment, and it resulted in this error:
+</p>
+<code-block data-extension="txt">
+YUKI.N&gt;ssh-keygen -p -N "" -o -f test_key_converted
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Permissions for 'test_key_converted' are too open.
+It is required that your private key files are NOT accessible by others.
+This private key will be ignored.
+Failed to load key test_key_converted: bad permissions
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+そこで、以下のように<common-tool data-lang="ja">CS50 Sandbox</common-tool>上で作業を行った。
+</p>
+<p class="language-selector-en" lang="en">
+Seeing this, I performed the conversion on <common-tool data-lang="en">CS50 Sandbox</common-tool> in this way:
+</p>
+<code-block data-extension="txt">
+$ ls -l
+total 5
+-rw-r--r-- 1 root root 2459 May  8 11:36 test_key_converted
+$ chmod 600 test_key_converted 
+$ ssh-keygen -p -N "" -o -f test_key_converted
+Your identification has been saved with the new passphrase.
+$ ls -l
+total 5
+-rw------- 1 root root 2578 May  8 11:36 test_key_converted
+$ 
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+変換結果をBase64デコードした結果と、先ほど秘密鍵に含まれる各値を取り出した結果を比較すると、<br>
+<code>prv0</code> が <code>d</code> に、<code>prv1</code> が <code>coefficient</code>、<code>prv2</code> が <code>p</code>、<code>prv3</code> が <code>q</code> に、それぞれ対応していることがわかった。
+</p><p>
+したがって、<code>p, q, coefficient = (inverse of q) mod p</code> を求めるのが良さそうである。<br>
+「rsa factorize n using d」でググると、以下のサイトが見つかった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Conparing the converted data after Base64-decoding and the parameters extacted from the private key,<br>
+I found that <code>prv0</code> should be <code>d</code>, <code>prv1</code> should be <code>coefficient</code>, <code>prv2</code> should be <code>p</code>, and <code>prv3</code> should be <code>q</code>.
+</p><p>
+Based on this, what to do next should be determining the values of <code>p, q, coefficient = (inverse of q) mod p</code>.<br>
+I googled "rsa factorize n using d" and found this page:
+</p>
+</div>
+<p><a href="https://www.di-mgt.com.au/rsa_factorize_n.html">RSA: how to factorize N given d</a></p>
+
+<p class="language-selector-ja" lang="ja">
+この方法を用いるため、まずPythonのインタラクティブモードを用いて以下のように <code>N</code> と <code>d</code> の値を取り出した。<br>
+なお、<code>dump.bin</code> は <code>id_rsa.corrupted</code> に含まれるBase64データをデコードしたものである。
+</p>
+<p class="language-selector-en" lang="en">
+To apply this method, firstly I extracted the values of <code>N</code> and <code>d</code> using the interactive mode of Python in this way.<br>
+<code>dump.bin</code> is data decoded from the Base64 data in <code>id_rsa.corrupted</code>.
+</p>
+<code-block data-extension="txt">
+&gt;&gt;&gt; dump = open("dump.bin", "rb").read()
+&gt;&gt;&gt; pub0 = dump[0x1d9+4:0x35e]
+&gt;&gt;&gt; prv0 = dump[0x365+4:0x4ea]
+&gt;&gt;&gt; def to_str(b):
+...  return "".join(["%02x" % x for x in b])
+...
+&gt;&gt;&gt; to_str(pub0)
+'00e365c13d3da38acd3a03bfd94dbd1617fa4f64710c23a95d56a4d084e963546dbbfe60572acec9186b7289771da4e480cb6e2221bf3e1bc7d0f31eed0380ef0d953f3c81d48ceb00e8907465362306d35a3f91dc0014bc9119ad57c548450f7fc6dbdc293d74768de84645c7de3d43aafc30102cc45c7fb24328bf253a2e38cd1ab6cb00e5f0687fe4d56ae489f9dd3a299c1a9fb49f10246a7974498b43240c1f001e5a0ada22edb9cfa1db256c8c5f8db153b6659b25d550d2184a7e191b2163e5a17a9b520a94deefe26936772239dcd135706f273d64f53204b54674e56e43611084ddfd9243f988bfb2d736038ae80a025493320a82c209d220fd8691299943c5770c1681de5318d77f9be7f871b46c7e967c148c07045900869e9be8c0e8050119e38e29df16e9117de4133712fdf51eda080a8ee1450ea3370d02c2d9321a790c51a4603f7f95fd50788bd8e0afd659359ae8ffe87c05d40d24c16ec2f7bb3f5239198af2d315eb5ae4d67624309e7f8e52c46497547f14e162d32f21'
+&gt;&gt;&gt; to_str(prv0)
+'00892c62cb7c99612bb7e9771bb1077582755edb2a4eb65c7e8fbbd085bcfc4c7bfdc1cf8005b4c41e5502bce5fc1df231b785f2550536842f9f5e69b3743f9cf546a8e4e934bce52ea11c32fab313a21471069408708c11cc3dff114952f5460a407d746bf4448317cb9c488fef026a058527c13a2021e46e369127ed5f116ef65b3d156caf48bce119bb9c45ccedcb8440818895fab1515d865549ceeb914ef778e3eb6b49cc98f16afb539a0d135402784916449b3a62323214eace550ef40ba745821906f62378edc697a6ece14bcb516eba5e899b2471acd9bd11618f45275d6437f67d128a950f2543422a71922d10bf7b8a634e0bde748461de216ee2f9b5a94dd086cef3f77b26dfc86783107ac994e731e3feef2b85a2788fe5fc34d5a62efcee79dff64f76522e87fc31e0b5d2b994fb5115dfaeb2e4fab2591b886be30ed85acc589fdc1e7c526c42aebc792bf598588c71a695f33c94c5b378d3cd133f8cde7c47803bce60f67cca4107a1fccb146edca017e7c4c46500680048a1'
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+次に、以下のプログラムを用いて <code>p</code> および <code>q</code> の値を求めた。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I obtained the values of <code>p</code> and <code>q</code> using this program.
+</p>
+<p><a href="get_primes.py" class="code-link" data-collapse="true">get_primes.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+残された <code>prv1</code> の最後2バイトをもとに、出力された <code>p</code> および <code>q</code> を <code>prv2</code> と <code>prv3</code> のどっちに当てはめるかを決め、
+以下のようにして得られた値をSSH秘密鍵のデータに書き込んだ。
+</p>
+<p class="language-selector-en" lang="en">
+Determining which of <code>p</code> and <code>q</code> should be <code>prv2</code> and <code>prv3</code> using the last 2 bytes of <code>prv1</code>, which are not filled with zero,
+I put the values obtained to the data in the SSH private key in this way.
+</p>
+<code-block data-extension="txt">
+&gt;&gt;&gt; prv1 = 0xecd3f281444cc9a11efc86a81384d20b4c7c178fa1a912143575f162934f942c0c2fc98a7dc2f5ee73c402b37df7b76dcc9f9339dcc117b0c7a47bbb24416b575465b044e36da661d0e8d8e6cd0d8515593b6a05694395cd88c034bc4aabf14bab411d76278a77563f38b93cd3b5e98a90d7cb62e843a624a05b86fed99b14afd135108802e0f6b92eb3806414d7677c3defb90c004d697a5e8f04461fab4a975ae3a3748ab1db858ae069b36c7ec769fef09824df983faaa6939673e6dc519
+&gt;&gt;&gt; prv2 = 0xf4c8fc59f0cf220b4399741b9febcbf2eddc4cf5334fbf54e2b90b8b573eb7c677d1d612c96876ff01ff877ef17d37d3e44edf3d6baf8b388a699eb17447ea21a6afd0e7325c38a9ca9a9df1af101a8f0679188ed53be54f6ecc09886a8e2aace5cc99e9c760234cce655a73129fc3b240fa6b1d7824854ea2d5d12f7b1a2545e323d265f54d832563ef53bbb7bdc2c99e4b3e94476ae80265e8e91f5b58c22d007a2f27cf8bed8e2a575b1b4f2ecc0af18520bdd16bda722215450f9ec0fcbd
+&gt;&gt;&gt; prv3 = 0xedd0d5ad4e44856ae46589096c94fe7755fb09017b933a604eb2ab841b79386d2d0b1ede5e7294eb69d34f13e27c603b40003716627f896d5d0c63db0f0f3fe63b78ccfc3189ba64a020493ac8fc5622a4bb5444e3840c6e2c63ba5ac5cd5bbe3a798d3db75ab7cb82545c6fd48f613fa3b0a9f09c7aa81d1d1a1a851df5d0c624de4ea0029e8ef39a5219aac9d348f98657a5f11c83c8fa8cc74602b36a3502cfa8c5e46476aced00853cbe22c183dfbde83d602ce9b3dc689c97fba47e0c35
+&gt;&gt;&gt; dump2 = dump[0:0x4ee] + prv1.to_bytes(0x5ae - 0x4ee, "big") + dump[0x5ae:]
+&gt;&gt;&gt; dump2 = dump2[0:0x5b2] + prv2.to_bytes(0x673 - 0x5b2, "big") + dump2[0x673:]
+&gt;&gt;&gt; dump2 = dump2[0:0x678] + prv3.to_bytes(0x738 - 0x678, "big") + dump2[0x738:]
+&gt;&gt;&gt; with open("dump_plus_prv.bin", "wb") as f:
+...  f.write(dump2)
+...
+1862
+&gt;&gt;&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+値を書き込んだデータを、以下のRecipeでBase64エンコードした。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I Base64-encoded the data with the values using this Recipe.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=To_Base64('A-Za-z0-9%2B/%3D')Find_/_Replace(%7B'option':'Regex','string':'(.%7B70%7D)'%7D,'$1%5C%5Cn',true,false,true,false)">To Base64, Find / Replace - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+得られたBase64エンコードの結果を用いてフォーマットを整え、SHA-256ハッシュ値を求め、<code>sdctf{}</code> で囲むことで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by formatting the Base64-encoded data, calculating the SHA-256 hash value, and putting that in <code>sdctf{}</code>.
+</p>
+
+<div class="flag">sdctf{687a497b47a7e8e6e88cafc6181fa0b3676548b989e7bff9bc87d55d450abd51}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

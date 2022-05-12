@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>A Bowl of Pythons (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>A Bowl of Pythons</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+Pythonのプログラム <code>chal.py</code> が与えられた。
+</p><p>
+<code>chal.py</code> は、入力された文字列の最初と最後の部分をチェックした後、
+残りの部分に関数 <code>a</code> から生成されるデータをxorし、結果が指定のものになるかをチェックするものだった。<br>
+そこで、まず、Pythonのインタラクティブモードを用い、以下のようにしてxorするデータを求めた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A Python program <code>chal.py</code> was given.
+</p><p>
+<code>chal.py</code> first checks the first and last part of the input string.
+Then, performs exclusive-or of the remaining part and data generated using a function <code>a</code>, and checks if the result is what is specified.<br>
+Seeing this, I firstly obtained the data for exclusive-or in this way, using the interactive mode of Python.
+</p>
+</div>
+<code-block data-extension="txt">
+&gt;&gt;&gt; a = lambda n: a(n-2) + a(n-1) if n &gt;= 2 else (2 if n == 0 else 1)
+&gt;&gt;&gt; "".join(["%02x" % (a(i) &amp; 0xff) for i in range(22)])
+'02010304070b121d2f4c7bc742094b549ff39285179c'
+&gt;&gt;&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+これを指定のデータとxorすることで、flagの一部が得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained a part of the flag by performing exclusive-or with the specified data.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Unescape_string()XOR(%7B'option':'Hex','string':'02010304070b121d2f4c7bc742094b549ff39285179c'%7D,'Standard',false)&amp;input=Y29cXDdceDdmXHg3ZmB8cFx4MTVceDBlXHg4YVx4MGZQXHgxNFx4MThceGZlXHhhOVx4ZjNceGUyeVx4ZGQ">Unescape string, XOR - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+これを <code>sdctf{}</code> で囲むことで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by putting the result in <code>sdctf{}</code>.
+</p>
+
+<div class="flag">sdctf{an_3xtra_YuMMY_LaZagnA}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

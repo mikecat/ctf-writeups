@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Oil Spill (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Oil Spill</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報が与えられた。<br>
+また、ELFファイル <code>OilSpill</code> と、ファイル <code>Dockerfile</code> が与えられた。
+</p><p>
+<code>OilSpill</code> を<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpで逆アセンブルし、
+<code>strings --radix=x</code> コマンドで文字列の位置に対応する文字列を求めたところ、以下の処理をしていることがわかった。
+</p>
+<ol>
+<li>以下の情報を出力する。
+<ul>
+<li><code>puts</code> 関数のアドレス</li>
+<li><code>printf</code> 関数のアドレス</li>
+<li>後の <code>fgets</code> 関数でデータを読み込む先のスタック上のアドレス</li>
+<li><code>temp</code> 関数のアドレス</li>
+</ul></li>
+<li>メッセージを出力する。</li>
+<li><code>fgets</code> 関数で文字列を読み込む。</li>
+<li>読み込んだ文字列を <code>printf</code> 関数の第1引数に渡す。</li>
+<li>メッセージを出力する。</li>
+</ol>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server was given.<br>
+An ELF file <code>OilSpill</code> and a file <code>Dockerfile</code> were also given.
+</p><p>
+I disassembled <code>OilSpill</code> using objdump from <common-tool data-lang="en">TDM-GCC</common-tool> and
+obtained strings that correspond to the positions of strings using <code>strings --radix-x</code> command.<br>
+As a result, I found it doing this:
+</p>
+<ol>
+<li>Print these information:
+<ul>
+<li>The address of the function <code>puts</code></li>
+<li>The address of the function <code>printf</code></li>
+<li>The address of the region on the stack to read some data via the function <code>fgets</code> called later</li>
+<li>The address of the function <code>temp</code></li>
+</ul></li>
+<li>Print some messages.</li>
+<li>Read a string using the function <code>fgets</code>.</li>
+<li>Pass the string read as the first argument of the function <code>printf</code>.</li>
+<li>Print a message.</li>
+</ol>
+<p>
+I entered this string and examined the output:
+</p>
+</div>
+<code-block data-extension="txt">
+%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p
+</code-block>
+<div class="language-selector-ja" lang="ja">
+<p>
+を入力し、出力を調べると、入力した文字列は8番目以降のデータに反映されることがわかった。
+</p><p>
+また、出力された <code>puts</code> 関数および <code>printf</code> 関数のアドレスを <common-tool data-lang="ja">libc-database</common-tool> に入力して調べると、
+<code>libc6_2.27-3ubuntu1.5_amd64</code> のみがヒットした。
+</p><p>
+これらに基づき、<code>printf</code>関数とデータの読み込み先のアドレスを受け取り、入力するべきデータを出力する以下のプログラムを作成した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+As a result, I found that the string entered is used as the 8th data and data after that.
+</p><p>
+Also, I put the printed addresses of <code>puts</code> and <code>printf</code> to <common-tool data-lang="en">libc-database</common-tool>.
+As a result, only <code>libc6_2.27-3ubuntu1.5_amd64</code> was presented as a result.
+</p><p>
+Based on these, I created this program that takes addresses of <code>printf</code> and where to read the data, and outputs data to enter.
+</p>
+</div>
+<p><a href="payload_gen.pl" class="code-link" data-collapse="true">payload_gen.pl</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+このプログラムにより作成したデータを入力すると、書式 <code>%n</code> により以下の動作をする。
+</p>
+<ul>
+<li><code>__stack_chk_fail</code> として呼び出す関数のアドレスを、<code>main</code> 関数のアドレスに書き換える。</li>
+<li><code>printf</code> として呼び出す関数のアドレスを、<code>system</code> 関数のアドレスに書き換える。</li>
+<li>スタック上のカナリアのデータを書き換え、<code>__stack_chk_fail</code> を呼び出させる。</li>
+</ul>
+<p>
+作成したデータを<common-tool data-lang="ja">Tera Term</common-tool>の「ファイル送信」を用いてサーバに送信すると、再び文字列の入力を要求される。<br>
+ここで <code>/bin/sh</code> と入力することで、シェルを起動することができる。
+</p><p>
+起動したシェルで <code>ls -al</code> コマンドを実行することで、ファイル <code>flag.txt</code> があることがわかった。<br>
+<code>cat flag.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+When the data created via this program is entered, thanks to the format specifier <code>%n</code>, the behavior will be:
+</p>
+<ul>
+<li>Change the address of the function called as <code>__stack_chk_fail</code> to one of the function <code>main</code>.</li>
+<li>Change the address of the function called as <code>printf</code> to one of the function <code>system</code>.</li>
+<li>Change the canary on the stack to have it call <code>__stack_chk_fail</code>.</li>
+</ul>
+<p>
+After sending the data via "Send File" on <common-tool data-lang="en">Tera Term</common-tool>, the server will ask for another string.<br>
+We can launch the shell by entering <code>/bin/sh</code> here.
+</p><p>
+I found that a file <code>flag.txt</code> exists via <code>ls -al</code> command on the shell.<br>
+I obtained the flag via <code>cat flag.txt</code> command.
+</p>
+</div>
+
+<div class="flag">sdctf{th4nks_f0r_S4V1nG_tH3_duCk5}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

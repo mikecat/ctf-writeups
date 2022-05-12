@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Oracle (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Oracle</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>Oracle.class</code> が与えられた。
+</p><p>
+これを <common-tool data-lang="ja">JD-GUI</common-tool> で逆コンパイルしてみると、
+入力された文字列が指定の長さであり、かつそれを3個の関数で順に処理した結果が指定のものになるかをチェックしているようだった。<br>
+そこで、<common-tool data-lang="ja">Z3</common-tool>を用いて入力を求める以下のプログラムを作成した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>Oracle.class</code> was given.
+</p><p>
+Decompling this program using <common-tool data-lang="en">JD-GUI</common-tool>,
+I found it checking if the input string has the expected length, and becomes expected data after processing it with 3 functions.<br>
+Seeing this, I created this program to determine the input via <common-tool data-lang="en">Z3</common-tool>.
+</p>
+</div>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムを実行することで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by executing this program.
+</p>
+
+<div class="flag">sdctf{u_f0und_th3_LANGu4ge_0f_th1s_0r4cl3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

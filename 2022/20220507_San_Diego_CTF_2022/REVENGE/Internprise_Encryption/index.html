@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Internprise Encryption (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Internprise Encryption</h1>
+<p class="language-selector-ja" lang="ja">
+以下のファイルが与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+These files were given:
+</p>
+<ul>
+<li><code>davecrypt.js</code></li>
+<li><code>flag.txt</code></li>
+<li><code>q2_report.txt</code></li>
+<li><code>shareholder_meeting_script.txt</code></li>
+</ul>
+<p class="language-selector-ja" lang="ja">
+<code>davecrypt.js</code> は、JavaScriptによる暗号化プログラムのようだった。<br>
+また、<code>flag.txt</code> の冒頭部分は、以下のようになっていた。
+</p>
+<p class="language-selector-en" lang="en">
+<code>davecrypt.js</code> looked like an encryption program written in JavaScript.<br>
+Also, the first part of <code>flag.txt</code> was:
+</p>
+
+</div>
+<code-block data-extension="txt">
+00000000  c3 bb c3 96 c3 8b c3 8d 6b c2 80 c3 ae 12 c3 96  |........k.......|
+00000010  6c 50 1d c2 9b c3 bb 6a 1e c3 96 14 c2 bd c3 a5  |lP.....j........|
+00000020  17 c2 9e c3 b9 66 72 15 24 c3 9b 37 c3 a8 23 c3  |.....fr.$..7..#.|
+00000030  84 21 c3 ba 74 c3 a0 c3 87 c3 b3 33 c3 89 3e 32  |.!..t......3..&gt;2|
+00000040  c4 80 c3 8f 66 2b c3 8f c3 8b 3a c3 93 03 c3 8d  |....f+....:.....|
+</code-block>
+<p class="language-selector-ja" lang="ja">
+だいたい2バイトごとに <code>c</code> で始まるバイトがあり、その中に <code>6c</code> など <code>0x80</code> 未満のバイトが混ざっていることから、
+<code>flag.txt</code> はUTF-8として解釈できそうだと推測した。<br>
+また、<code>davecrypt.js</code> は乱数や時刻を用いた処理を行う行を含むが、よく見るとこれらの行は復号代入演算子の右辺が常にゼロとなり、無視できることがわかる。<br>
+そこで、<code>davecrypt.js</code> のそれぞれの行に相当する処理を考え、<common-tool data-lang="ja">Z3</common-tool>で入力を求める以下のプログラムを作成した。<br>
+なお、入力の各要素は <code>0xff</code> 以下であると仮定した。
+</p>
+<p class="language-selector-en" lang="en">
+There are bytes beginning with <code>c</code> in about each 2 bytes. Also there are bytes less than <code>0x80</code> such as <code>6c</code>.
+Therefore, I guessed that <code>flag.txt</code> can be decoded as UTF-8.<br>
+Also, <code>davecrypt.js</code> contains lines that uses random numbers and date,
+but I found that the lines can be ignored because the right-hand side of the compound assignment operators are always zero.<br>
+Based on these, I determined formulas corresponding to each lines of <code>davecrypt.js</code> and created this program to obtain the input using <common-tool data-lang="en">Z3</common-tool>.<br>
+Also note that I assumed that each elements of the input are <code>0xff</code> or less.
+</p>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムを用いて <code>flag.txt</code> に対応する入力を求めると、flagのような文字列を含む内容が得られた。<br>
+この文字列から問題文の指示に従って <code>'</code> を削除することで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+Using this program, I determined the input corresponding to <code>flag.txt</code>. The result contained a string that looks like the flag.<br>
+I obtained the flag by removing <code>'</code> from the string as requested in the challenge description.
+</p>
+
+<div class="flag">sdctf{D0nt_b3_a_D4v3_ju5t_Use_AES_0r_S0me7h1ng}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

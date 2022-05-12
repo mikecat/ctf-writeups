@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>send</title>
+</head>
+<body>
+<h1>send</h1>
+<form method="POST" action="https://gcaas.sdc.tf/" enctype="multipart/form-data" target="_blank">
+<p><input type="file" name="repo"></p>
+<p><input type="submit" value="send"></p>
+</form>
+</body>
+</html>

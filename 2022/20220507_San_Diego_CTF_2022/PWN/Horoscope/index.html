@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Horoscope (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Horoscope</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ELFファイル <code>horoscope</code> が与えられた。
+</p><p>
+<code>horoscope</code> を<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpで逆アセンブルし、
+<code>strings --radix=x</code> コマンドで文字列の位置に対応する文字列を求めたところ、以下の処理をしていることがわかった。
+</p>
+<ol>
+<li>メッセージを出力する。</li>
+<li><code>fgets</code> 関数でスタック上に文字列を読み込む。</li>
+<li>読み込んだ文字列を <code>processInput</code> 関数に渡す。</li>
+</ol>
+<p>
+<code>processInput</code> 関数は文字列の内容によっては <code>exit</code> 関数を用いて処理を終わらせるが、例えば <code>1</code> を入力した時は呼び出し元に帰ることがわかった。<br>
+また、<code>system("/bin/sh");</code> に相当する以下の部分があった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information to connect to a TCP server and an ELF file <code>horoscope</code> were given.
+</p><p>
+I disassembled <code>horoscope</code> using objdump from <common-tool data-lang="en">TDM-GCC</common-tool> and
+obtained strings that correspond to the positions of strings using <code>strings --radix-x</code> command.<br>
+As a result, I found it doing this:
+</p>
+<ol>
+<li>Print some messages.</li>
+<li>Read a string on the stack via the function <code>fgets</code>.</li>
+<li>Pass the string read to the function <code>processInput</code>.</li>
+</ol>
+<p>
+The function <code>processInput</code> may terminate execution via the function <code>exit</code> for some input strings, but I found that entering <code>1</code> will have the function return to the caller.<br>
+Also, I found this part that is equivalent to <code>system("/bin/sh");</code>:
+</p>
+</div>
+<code-block data-extension="txt">
+  40095f:	48 8d 3d 52 02 00 00 	lea    0x252(%rip),%rdi        # 400bb8 &lt;_IO_stdin_used+0x1b8&gt;
+  400966:	e8 95 fc ff ff       	callq  400600 &lt;system@plt&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+<code>fgets</code> 関数が読み込む文字列の長さの上限は十分大きいので、ここで読み込ませるデータによって <code>main</code> 関数のリターンアドレスを書き換えることができる。<br>
+以下のデータを<common-tool data-lang="ja">Tera Teram</common-tool>の「ファイル送信」で送信することで、<code>main</code> 関数のリターンアドレスを <code>system("/bin/sh");</code> に相当する部分のアドレスに書き換え、シェルを起動することができた。
+</p>
+<p class="language-selector-en" lang="en">
+The maximum length of the string to be read via the function <code>fgets</code> is large enough, so the return address of the function <code>main</code> can be changed via the data to feed here.<br>
+I succeeded to launch the shell by sending this data via "Send File" on <common-tool data-lang="en">Tera Term</common-tool> to set the return address of the function <code>main</code> to the address of the part equivalent to <code>system("/bin/sh");</code>.
+</p>
+<p><a href="payload.bin" class="code-link" data-binary="true">payload.bin</a></p>
+
+<p class="language-selector-ja" lang="ja">
+起動したシェルで <code>ls -al</code> コマンドを実行することで、ファイル <code>flag.txt</code> があることがわかった。<br>
+<code>cat flag.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I found that a file <code>flag.txt</code> exists via <code>ls -al</code> command on the shell.<br>
+I obtained the flag via <code>cat flag.txt</code> command.
+</p>
+
+<div class="flag">sdctf{S33ms_y0ur_h0rO5c0p3_W4s_g00d_1oD4y}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>

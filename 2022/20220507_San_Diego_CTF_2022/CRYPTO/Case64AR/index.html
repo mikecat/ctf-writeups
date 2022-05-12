@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Case64AR (San Diego CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Case64AR</h1>
+<p class="language-selector-ja" lang="ja">
+以下の暗号文が与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+This ciphertext was given:
+</p>
+<blockquote>
+<code>OoDVP4LtFm7lKpHkMJDrJmXlJn/XCpHk+JDr6Jm=</code>
+</blockquote>
+<div class="language-selector-ja" lang="ja">
+<p>
+これは<a href="https://github.com/acmucsd/sdctf-2021/tree/main/crypto/case64ar">San Diego CTF 2021 で出題された問題</a>であり、暗号文はBase64のアルファベットをずらしてエンコードしたものである。
+</p><p>
+flagの冒頭部分 <code>sdctf</code> をBase64エンコードすると <code>c2RjdGY=</code> となり、これを暗号文と比較すると、例えば通常のBase64の <code>R</code> を暗号文では <code>D</code> で表していることがわかる。
+</p><p>
+これに合わせて Alphabet を設定し、<common-tool data-lang="ja">CyberChef</common-tool> の From Base64 を用いることで、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+This is <a href="https://github.com/acmucsd/sdctf-2021/tree/main/crypto/case64ar">a challenge from San Diego CTF 2021</a>. The ciphertext is Base64-encoded using shifted alphabets.
+</p><p>
+The first part of the flag <code>sdctf</code> becomes <code>c2RjdGY=</code> when Base64-encoded. Comparing this with the ciphertext, I found that <code>R</code> in the normal Base64 is represented as <code>D</code> in the ciphertext.
+</p><p>
+I obtained the flag using "From Base64" on <common-tool data-lang="en">CyberChef</common-tool> with setting Alphabet based on this.
+</p>
+</div>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('yz0-9%2B/A-Za-x%3D',true)&amp;input=T29EVlA0THRGbTdsS3BIa01KRHJKbVhsSm4vWENwSGsrSkRyNkptPQ">From Base64 - CyberChef</a></p>
+
+<div class="flag">sdctf{OBscurity_Is_SeCur1ty!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">San Diego CTF 2022</a>
+</p>
+</body>
+</html>
