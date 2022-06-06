@@ -175,13 +175,46 @@ function parse_TFC_CTF(solves, challenges) {
 	return result;
 }
 
+function parse_SECCON_Beginners_CTF(solves, challenges) {
+	const challengeInfo = {};
+	if (challenges && challenges.challenges) {
+		const clist = challenges.challenges;
+		for (let i = 0; i < clist.length; i++) {
+			challengeInfo[clist[i].id] = {
+				category: clist[i].category,
+				name: clist[i].name,
+				solves: clist[i].solved,
+				value: clist[i].point
+			};
+		}
+	}
+	const result = [];
+	const slist = solves.solves;
+	for (let i = 0; i < slist.length; i++) {
+		const sid = slist[i].challenge_id;
+		const parsed = {};
+		if (sid in challengeInfo) {
+			parsed.category = challengeInfo[sid].category;
+			parsed.name = challengeInfo[sid].name;
+			parsed.solves = challengeInfo[sid].solves;
+			parsed.value = challengeInfo[sid].value;
+		} else {
+			parsed.name = sid;
+		}
+		parsed.time = slist[i].created_at;
+		result.push(parsed);
+	}
+	return result;
+}
+
 const parsers = [
 	parse_RACTF,
 	parse_rCTF,
 	parse_CTFd,
 	parse_WaniCTFd,
 	parse_SquareCTF,
-	parse_TFC_CTF
+	parse_TFC_CTF,
+	parse_SECCON_Beginners_CTF
 ];
 
 function parseJSON(jsonStr) {
