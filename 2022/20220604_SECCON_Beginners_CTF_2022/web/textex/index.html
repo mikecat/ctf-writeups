@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>textex (SECCON Beginners CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>textex</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、サーバのファイル一式が与えられた。<br>
+Webページは、LaTeXのソースコードを送信するとPDFを生成してくれるものだった。
+</p><p>
+与えられたファイルを調べると、送信したLaTeXのソースコードが配置されるディレクトリの2階層上にファイル <code>flag</code> があることがわかった。<br>
+また、<code>app/app.py</code> より、送信したデータに <code>flag</code> という文字列が含まれているとデータ全体が消されることがわかった。
+</p><p>
+<code>\newcommand</code> を用いて <code>flag</code> を <code>fl</code> と <code>ag</code> に分割して定義することで、
+<code>flag</code> をそのまま含めずに <code>flag</code> を表すことができる。<br>
+これを用いて <code>\input</code> で <code>../../flag</code> を取り込もうとしたが、エラーになってしまった。<br>
+flagに含まれる特殊文字が影響していると考え、外部ファイルの内容をそのまま取り込む方法を探すと、<br>
+<a href="https://www-cc.gakushuin.ac.jp/~20110166/latex.html">MasaYan Information LaTeX</a> で紹介されている <code>\verbatiminput</code> がエラーにならずに使えることがわかった。
+</p><p>
+これらを組み合わせた以下のソースコードを送信することで、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL of a web page and files for the server were given.<br>
+The web page accepts LaTeX source code and generates PDF files from that.
+</p><p>
+Checking the given files, I found that there is a file <code>flag</code> on the directory two levels upper from the directory where tha LaTeX source code sent is placed.<br>
+Also, from <code>app/app.py</code>, I found that the data sent is turned into an empty string when it contains a string <code>flag</code>.
+</p><p>
+We can express <code>flag</code> without including <code>flag</code> directly by splitting <code>flag</code> to <code>fl</code> and <code>ag</code> with <code>\newcommand</code>.<br>
+I tried to put the contents of <code>../../flag</code> via <code>\input</code>, but it resulted in errors.<br>
+I guessed that this is caused by some special characters in the flag, and searched for a way to put contents of external files without processing.<br>
+As a result, I found that <code>\verbatiminput</code>, which was introduced on <a href="https://www-cc.gakushuin.ac.jp/~20110166/latex.html">MasaYan Information LaTeX</a>, is available in the environment for this challenge.
+</p><p>
+In conclusion, I obtained the flag by sending this source code:
+</p>
+</div>
+<code-block data-extension="txt">
+\documentclass{article}
+\usepackage{verbatim}
+\begin{document}
+
+\newcommand{\fl}{fl}
+\newcommand{\ag}{ag}
+\verbatiminput{../../\fl\ag}
+
+\end{document}
+</code-block>
+
+<div class="flag">ctf4b{15_73x_pr0n0unc3d_ch0u?}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SECCON Beginners CTF 2022</a>
+</p>
+</body>
+</html>

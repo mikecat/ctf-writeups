@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Util (SECCON Beginners CTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Util</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、サーバのファイル一式が与えられた。
+</p><p>
+Webページにアクセスすると、IP addressの入力欄とcheckボタンがあった。<br>
+入力欄に <code>127.0.0.1; ls</code> と入力してcheckボタンを押すと、「Invalid IP address」と表示された。<br>
+<common-tool data-lang="ja">Firefox</common-tool>の開発者ツールで確認したところ、この時通信は行われていないようだった。<br>
+入力欄に <code>127.0.0.1</code> と入力してcheckボタンを押すと通信が行われ、要求ペイロードは以下のものだった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL of a web page and files for the server were given.
+</p><p>
+An input field for "IP address" and a "check" button were on the web page.<br>
+When I entered <code>127.0.0.1; ls</code> to the field and hit the "check" button, a string "Invalid IP address" appeared.<br>
+Checking with the Developer Tool on <common-tool data-lang="en">Firefox</common-tool>, no communication were performed here.<br>
+Entering <code>127.0.0.1</code> to the field and hitting the "check" button, a communication occured and it had this request payload:
+</p>
+</div>
+<code-block data-extension="js">
+{"address":"127.0.0.1"}
+</code-block>
+<p class="language-selector-ja" lang="ja">
+これを
+</p>
+<p class="language-selector-en" lang="en">
+I changed this to
+</p>
+<code-block data-extension="js">
+{"address":"127.0.0.1; ls"}
+</code-block>
+<div class="language-selector-ja" lang="ja">
+<p>
+に「編集して再送信」すると、レスポンスに<code>ls</code>コマンドの出力が出るようだった。
+</p><p>
+さらに、配布されたファイル中の <code>Dockerfile</code> を読むと、ファイル <code>/flag_(ランダム文字列).txt</code> にflagを書き込んでいるようだった。<br>
+そこで、要求ボディを以下のものに「編集して再送信」することで、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+and performed "edit and resend". As a result, the response looked containing the output of the <code>ls</code> commnd.
+</p><p>
+Here, I checked <code>Dockerfile</code> in the given files and found that the flag looks written to a file <code>/flag_(a random string).txt</code>.<br>
+I obtained the flag by sending a request with this request body via "edit and resend":
+</p>
+</div>
+<code-block data-extension="js">
+{"address":"127.0.0.1; cat /flag*"}
+</code-block>
+
+<div class="flag">ctf4b{al1_0vers_4re_i1l}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SECCON Beginners CTF 2022</a>
+</p>
+</body>
+</html>
