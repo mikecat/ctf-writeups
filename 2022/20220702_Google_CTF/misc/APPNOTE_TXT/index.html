@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>APPNOTE.TXT (Google Capture the Flag 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>APPNOTE.TXT</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイルが与えられた。<br>
+このファイルを<common-tool data-lang="ja">7-Zip</common-tool>で開くと、ファイル <code>dump.zip</code> が得られた。
+</p><p>
+<code>dump.zip</code> をバイナリエディタで開くと、<code>PK</code>というデータが大量に入っているようだった。<br>
+そこで、<common-tool data-lang="ja">CyberChef</common-tool>を用いて <code>PK\x03\x04</code> で始まるヘッダを抽出し、さらにファイルサイズを表す部分を抜き出した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file was given.<br>
+Opening this file with <common-tool data-lang="en">7-Zip</common-tool>, I found a file <code>dump.zip</code>.
+</p><p>
+Opening <code>dump.zip</code> with a binary editor, I found that there are a lot of strings <code>PK</code>.<br>
+Seeing this, I extracted headers beginning with <code>PK\x03\x04</code> using <common-tool data-lang="en">CyberChef</common-tool>, and then extracted the parts that represents the sizes of files.
+</p>
+</div>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=To_Hex('Space',0)Regular_expression('User%20defined','50%204b%2003%2004%20(%5B0-9a-f%5D%7B2%7D%20)%7B14%7D(%5B0-9a-f%5D%7B2%7D%20)%7B8%7D',true,true,false,false,false,false,'List%20matches')Find_/_Replace(%7B'option':'Regex','string':'%5E(%5B0-9a-f%5D%7B2%7D%20)%7B18%7D'%7D,'',true,false,true,false)Sort('Line%20feed',false,'Alphabetical%20(case%20sensitive)')">To Hex, 3 more - CyberChef</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+すると、最初の2ファイル (<code>hello.txt</code> および <code>hi.txt</code>) 以外は全て1バイトであることがわかった。
+</p><p>
+さらに、ファイル名の長さを抽出した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+As a result, I found that all of the files except for the first 2 files (<code>hello.txt</code> and <code>hi.txt</code>) are 1-byte long.
+</p><p>
+After that, I extracted the lengths of the names of the files.
+</p>
+</div>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=To_Hex('Space',0)Regular_expression('User%20defined','50%204b%2003%2004%20(%5B0-9a-f%5D%7B2%7D%20)%7B14%7D(%5B0-9a-f%5D%7B2%7D%20)%7B8%7D(%5B0-9a-f%5D%7B2%7D%20)%7B4%7D',true,true,false,false,false,false,'List%20matches')Find_/_Replace(%7B'option':'Regex','string':'%5E(%5B0-9a-f%5D%7B2%7D%20)%7B26%7D'%7D,'',true,false,true,false)Sort('Line%20feed',false,'Alphabetical%20(case%20sensitive)')">To Hex, 3 more - CyberChef</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+その結果、<code>hello.txt</code> 以外は全て6バイトであることがわかった。
+</p><p>
+ファイルのデータを抽出すると、<code>abcdefghijklmnopqrstuvwxyz{CTF0137}_</code> が繰り返されていた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+As a result, I found that all names except for <code>hello.txt</code> are 6-byte long.
+</p><p>
+Extracting the data of the files resulted in repeated <code>abcdefghijklmnopqrstuvwxyz{CTF0137}_</code>.
+</p>
+</div>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=To_Hex('Space',0)Regular_expression('User%20defined','50%204b%2003%2004%20(%5B0-9a-f%5D%7B2%7D%20)%7B32%7D%5B0-9a-f%5D%7B2%7D',true,true,false,false,false,false,'List%20matches')Find_/_Replace(%7B'option':'Regex','string':'%5E(%5B0-9a-f%5D%7B2%7D%20)%7B36%7D'%7D,'',true,false,true,false)From_Hex('Auto')">To Hex, 3 more - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+「<code>PK\x03\x04</code>から始まるヘッダとファイルのデータ」および「<code>PK\x01\x02</code>から始まるヘッダ」以外のデータが無いかをチェックしたところ、<br>
+ファイルの最後に <code>PK\x05\x06</code> から始まるデータが繰り返されていることがわかった。
+</p>
+<p class="language-selector-en" lang="en">
+I also checked if there is any other data than "headers beginning with <code>PK\x03\x04</code> and data of files" and "headers beginning with <code>PK\x01\x02</code>".<br>
+As a result, I found there is data beginning with <code>PK\x05\x06</code> repeated at the end of the file.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=To_Hex('Space',0)Regular_expression('User%20defined','50%204b%2003%2004%20(%5B0-9a-f%5D%7B2%7D%20)%7B33%7D%7C50%204b%2001%2002%20(%5B0-9a-f%5D%7B2%7D%20)%7B48%7D',true,true,false,false,false,false,'Highlight%20matches')">To Hex, Regular expression - CyberChef</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+このデータを調査したところ、<code>PK\x05\x06</code>の16バイト先が、flagの文字のファイル中の位置に1を足した値になっているようであることがわかった。
+</p><p>
+そこで、この仮定に基づいてflagを抽出する以下のプログラムを作成した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Investigating the data, I found that the values 16 bytes after <code>PK\x05\x06</code> look like the offsets of the characters of the flag in the file plus one.
+</p><p>
+I created this program to extract the flag based on this finding.
+</p>
+</div>
+<p><a href="solve.pl" class="code-link">solve.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムにより、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag using this program.
+</p>
+
+<div class="flag">CTF{p0s7m0d3rn_z1p}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Google Capture the Flag 2022</a>
+</p>
+</body>
+</html>

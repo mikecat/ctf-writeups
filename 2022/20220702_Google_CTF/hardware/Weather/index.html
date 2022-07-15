@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Weather (Google Capture the Flag 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Weather</h1>
+<p class="language-selector-ja" lang="ja">
+TCPサーバの接続情報とファイルが与えられた。<br>
+このファイルを<common-tool data-lang="ja">7-Zip</common-tool>で開くと、以下のファイルが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+A file and information to connect to a TCP server were given.<br>
+Opening the file with <common-tool data-lang="en">7-Zip</common-tool>, I found these files:
+</p>
+<ul>
+<li><code>Device Datasheet Snippets.pdf</code></li>
+<li><code>firmware.c</code></li>
+</ul>
+<p class="language-selector-ja" lang="ja">
+<code>Device Datasheet Snippets.pdf</code> (以下、「PDF」) はシステムの構造についての説明、
+<code>firmware.c</code> はサーバのプログラムのソースコードのようであった。
+</p>
+<p class="language-selector-en" lang="en">
+<code>Device Datasheet Snippets.pdf</code> (I'll call this as "the PDF") looked like a document about the structure of the system,
+and <code>firmware.c</code> looked like a source code for the server program.
+</p>
+
+<h2>
+<span class="language-selector-ja" lang="ja">デバイスへのアクセス</span>
+<span class="language-selector-en" lang="en">Accessing the devices</span>
+</h2>
+<div class="language-selector-ja" lang="ja">
+<p>
+PDFより、今回のシステムでは、
+プロセッサと各種センサおよびEEPROMがI2Cで繋がっていることがわかる。<br>
+このEEPROMには、プロセッサ用のプログラムが格納されていそうである。<br>
+なお、センサのI2CアドレスはPDFに載っているが、EEPROMのI2Cアドレスは載っていない。
+</p><p>
+<code>firmware.c</code> を読むと、
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The PDF tells that the processor is connected to the sensors and the EEPROM via I2C in the system for this challenge.<br>
+The EEPROM should have the program for the processor.<br>
+Note that the I2C addresses for the sensors are on the PDF, but the address for the EEPROM isn't.
+</p><p>
+Reading <code>firmware.c</code>, I found that we can read from I2C devices by specifying the address to read and the number of bytes to read in this order after "r" like this:
+</p>
+</div>
+<code-block data-extension="txt">
+r 101 4
+</code-block>
+<p class="language-selector-ja" lang="ja">
+のように、「r」に続いて読み込むアドレスと読み込むバイト数を順に指定することで、I2Cデバイスからの読み込みを行えることがわかる。<br>
+また、
+</p>
+<p class="language-selector-en" lang="en">
+Also, we can write to I2C devices by specifying the address to write, the number of bytes to write, the data to write in this order after "w" like this:
+</p>
+<code-block data-extension="txt">
+w 101 4 11 22 33 44
+</code-block>
+<div class="language-selector-ja" lang="ja">
+<p>
+のように、「w」に続いて書き込むアドレス、書き込むバイト数、書き込むデータを順に指定することで、I2Cデバイスへの書き込みを行えることがわかる。
+</p><p>
+ここで、指定したアドレスは、<code>port_to_int8</code> 関数によって数値に変換される。<br>
+この関数では、まず <code>is_port_allowed</code> 関数でアドレスを表す文字列をチェックし、
+チェックを通過した場合のみ <code>str_to_uint8</code> 関数で文字列を数値に変換して返す。
+</p><p>
+<code>is_port_allowed</code> 関数では、指定した文字列が許可リストにある文字列のいずれか<strong>で始まる</strong>かどうかをチェックしている。<br>
+また、<code>str_to_uint8</code> 関数では、オーバーフローやラップアラウンドのチェックをしない単純な処理で十進文字列を8ビットの数値に変換している。<br>
+したがって、許可リストにある文字列 (例えば <code>101</code>) で始め、その後の数字列をうまく選ぶことで、0～127の任意のアドレスを指定することができる。
+</p><p>
+例えば、<code>101248000</code> は <code>101</code> で始まっているため、アドレスの指定として利用可能である。<br>
+さらに、256で割った余りが0なので、末尾の <code>000</code> の部分をアクセスしたいアドレスに置き換えることで、簡単に任意のアドレスを指定できる。<br>
+これを利用し、0～127の全I2Cアドレスへのアクセスを試みる以下のプログラムを作成・実行した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Now note that the specified address is converted to an integer by the function <code>port_to_int8</code>.<br>
+This function first checks the strings that represent the addresses using the function <code>is_port_allowed</code>,
+and then converts the strings to integers using the function <code>str_to_uint8</code> only if it passed the check.
+</p><p>
+The function <code>is_port_allowed</code> checks if the strings <strong>start from</strong> either one of the strings in the allow list.<br>
+Also, the function <code>str_to_uint8</code> simply converts decimal strings to 8-bit integers without checking for overflows/wraparounds.<br>
+Therefore, we can specify arbitrary addresses from 0 to 127 by starting from a string in the allow list (<code>101</code>, for example) and properly selecting numbers to add after that.
+</p><p>
+For example, we can use <code>101248000</code> as the address because this starts from <code>101</code>.<br>
+Moreover, since the remainder of this value divided by 256 is 0, we can easily specify arbitrary addresses by replacing the last part <code>000</code> with the address to specify.<br>
+I wrote this program that tries accessing all I2C addresses from 0 to 127 using this value, and executed that.
+</p>
+</div>
+<p><a href="port_brute.pl" class="code-link" data-collapse="true">port_brute.pl</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+この結果、センサのI2CアドレスとしてPDFに載っているアドレスに加えて、アドレス33へのアクセスが有効であることがわかった。<br>
+したがって、このアドレス33がEEPROMのI2Cアドレスであると推測できた。
+</p><p>
+アドレス33は、<code>101</code> で始まり、256で割った余りが33になる <code>101153</code> とも表すことができる。<br>
+<code>101248033</code> よりも短いため、今後はこれを用いる。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+As a result, I found that the I2C address 33 is available in addition to the addresses that are on the PDF as the addresses for the sensors.<br>
+Therefore, I guessed that the address 33 is the I2C address for the EEPROM.
+</p><p>
+We can also use <code>101153</code>, which begins from <code>101</code> and the remainder divided by 256 is 33, to specify the address 33.<br>
+I'll use this from here because this is shorter than <code>101248033</code>.
+</p>
+</div>
+
+<h2>
+<span class="language-selector-ja" lang="ja">EEPROMのダンプ</span>
+<span class="language-selector-en" lang="en">Dumping the EEPROM</span>
+</h2>
+<div class="language-selector-ja" lang="ja">
+<p>
+PDFより、今回使用されているEEPROMは以下の手順でI2Cから読み出すことができることがわかる。
+</p>
+<ol>
+<li>page index を書き込むことにより、読み出すページを選択する。</li>
+<li>データを読み出す。最大64バイトを読み出すことができる。</li>
+</ol>
+<p>
+1ページの大きさは64バイトである。<br>
+page index の指定方法は明示されていないようであるが、試した結果何番目のページを読み出したいかを0-originの1バイトで指定すればよさそうだった。<br>
+また、今回使用されているEEPROMは <code>CTF-55930D</code> であり、これは64ページあることがわかる。
+</p><p>
+これらを踏まえ、EEPROM全体の内容を読み出す以下のプログラムを作成・実行した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The PDF is telling that the EEPROM used in this challenge can be read via I2C in this way:
+</p>
+<ol>
+<li>Select the page to read by writing "page index".</li>
+<li>Read data. We can read 64 bytes at most.</li>
+</ol>
+<p>
+The size of a page is 64 bytes.<br>
+How to specify "page index" didn't look clearly specified. Some experiments showed that putting the index of the page to read (the first page is 0th) as a single byte should work.<br>
+The PDF is also telling that the EEPROM used in this challenge is <code>CTF-55930D</code>, which has 64 pages.
+</p><p>
+Based on these information, I wrote this program to read the whole contents from the EEPROM and executed that.
+</p>
+</div>
+<p><a href="read_eeprom.pl" class="code-link" data-collapse="true">read_eeprom.pl</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+読み出した結果、EEPROMのデータは以下のようになっているようだった。
+</p>
+<ul>
+<li>0x000～0x889 : 謎のデータ (機械語？)</li>
+<li>0x88A～0xA01 : 文字列データ</li>
+<li>0xA02～0xFFF : 0xFFの連続</li>
+</ul>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The contents of EEPROM read were:
+</p>
+<ul>
+<li>0x000 - 0x889 : unknown data (maybe machine code)</li>
+<li>0x88A - 0xA01 : strings</li>
+<li>0xA02 - 0xFFF : continuous 0xFF</li>
+</ul>
+</div>
+
+<h2>
+<span class="language-selector-ja" lang="ja">EEPROMの解析</span>
+<span class="language-selector-en" lang="en">Analyzing the EEPROM</span>
+</h2>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+EEPROMの内容を読み出すことができたので、これを解析し、flagの取得に繋げたい。<br>
+文字列はEEPROMの内容と <code>firmware.c</code> の内容を紐づける特徴となりそうなので、まずはこれを足がかりとした解析を試みた。
+</p><p>
+例えば、<code>firmware.c</code> 中の関数 <code>i2c_status_to_error</code> では、以下のように文字列が連続で使われている。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Now I succeeded to read out the contents of EEPROM. What to do next is analyzing this and find some ways to get the flag.<br>
+I decided to begin with using strings for analysis because they looks useful to determine which part of the EEPROM corresponds to each parts of <code>firmware.c</code>.
+</p><p>
+For example, this function <code>i2c_status_to_error</code> in <code>firmware.c</code> has multiple strings used in row.
+</p>
+</div>
+<code-block data-extension="c">
+const char *i2c_status_to_error(int8_t err) {
+  switch (err) {
+    case 0: return "i2c status: transaction completed / ready\n";
+    case 1: return "i2c status: busy\n";
+    case 2: return "i2c status: error - device not found\n";
+    case 3: return "i2c status: error - device misbehaved\n";
+  }
+
+  return "i2c status: unknown error\n";
+}
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+EEPROMから読み出したデータに <code>strings --radix=x</code> コマンドをかけた結果のうち、これらの文字列に対応する部分は以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+This is the part of the result of <code>strings --radix=x</code> command used to the EEPROM data that corresponds to the strings.
+</p>
+<code-block data-extension="txt">
+    889 "i2c status: transaction completed / ready
+    8b5 i2c status: busy
+    8c7 i2c status: error - device not found
+    8ed i2c status: error - device misbehaved
+    914 i2c status: unknown error
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+これらのアドレスをEEPROMのデータから探したところ、このあたりにビッグエンディアンで入っていた。
+</p>
+<p class="language-selector-en" lang="en">
+I searched for these addresses from the EEPROM data. As a result, I found them (stored in big-endian) in this area.
+</p>
+<code-block data-extension="txt">
+000000E0  E1 05 75 FE 01 80 F4 8F 82 22 AF 82 BF 00 02 80  |..u......"......|
+000000F0  0F BF 01 02 80 11 BF 02 02 80 13 BF 03 1E 80 15  |................|
+00000100  90 08 8A 75 F0 80 22 90 08 B5 75 F0 80 22 90 08  |...u.."...u.."..|
+00000110  C7 75 F0 80 22 90 08 ED 75 F0 80 22 90 09 14 75  |.u.."...u.."...u|
+00000120  F0 80 22 AD 82 AE 83 AF F0 8D 82 8E 83 8F F0 12  |..".............|
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+この部分のデータをよく見ると、0x100～0x122において、<code>90 XX XX 75 F0 80 22</code> というデータが繰り返されていることがわかる。<br>
+(<code>XX XX</code> はそれぞれの文字列のアドレスをビッグエンディアンで表したものである)<br>
+さらに、0x0EC～0x0FFのデータは <code>BF YY ZZ 80 WW</code> というパターンの繰り返しになっており、<code>WW</code> の次のバイトから<code>WW</code>バイト後が<code>90 XX XX</code>になっていることがわかった。<br>
+これらを <code>i2c_status_to_error</code> 関数の処理と照らし合わせ、これらのデータは以下の意味を持つ機械語であると推測した。
+</p>
+<ul>
+<li><code>90 XX XX</code> : 即値 <code>XX XX</code> をどこかにロードする</li>
+<li><code>75 F0 80 22</code> : 関数から戻る</li>
+<li><code>BF YY ZZ</code> : 何かの値が<code>YY</code>でない場合、実行を <code>ZZ</code> バイト飛ばす</li>
+<li><code>80 WW</code> : 無条件で実行を <code>WW</code> バイト飛ばす</li>
+</ul>
+<p>
+ここで、プロセッサの名前が <code>CTF-8051μC</code> であり、「8051」が入っていることから、8051の命令セットが使われているのではないかと考えた。<br>
+8051の命令セットについては、例えば以下のページに情報がある。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Carefully looking at data in this area, I found that a pattern <code>90 XX XX 75 F0 80 22</code> is repeated from 0x100 to 0x122.<br>
+(<code>XX XX</code> is the addresses of each strings, represented in big-endian)<br>
+Moreover, I found a pattern <code>BF YY ZZ 80 WW</code> repeated from 0x0EC to 0x0FF, and that the pattern <code>90 XX XX</code> begins at <code>WW</code> bytes ahead from the byte next to <code>WW</code>.<br>
+Comparing these findings with what the function <code>i2c_status_to_error</code> does, I guessed that these patterns are machine codes that has these meanings:
+</p>
+<ul>
+<li><code>90 XX XX</code> : Load an immediate value <code>XX XX</code> somewhere.</li>
+<li><code>75 F0 80 22</code> : Return from a function.</li>
+<li><code>BF YY ZZ</code> : If the value of something is not <code>YY</code>, skip <code>ZZ</code> bytes to execute.</li>
+<li><code>80 WW</code> : Unconditionally skip <code>WW</code> bytes to execute.</li>
+</ul>
+<p>
+Here, I guessed that the instruction set of 8051 is used here because the name of the processor is <code>CTF-8051μC</code>, which contains "8051".<br>
+We can found information about the instruction set of 8051 on, for example, these pages:
+</p>
+</div>
+<ul>
+<li><a href="http://www.st.rim.or.jp/~nkomatsu/intel8bit/i8051.html">Intel 8051</a></li>
+<li><a href="https://www.win.tue.nl/~aeb/comp/8051/set8051.html">8051 Instruction Set</a></li>
+</ul>
+<div class="language-selector-ja" lang="ja">
+<p>
+これらのページを参照すると、<code>75 F0 80 22</code> は <code>75 F0 80</code> (値0x80をアドレス0xF0にストアする) と <code>22</code> (RET) に分割でき、<br>
+推測した機械語の意味と合っていそうであることがわかる。<br>
+そこで、以下の逆アセンブラを利用し、EEPROMのデータ全体の逆アセンブルを行った。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+Referring these pages, I found that the instruction set matches with the guessed meanings of machine code,<br>
+dividing <code>75 F0 80 22</code> into <code>75 F0 80</code> (store the value 0x80 to the address 0xF0) and <code>22</code> (RET).<br>
+Seeing this, I disassembled the whole data in the EEPROM using this disassembler:
+</div>
+<p><a href="https://www.bipom.com/dis51.php">BiPOM Electronics - D52 8051/8052 Disassembler</a></p>
+
+<p class="language-selector-ja" lang="ja">
+その結果、全体を自然に逆アセンブルすることができたので、8051の命令セットが使われていると仮定して進めることにした。
+</p>
+<p class="language-selector-en" lang="en">
+As a result, the whole data is smoothly disassembled. Therefore, I decided to assume that the instruction set for 8051 is used to proceed to the next step.
+</p>
+
+<h2>
+<span class="language-selector-ja" lang="ja">FlagROMの読み出し</span>
+<span class="language-selector-en" lang="en">Reading the FlagROM</span>
+</h2>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+使われている命令セットが推測できたので、残る仕事はFlagROMの内容を読み出すことである。<br>
+PDFによれば、FlagROMは256バイトのROMであり、アドレス用のレジスタにセットした位置のデータがデータ用のレジスタから読めるようである。
+</p><p>
+I2C経由でEEPROMの内容を書き換えることで、実行するプログラムを書き換えることができるはずである。<br>
+ただし、ビットを1から0にすることはできるが、0から1にすることはできないようである。<br>
+幸い、EEPROMの後半に0xFFが連続している部分があるので、ここには任意のプログラムを書くことができる。<br>
+そこで、既存のプログラムをうまく書き換え、この部分に書いたプログラムを実行する方法を考えることにした。
+</p><p>
+逆アセンブル結果を調べた結果、出力する文字列のアドレスをセットしてから呼び出されていることなどから、<br>
+<code>X0123</code> が <code>serial_print</code> 関数に相当しそうであることがわかった。<br>
+さらに、その冒頭部分は以下のようになっていた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Now I guessed the instruction set used. What to do next is to read the FlagROM out.<br>
+The PDF tells that the FlagROM is a 256-byte ROM, and that data whose position is specified via the address register is available via the data register.
+</p><p>
+It should be possible to change the program to execute by changing contents of the EEPROM via I2C.<br>
+Note that changing bits from 1 to 0 is possible, but changing bits from 0 to 1 looks impossible.<br>
+Fortunately there is a region with continuous 0xFF in the latter part of the EEPROM and we can write arbitrary programs there.<br>
+Therefore, I decided to find a way to change the existing program to have it execute programs written to the region.
+</p><p>
+Reading the disassembled code, I found that <code>X0123</code> should correspond to the function <code>serial_print</code>.<br>
+One of the reasons is that the label is called after setting the addresses of strings to print.<br>
+This is the first part of the location:
+</p>
+</div>
+<code-block data-extension="txt">
+X0123:	mov	r5,dpl		; 0123   ad 82      -.
+	mov	r6,dph		; 0125   ae 83      ..
+	mov	r7,b		; 0127   af f0      /p
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+このうち <code>83 af f0</code> という部分は、適切にビットを1から0にすることで、<code>02 0a 40</code> にすることができる。<br>
+これはアドレス0xA40に実行を移すLJMP命令であり、0xFFが連続している部分に実行を移すことができる。
+</p><p>
+次に、このアドレス0xA40に書き込む、FlagROMの内容を出力するプログラムを作成した。<br>
+<code>serial_print</code> 関数のプログラムを参考に以下のプログラムを書き、手動で機械語に変換した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The piece <code>83 af f0</code>, which exists in this area, can be changed to <code>02 0a 40</code> by properly changing some bits from 1 to 0.<br>
+This is the LJMP instruction to jump to the address 0xA40, so it can execute the region with continuous 0xFF.
+</p><p>
+After finding this, I created a program for writing to this address 0xA40 to print the contents of the FlagROM.<br>
+Referring to the program of the function <code>serial_print</code>, I wrote this program and converted to machine code manually.
+</p>
+</div>
+<code-block data-extension="txt">
+7d 00      mov r5, #0
+        flagLoop:
+8d ee       mov 0eeh, r5
+        waitLoop:
+e5 f3       mov a, 0f3h
+60 fc       jz waitLoop
+e5 ef       mov a, 0efh
+f5 f2       mov 0f2h, a
+0d          inc r5
+bd 00 f2    cjne r5, #0, flagLoop
+22          ret
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+PDFより、EEPROMにI2C経由で以下のデータを書き込むことで、EEPROMに書き込みを行うことができることがわかる。
+</p>
+<ul>
+<li>書き込むページ (64バイト) を表すPageIndex</li>
+<li>WriteKey (<code>A5 5A A5 5A</code>)</li>
+<li>0にするビットを表すバイト列 (0にするビットを1で表す)</li>
+</ul>
+<p>
+これに基づき、作成したプログラムを<common-tool data-lang="ja">CyberChef</common-tool>で書き込み用のバイト列に変換した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The PDF tells that we can write to the EEPROM by writing the following data to the EEPROM via I2C:
+</p>
+<ul>
+<li>PageIndex that represents the page (64 byte) to write</li>
+<li>WriteKey (<code>A5 5A A5 5A</code>)</li>
+<li>Sequence of bytes that represents the bits to change to 0 (Bits with the value 1 means that the bits should be changed to 0)</li>
+</ul>
+<p>
+Based on this, I converted the program I wrote to a sequence of bytes to use for writing using <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+</div>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'((%5B0-9a-f%5D%7B2%7D%20)*)%20.*$'%7D,'$1',true,false,true,false)From_Hex('Auto')NOT()To_Decimal('Space',false)&amp;input=N2QgMDAgICAgICBtb3YgcjUsICMwCiAgICAgICAgZmxhZ0xvb3A6CjhkIGVlICAgICAgIG1vdiAwZWVoLCByNQogICAgICAgIHdhaXRMb29wOgplNSBmMyAgICAgICBtb3YgYSwgMGYzaAo2MCBmYyAgICAgICBqeiB3YWl0TG9vcAplNSBlZiAgICAgICBtb3YgYSwgMGVmaApmNSBmMiAgICAgICBtb3YgMGYyaCwgYQowZCAgICAgICAgICBpbmMgcjUKYmQgMDAgZjIgICAgY2puZSByNSwgIzAsIGZsYWdMb29wCjIyICAgICAgICAgIHJldAo">Find / Replace, From Hex, NOT, To Decimal - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+以下が、これを用いて作成した、このプログラムを0xA40から書き込むコマンドである。
+</p>
+<p class="language-selector-en" lang="en">
+This is the command to write this program from 0xA40, created using the result of this conversion.
+</p>
+<code-block data-extension="txt">
+w 101153 22 41 165 90 165 90 130 255 114 17 26 12 159 3 26 16 10 13 242 66 255 13 221
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+さらに、以下が <code>serial_print</code> 関数の冒頭部分を0xA40にジャンプするように書き換えるコマンドである。<br>
+<code>83 af f0</code> の部分を書き換えるだけでなく、その前の <code>ae</code> を <code>00</code> (NOP) に書き換えることで、LJMP命令を実行させている。
+</p>
+<p class="language-selector-en" lang="en">
+This is the command to modify the beginning part of the function <code>serial_print</code> to have it jump to 0xA40.<br>
+This command will not only modify the piece <code>83 af f0</code> but also change <code>ae</code> placed before the piece to <code>00</code> (NOP) to have it execute the LJMP instruction.
+</p>
+<code-block data-extension="txt">
+w 101153 46 4 165 90 165 90 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 253 245 191
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+これらのコマンドを以下のように続けて実行することで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag using these commands in this way:
+</p>
+<code-block data-extension="txt">
+== proof-of-work: disabled ==
+Weather Station
+? w 101153 22 41 165 90 165 90 130 255 114 17 26 12 159 3 26 16 10 13 242 66 255 13 221
+i2c status: transaction completed / ready
+? w 101153 46 4 165 90 165 90 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 253 245 191
+CTF{DoesAnyoneEvenReadFlagsAnymore?}
+CTF{DoesAnyoneEvenReadFlagsAnymore?}
+</code-block>
+
+<div class="flag">CTF{DoesAnyoneEvenReadFlagsAnymore?}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Google Capture the Flag 2022</a>
+</p>
+</body>
+</html>

