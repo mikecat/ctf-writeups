@@ -411,7 +411,6 @@ function setupLanguageSelector() {
 		return;
 	}
 	const names = rawNames.split(",");
-	if (names.length < 4) return; // 言語が1個の場合は、選ぶ必要が無い
 	const selectLinkClass = "language-select-link";
 	const classPrefix = "language-selector-";
 	const selectorFunctions = {};
@@ -462,7 +461,8 @@ function setupLanguageSelector() {
 		divElement.appendChild(aTag);
 	}
 	divElement.appendChild(document.createTextNode("]"));
-	languageSelector.replaceWith(divElement);
+	// 言語が1個の場合は、選ぶ必要が無い
+	if (names.length >= 4) languageSelector.replaceWith(divElement);
 	const hash = location.hash.replace(/^#/, "");
 	selectorFunctions[hash in selectorFunctions ? hash : names[1]]();
 }
