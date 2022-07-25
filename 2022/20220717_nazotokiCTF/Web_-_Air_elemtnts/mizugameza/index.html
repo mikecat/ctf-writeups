@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>みずがめ座 (nazotokiCTF～入社試験からの脱出～) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>みずがめ座</h1>
+<p class="language-selector-ja" lang="ja">
+Webページへのリンクが与えられた。<br>
+リンク先を開くと、社員ナンバーとパスワードの入力欄、SEARCHボタン、そして以下の文字列があった。
+</p>
+<p class="language-selector-en" lang="en">
+A link to a web page was given.<br>
+The destination of the link had input fields for employee number and passowrd, SEARCH button, and this text:
+</p>
+<blockquote>
+passwordを入力することで指定した社員情報を閲覧できます
+</blockquote>
+
+<p class="language-selector-ja" lang="ja">
+社員ナンバーにプロローグにあった「アイ」の社員ナンバー <code>99</code>を、パスワードに <code>password</code> を入力してEnterキーを押すと、以下が表示された。
+</p>
+<p class="language-selector-en" lang="en">
+I entered the employee number of "アイ" in the prologue <code>99</code> as the employee number and <code>password</code> as the password. After that, I hit the Enter key and this text appeared:
+</p>
+<blockquote>
+フラグのヒントはナンバー9999に載せておいたよ！入社前情報だから普通のパスワードでは見れないかもね。 
+</blockquote>
+
+<p class="language-selector-ja" lang="ja">
+試しに、社員ナンバーに <code>9999</code>、パスワードに <code>' or 1=1 --</code> を入力してEnterキーを押すと、以下が表示された。
+</p>
+<p class="language-selector-en" lang="en">
+I tried entering <code>9999</code> as the employee number and <code>' or 1=1 --</code> as the password, and hitting the Enter key. As a result, this text appeared:
+</p>
+<blockquote>
+Fatal error: Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''' at line 1 in /var/www/html/index.php:68 Stack trace: #0 /var/www/html/index.php(68): PDOStatement-&gt;execute() #1 {main} thrown in /var/www/html/index.php on line 68
+</blockquote>
+
+<p class="language-selector-ja" lang="ja">
+社員ナンバーに <code>9999</code>、パスワードに <code>' or 1=1 or '</code> を入力してEnterキーを押すと、情報が表示された。<br>
+このうち重要そうなのは以下の部分である。
+</p>
+<p class="language-selector-en" lang="en">
+Hitting the Enter key after entering <code>9999</code> as the employee number and <code>' or 1=1 or '</code> as the password resulted in some information appearing.<br>
+This is a part of the information that looks important:
+</p>
+<blockquote>
+<table>
+<tr><td>部署</td><td>未定。スーパースター枠において当社入社試験に挑戦中</td></tr>
+<tr><td>メモ</td><td>nazotokiCTF{この候補者の苗字}</td></tr>
+</table>
+</blockquote>
+
+<p class="language-selector-ja" lang="ja">
+プロローグに載っている「ぼく」の名前より、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag from the name of "ぼく" on the prologue.
+</p>
+
+<div class="flag">タカハシ</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">nazotokiCTF～入社試験からの脱出～</a>
+</p>
+</body>
+</html>

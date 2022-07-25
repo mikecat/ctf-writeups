@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>てんびん座 (nazotokiCTF～入社試験からの脱出～) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>てんびん座</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+Webページへのリンクが与えられた。
+</p><p>
+リンク先を開くと、
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A link to a web page was given.
+</p><p>
+Opening the page, I found this text:
+</p>
+</div>
+<blockquote>
+フラグはstardustChromeという特殊なブラウザでしか閲覧できません。 
+</blockquote>
+<div class="language-selector-ja" lang="ja">
+<p>
+と表示された。
+</p><p>
+以下の操作によりflagが得られた。
+</p>
+<ol>
+<li><common-tool data-lang="ja">Firefox</common-tool>の開発者ツールを開き、ページを再読み込みする。</li>
+<li>ファイル <code>/</code> のリクエストを選択し、「再送信」を押す。</li>
+<li>「新しい要求」でUser-Agentの値を <code>stardustChrome</code> にし、「送信」を押す。</li>
+<li>送信したリクエストの「応答」を見る。</li>
+</ol>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+I obtained the flag in this way:
+</p>
+<ol>
+<li>Open the Developer Tools on <common-tool data-lang="en">Firefox</common-tool> and reload the page.</li>
+<li>Select a request for the file <code>/</code> and click "Resend".</li>
+<li>In the "New Request" area, set the value of User-Agent to <code>stardustChrome</code> and click "Send".</li>
+<li>See "Response" of the request sent.</li>
+</ol>
+</div>
+
+<div class="flag">クローン</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">nazotokiCTF～入社試験からの脱出～</a>
+</p>
+</body>
+</html>

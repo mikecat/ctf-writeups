@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>うお座 (nazotokiCTF～入社試験からの脱出～) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>うお座</h1>
+<p class="language-selector-ja" lang="ja">
+以下の問題文が与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+This challenge description was given:
+</p>
+<blockquote>
+みずがめ座からてんびん座に向かうとき、ひみつの鍵が手に入るだろう。水の中に浮かぶ真実を見定めよ。
+</blockquote>
+<p class="language-selector-ja" lang="ja">
+また、以下のファイルが与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+These files were also given:
+</p>
+<ul>
+<li><code>password.enc</code></li>
+<li><code>encrypt-pisces-new.zip</code></li>
+</ul>
+<p class="language-selector-ja" lang="ja">
+<code>password.enc</code> は謎のバイナリデータであり、<br>
+<code>encrypt-pisces-new.zip</code> はJPGファイルをDeflate圧縮してZipCryptoで暗号化したもののようだった。
+</p>
+<p class="language-selector-en" lang="en">
+<code>password.enc</code> was a binary data whose characteristics is unknown.<br>
+<code>encrypt-pisces-new.zip</code> was a JPG file compressed using Deflate and encrypted using ZipCrypto.
+</p>
+
+<p class="language-selector-ja" lang="ja">
+さらに、最初のヒントを開けると、以下のようになっていた。
+</p>
+<p class="language-selector-en" lang="en">
+This was the first hint:
+</p>
+<blockquote>
+みずがめ座からてんびん座に向かうとき…ヘッダー情報に記録されるものはなんでしょうか？
+</blockquote>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+「ヘッダー情報」という所から、問題「みずがめ座」および「てんびん座」で使ったWebページを使いそうだということに思い当たった。
+</p><p>
+残念ながら現在の<common-tool data-lang="ja">Firefox</common-tool>の開発者ツールではRefererの値を変更してリクエストを送ることはできなさそうだったので、<br>
+みずがめ座のWebページで開発者ツールを開き、以下のプログラムを実行することでてんびん座のWebページへのリンクを作った。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Seeing that this hint is mentioning about "header information", I came up with using the web pages used in the challenges "みずがめ座" and "てんびん座".
+</p><p>
+Unfortunately it didn't seem possible to change the value of Referer and send requests in the Developer Tools in current <common-tool data-lang="en">Firefox</common-tool>.<br>
+I opened the Developer Tools on the web page for the challenge "みずがめ座" and executed this program to create a link to the web pagefor the challenge "てんびん座".
+</p>
+</div>
+<code-block data-extension="js">
+a = document.getElementsByTagName("input")[0];
+x = document.createElement("a");
+x.setAttribute("href", "https://libra.ctf.nazotoki.tech/");
+x.appendChild(document.createTextNode("libra"));
+a.parentNode.replaceChild(x, a);
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+作成したリンクをクリックすると、Base64エンコードされているっぽいデータが <code>-----BEGIN RSA PRIVATE KEY-----</code> と <code>-----END RSA PRIVATE KEY-----</code> に挟まれたデータが出現した。
+</p><p>
+そこで、このデータを RSA Private Key (PEM) とし、<common-tool data-lang="ja">CyberChef</common-tool> の RSA Decrypt で <code>password.enc</code> の復号を試みた。<br>
+Encryption Scheme を <code>RSAES-PKCS1-V1_5</code> にすると復号に成功し、以下の結果が得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Clicking the link created, data that looks Base64-encoded appeared between <code>-----BEGIN RSA PRIVATE KEY-----</code> and <code>-----END RSA PRIVATE KEY-----</code>.
+</p><p>
+Seeing this, I tried to decrypt <code>password.enc</code> using "RSA Decrypt" on <common-tool data-lang="en">CyberChef</common-tool> using the data as "RSA Private Key (PEM)".<br>
+It succeeded to decrypt with "Encryption Scheme" set to <code>RSAES-PKCS1-V1_5</code>. This is the result:
+</p>
+</div>
+<blockquote>
+The password for the zip is "fomalhaut".
+</blockquote>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+このパスワード <code>fomalhaut</code> を用いると、 <code>encrypt-pisces-new.zip</code> を解凍することができた。<br>
+<del>こんな単純なパスワードなら、<code>password.enc</code> は無視して <common-tool data-lang="ja">rockyou.txt</common-tool> でパスワードクラックをかければよかった。</del>
+</p><p>
+解凍の結果、周期的なパターンを持つ画像が得られた。<br>
+このパターン1個分の間隔に合わせて指を2本置き、この指が3本に見えるように調整して見ると、flagが飛び出して見えた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Using this password <code>fomalhaut</code>, I succeeded to decompress <code>encrypt-pisces-new.zip</code>.<br>
+<del>I should have ignored <code>password.enc</code> and tried to crack the password using <common-tool data-lang="en">rockyou.txt</common-tool> given that such simple password is used.</del>
+</p><p>
+The decompressing resulted in an image that has periodic puttern.<br>
+I put two of my fingers with an interval that matches the period and adjusted how I see to have the fingers look like there are three. As a result, the flag looked popped up in the front.
+</p>
+</div>
+
+<div class="flag">ケッパク</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">nazotokiCTF～入社試験からの脱出～</a>
+</p>
+</body>
+</html>

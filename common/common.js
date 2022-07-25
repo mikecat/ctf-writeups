@@ -265,7 +265,10 @@ const commonToolList = {
 	},
 	"InstAddr - Instant Email Address": {
 		"": "https://m.kuku.lu/en.php"
-	} 
+	},
+	"豚辞書": {
+		"": "http://www.vector.co.jp/soft/dos/game/se018509.html"
+	}
 };
 
 function getLanguage(ext) {

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ふたご座 (nazotokiCTF～入社試験からの脱出～) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>ふたご座</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+Webページへのリンクが与えられた。
+</p><p>
+リンク先を開くと、以下のものがあった。
+</p>
+<ul>
+<li>パスワードが <code>dioskouroi</code> だという情報</li>
+<li>「Dummy Password」と書かれた入力欄</li>
+<li>「SUBMIT」と書かれたボタン</li>
+</ul>
+<p>
+ページのソースを表示すると、以下の要素があった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A link to a web page was given.
+</p><p>
+What is linked had these elements:
+</p>
+<ul>
+<li>Information that the password is <code>dioskouroi</code></li>
+<li>An input field with a text "Dummy Password"</li>
+<li>A button with a text "SUBMIT"</li>
+</ul>
+<p>
+Viewing the source of the page, I found this element:
+</p>
+</div>
+<code-block data-extension="html">
+&lt;input type="hidden" name="realPassword" value="dummyPassword"&gt;
+</code-block>
+<p class="language-selector-ja" lang="ja">
+開発者ツールでこの要素の属性 <code>value</code> の値を <code>dioskouroi</code> に書き換えてからSUBMITボタンを押すと、flagが表示された。
+</p>
+<p class="language-selector-en" lang="en">
+I changed the value of the attribute <code>value</code> of this element to <code>dioskouroi</code> using the Developer Tools and hit the SUBMIT button. As a result, the flag appeared.
+</p>
+
+<div class="flag">ナイーブ</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">nazotokiCTF～入社試験からの脱出～</a>
+</p>
+</body>
+</html>

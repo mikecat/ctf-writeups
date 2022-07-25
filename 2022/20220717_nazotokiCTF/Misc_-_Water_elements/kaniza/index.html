@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>かに座 (nazotokiCTF～入社試験からの脱出～) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>かに座</h1>
+<p class="language-selector-ja" lang="ja">
+ファイル群と、以下の問題文が与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+A set of files and this challenge description were given.
+</p>
+<blockquote>
+仲間はずれを探せ
+</blockquote>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル群を順にバイナリエディタで見ていくと、<br>
+ファイル <code>f0525aafa095ed2665d03681537a70ea</code> には「Open in Notepad.」が大量に書かれており、<br>
+他のファイルにはCPUやOSの情報が描かれていた。
+</p><p>
+このファイル <code>f0525aafa095ed2665d03681537a70ea</code> を<common-tool data-lang="ja">サクラエディタ</common-tool>で開いて最後を見ることで、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+I opened each files on a binary editor.<br>
+As a result, I found many "Open in Notepad." in the file <code>f0525aafa095ed2665d03681537a70ea</code>,<br>
+and information about CPU and OS in the other files.
+</p><p>
+I obtained the flag by opening this file <code>f0525aafa095ed2665d03681537a70ea</code> on <common-tool data-lang="en">Sakura Editor</common-tool> and looking at the last part.
+</p>
+</div>
+
+<div class="flag">イイワケ</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">nazotokiCTF～入社試験からの脱出～</a>
+</p>
+</body>
+</html>

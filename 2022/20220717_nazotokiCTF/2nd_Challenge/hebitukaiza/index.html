@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>へびつかい座 (nazotokiCTF～入社試験からの脱出～) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>へびつかい座</h1>
+<p class="language-selector-ja" lang="ja">
+以下のファイルが与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+These files were given:
+</p>
+<ul>
+<li><code>answersheet.pdf</code></li>
+<li><code>answersheet.png</code></li>
+</ul>
+<div class="language-selector-ja" lang="ja">
+<p>
+これらのファイルの内容は、以下のようになっていた。
+</p>
+<ul>
+<li>1～12の番号が上から下に並んでいる</li>
+<li>それらの番号の横に、四角がそれぞれ4個ずつ並んでいる</li>
+<li>並んでいる四角のうち、一番左のものがハイライトされている</li>
+</ul>
+<p>
+これ以外の「〇〇座」の問題を開くとアドレスバーに1～12の数字が出ていたので、これに沿って四角にこれまで得られていた各問題のflagを当てはめてみた。<br>
+すると、以下のようになった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+This is how the contents of the files looked:
+</p>
+<ul>
+<li>Numbers from 1 to 12 are lined up from up to down.</li>
+<li>There are 4 rectangles on the right of each numbers.</li>
+<li>Among the rectangles, the leftmost ones are highlighted.</li>
+</ul>
+<p>
+Numbers from 1 to 12 were appearing when I opened the "〇〇座" challenges other than this challenge.<br>
+Therefore, I put the flags of the challenges I had obtained to the rectangles according to the numbers.<br>
+This is the result:
+</p>
+</div>
+<code-block data-extension="txt">
+1   ハンドル
+2   テントウ
+3   ナイーブ
+4   イイワケ
+5   チーター
+6   オワスプ
+7   クローン
+8   
+9   
+10  タイスウ
+11  タカハシ
+12  
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+ハイライトされていた左端を見ると、「ハテナ」という文字列が出ている。
+</p><p>
+ここで、スコアサーバのページのソースを見ていると、スクリプト <code>/themes/core/static/js/hatena.js</code> が使われていることに気がついた。<br>
+このファイルを見ると、flagが書かれていた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+There is a string "ハテナ" in the leftmost line, which is highlighted.
+</p><p>
+While viewing the sources of the pages on the score server, I found that a script <code>/themes/core/static/js/hatena.js</code> is used.<br>
+The flag was in the file.
+</p>
+</div>
+
+<div class="flag">ポラリス</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">nazotokiCTF～入社試験からの脱出～</a>
+</p>
+</body>
+</html>

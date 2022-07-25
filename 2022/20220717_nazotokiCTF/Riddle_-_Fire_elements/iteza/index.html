@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>いて座 (nazotokiCTF～入社試験からの脱出～) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>いて座</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+画像ファイル <code>sagittarius2.png</code> が与えられた。
+</p><p>
+画像では、<code>=</code> の左右に四角が並んだ組が4組あった。<br>
+一番上の組の <code>=</code> の左には4個の四角があり、左から3番目に「ス」と書かれていた。<br>
+さらにこの4個の四角が線で囲まれ、旗のマークがついていた。<br>
+この組の <code>=</code> の右には2個の四角があり、左から2番目に「ウ」と書かれていた。
+</p><p>
+さらに、問題「へびつかい座」で使った表の一番左は、「ハテナイチオク？☆タタ？」となっていた。<br>
+ただし、☆はこの問題のflagの最初の文字が当てはまる位置であり、？はまだ解けていない他の問題のflagの最初の文字があてはまる位置である。<br>
+ここから、「イチオク」の後に「カイ」が来ると予想した。これを仮定すると、☆には「イ」が当てはまる。
+</p><p>
+すると、画像に書かれている「ス」と合わせ、この問題のflagは「イ？ス？」であると考えられる。<br>
+<common-tool data-lang="ja">豚辞書</common-tool>から<common-tool data-lang="ja">サクラエディタ</common-tool>を用いて正規表現 <code>^い.す.$</code> を検索したところ、「いーすと」がヒットした。<br>
+<code>=</code> の右側を「トウ」(東京の東)と考えると、辻褄が合いそうである。<br>
+これを送信すると、正解になった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An image file <code>sagittarius2.png</code> was given.
+</p><p>
+The image had 4 <code>=</code> with rectangles in left and right.<br>
+The left side of the topmost <code>=</code> had 4 rectangles. The 3rd rectangle from the left had "ス".<br>
+Also, the 4 rectangles were surrounded by a line and there was a flag mark.<br>
+The right side of the <code>=</code> had 2 rectangles. The 2nd rectangle from the left had "ウ".
+</p><p>
+The leftmost column in the table used in the challenge "へびつかい座" was "ハテナイチオク？☆タタ？".<br>
+☆ means the position to put the first character of the flag for this challenge. ？ means positions to put the first characters of the flags of challenges I haven't solved yet.<br>
+I guessed that "カイ" will come after "イチオク". Assuming this, ☆ becomes "イ".
+</p><p>
+Adding "ス" in the image, the flag for this challenge should be "イ？ス？".<br>
+I searched for a regular expression <code>^い.す.$</code> from <common-tool data-lang="en">豚辞書</common-tool> using <common-tool data-lang="en">Sakura Editor</common-tool>. As a result, I found "いーすと".<br>
+This should fit well with "トウ" ("東" from "東京") in the right side of <code>=</code>.<br>
+I submitted this and this was judged as correct.
+</p>
+</div>
+
+<div class="flag">イースト</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">nazotokiCTF～入社試験からの脱出～</a>
+</p>
+</body>
+</html>

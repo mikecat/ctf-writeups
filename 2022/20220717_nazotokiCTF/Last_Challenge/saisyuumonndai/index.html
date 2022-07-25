@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>最終問題 (nazotokiCTF～入社試験からの脱出～) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>最終問題</h1>
+<p class="language-selector-ja" lang="ja">
+Webページへのリンクが与えられた。<br>
+リンク先には、以下の文言があった。
+</p>
+<p class="language-selector-en" lang="en">
+A link to a web page was given.<br>
+The page linked had this text:
+</p>
+<blockquote>
+<p>
+パスワードのヒントは愛の星座の中
+</p><p>
+流れに従い<br>
+太陽と月に背いて心の示す方を読め 
+</p>
+</blockquote>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+さらに、1個目のヒントより、「愛の星座」とはアイちゃんの星座であることがわかった。
+</p><p>
+アイちゃんの誕生日は問題「みずがめ座」で使ったページより7月18日であり、<a href="http://web.akikusa.ac.jp/web2011/21064141/12seiza.html">12星座</a>を参照すると、これは蟹座に相当する。
+</p><p>
+問題「かに座」で与えられたファイルのうち仲間外れ以外をバイナリエディタで観察するとPNGファイルが入っているようだったので、<common-tool data-lang="ja">CyberChef</common-tool>の Extract Files で抽出した。<br>
+それぞれのPNGファイルには、星座の名前が1個ずつ書かれていた。<br>
+さらに、これらのファイルを<common-tool data-lang="ja">Wireshark</common-tool>で開いて先頭のパケットの時刻を確認すると、以下のようになっていた。<br>
+(ファイル名の先頭4文字を示している)
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Also, the first hint told that "愛の星座" means the zodiac sign of アイちゃん.
+</p><p>
+The birthday of アイちゃん is July 18th, according to the page for the challenge "みずがめ座". <a href="http://web.akikusa.ac.jp/web2011/21064141/12seiza.html">12星座</a> reveals that this corresponds to 蟹座.
+</p><p>
+Looking that the files given in the challenge "かに座", I found PNG files in them expect for one. I extracted them using "Extract Files" on <common-tool data-lang="en">CyberChef</common-tool>.<br>
+Each of the PNG files had a name of one sign of the zodiac.<br>
+Also, I opend the files on <common-tool data-lang="en">Wireshark</common-tool> and checked the time of the first packet. This is the result:<br>
+(the first 4 characters of the names of the files are shown)
+</p>
+</div>
+<code-block data-extension="txt">
+4de4	2022-07-06 17:15:00.740075
+7c70	2022-07-06 17:15:03.680169
+44ca	2022-07-06 17:15:04.160480
+397c	2022-07-06 17:15:01.220219
+550e	2022-07-06 17:15:02.721533
+635c	2022-07-06 17:14:58.640138
+766c	2022-07-06 17:15:03.184941
+0961	2022-07-06 17:14:59.510254
+7463	2022-07-06 17:15:00.245184
+a067	2022-07-06 17:15:01.744846
+b9c9	2022-07-06 17:15:04.610421
+f8a5	2022-07-06 17:15:02.194684
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+これをCyberChefで時刻順にソートした。
+</p>
+<p class="language-selector-en" lang="en">
+I sorted this according to the time using CyberChef.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%5E(%5B%5E%5C%5Ct%5C%5Cr%5C%5Cn%5D%2B)%5C%5Ct(%5B%5E%5C%5Ct%5C%5Cr%5C%5Cn%5D%2B)$'%7D,'$2%5C%5Ct$1',true,false,true,false)Sort('Line%20feed',false,'Alphabetical%20(case%20sensitive)')&amp;input=NGRlNAkyMDIyLTA3LTA2IDE3OjE1OjAwLjc0MDA3NQo3YzcwCTIwMjItMDctMDYgMTc6MTU6MDMuNjgwMTY5CjQ0Y2EJMjAyMi0wNy0wNiAxNzoxNTowNC4xNjA0ODAKMzk3YwkyMDIyLTA3LTA2IDE3OjE1OjAxLjIyMDIxOQo1NTBlCTIwMjItMDctMDYgMTc6MTU6MDIuNzIxNTMzCjYzNWMJMjAyMi0wNy0wNiAxNzoxNDo1OC42NDAxMzgKNzY2YwkyMDIyLTA3LTA2IDE3OjE1OjAzLjE4NDk0MQowOTYxCTIwMjItMDctMDYgMTc6MTQ6NTkuNTEwMjU0Cjc0NjMJMjAyMi0wNy0wNiAxNzoxNTowMC4yNDUxODQKYTA2NwkyMDIyLTA3LTA2IDE3OjE1OjAxLjc0NDg0NgpiOWM5CTIwMjItMDctMDYgMTc6MTU6MDQuNjEwNDIxCmY4YTUJMjAyMi0wNy0wNiAxNzoxNTowMi4xOTQ2ODQK">Find / Replace, Sort - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+結果は以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+This is the result:
+</p>
+<code-block data-extension="txt">
+2022-07-06 17:14:58.640138	635c
+2022-07-06 17:14:59.510254	0961
+2022-07-06 17:15:00.245184	7463
+2022-07-06 17:15:00.740075	4de4
+2022-07-06 17:15:01.220219	397c
+2022-07-06 17:15:01.744846	a067
+2022-07-06 17:15:02.194684	f8a5
+2022-07-06 17:15:02.721533	550e
+2022-07-06 17:15:03.184941	766c
+2022-07-06 17:15:03.680169	7c70
+2022-07-06 17:15:04.160480	44ca
+2022-07-06 17:15:04.610421	b9c9
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+この順番で抽出されたPNGファイルに書かれた文字を読むと、以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+These are the names in the extracted PNG files, lined up in this order:
+</p>
+<code-block data-extension="txt">
+うお座 やぎ座 かに座 てんびん座 おひつじ座 みずがめ座
+おとめ座 しし座 ふたご座 さそり座 いて座 おうし座
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+問題「へびつかい座」の表をこの順番に並べ替えると、以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+I sorted the table used in the challenge "へびつかい座" according to this order. This is the result:
+</p>
+<code-block data-extension="txt">
+12  ケッパク
+10  タイスウ
+4   イイワケ
+7   クローン
+1   ハンドル
+11  タカハシ
+6   オワスプ
+5   チーター
+3   ナイーブ
+8   カクダイ
+9   イースト
+2   テントウ
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+ハートマークがある3列目を読むと、「パスワードハスターダスト」となっている。
+</p><p>
+問題「みずがめ座」で使われたサイトにあった <code>stardust</code> をパスワードとして入力すると、エピローグのページに遷移し、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The third column, which has a heart mark, is "パスワードハスターダスト".
+</p><p>
+I entered <code>stardust</code> (from the page used in the challenge "みずがめ座") as the password. As a result, an epilogue page appeared and the flag was there.
+</p>
+</div>
+
+<div class="flag">オールト</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">nazotokiCTF～入社試験からの脱出～</a>
+</p>
+</body>
+</html>
