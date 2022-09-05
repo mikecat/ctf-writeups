@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Survey (CakeCTF 2022) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Survey</h1>
+<p class="language-selector-ja" lang="ja">
+以下の問題文が与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+This challenge description was given:
+</p>
+<blockquote>
+Solving this challenge won't update the flag submission timestamp. So, take enough time to fill the survey!
+</blockquote>
+<div class="language-selector-ja" lang="ja">
+<p>
+「survey」の部分は、Googleフォームへのリンクになっていた。
+</p><p>
+リンク先のページのソースを表示し、<code>CakeCTF{</code> で検索することで、flagが得られた。<br>
+(<code>CakeCTF</code> だけだと複数ヒットしたので、<code>{</code> を入れるとよい)
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The "survey" part was a link to a Google Forms page.
+</p><p>
+I viewed the source of the linked page and searched for <code>CakeCTF{</code> to obtain the flag.<br>
+(Searching for <code>CakeCTF</code> only resulted in multiple hits, so <code>{</code> should be added)
+</p>
+</div>
+
+<div class="flag">CakeCTF{ar3_y0u_5ati5fi3d_with_thi5_y3ar5_cak3?}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">CakeCTF 2022</a>
+</p>
+</body>
+</html>
