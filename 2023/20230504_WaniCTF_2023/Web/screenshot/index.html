@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>screenshot (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>screenshot</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+URLを指定するとスクリーンショットを返してくれるWebページのURLと、サーバー用のファイル一式が与えられた。
+</p>
+<p>
+与えられたファイル中の <code>Dockerfile</code> を読むと、ファイル <code>/flag.txt</code> が配置されていることがわかった。<br>
+さらに、<code>src/index.js</code> を読むと、指定するURLが <code>http</code> を含まないか <code>file</code> を含む場合は処理を拒否されることがわかった。
+</p>
+<p>
+URL <code>FILE:///flag.txt#http</code> を指定することで、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL of a web page that accepts an URL and returns a screenshot, and files for the server were given.
+</p>
+<p>
+Reading one of the given files <code>Dockerfile</code>, I found that a file <code>/flag.txt</code> is placed on the server.<br>
+Also, reading <code>src/index.js</code>, It will refuse processing when the specified URL doesn't contain <code>http</code> or contains <code>file</code>.
+</p>
+<p>
+I obtained the flag by specifying an URL <code>FILE:///flag.txt#http</code>.
+</p>
+</div>
+
+<div class="flag">FLAG{beware_of_parameter_type_confusion!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

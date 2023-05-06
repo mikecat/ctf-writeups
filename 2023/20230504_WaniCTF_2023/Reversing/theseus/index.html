@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>theseus (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>theseus</h1>
+<div class="language-selector-ja" lang="ja">
+ファイル <code>chall</code> が与えられた。
+</p>
+<p>
+<common-tool data-lang="ja">Ghidra</common-tool> で逆コンパイルすると、<code>compare</code> 関数に以下の部分があった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>chall</code> was given.
+</p>
+<p class="language-selector-en" lang="en">
+Decompiling via <common-tool data-lang="en">Ghidra</common-tool>, I found this part in the function <code>compare</code>:
+</p>
+</div>
+
+<code-block data-extension="c">
+  local_38 = 0x41456c6d47414c46;
+  local_30 = 0x5f662c60692e6866;
+  local_28 = 0x24635e573f72294e;
+  local_20 = 0x786b;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+この部分を<common-tool data-lang="ja">CyberChef</common-tool> で変換した。
+</p>
+<p class="language-selector-en" lang="en">
+I applied some operations on <common-tool data-lang="en">CyberChef</common-tool> to this part.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%5E.*0x'%7D,'',true,false,true,false)From_Hex('Auto')Swap_endianness('Raw',8,true)&amp;input=ICBsb2NhbF8zOCA9IDB4NDE0NTZjNmQ0NzQxNGM0NjsKICBsb2NhbF8zMCA9IDB4NWY2NjJjNjA2OTJlNjg2NjsKICBsb2NhbF8yOCA9IDB4MjQ2MzVlNTczZjcyMjk0ZTsKICBsb2NhbF8yMCA9IDB4Nzg2Yjs">Find / Replace, From Hex, Swap endianness - CyberChef</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+すると、以下の結果が得られた。
+</p>
+<code-block data-extension="txt">
+FLAGmlEAfh.i`,f_N)r?W^c$ (NUL 6個) kx
+</code-block>
+<p>
+さらに、<code>main</code> 関数を見ると、以下の部分があった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+This is the result:
+</p>
+<code-block data-extension="txt">
+FLAGmlEAfh.i`,f_N)r?W^c$ (6 NULs) kx
+</code-block>
+<p>
+Looking at the <code>main</code> funciton, I noticed at this part:
+</p>
+</div>
+
+<code-block data-extension="c">
+  local_68 = 0;
+  for (local_64 = 0; local_64 &lt; 0x1a; local_64 = local_64 + 1) {
+    if (3 &lt; local_64) {
+      local_68 = (local_64 * 0xb) % 0xf;
+    }
+    cVar1 = (char)local_68;
+    if (local_64 &lt; 8) {
+      compare[local_64 + 0x25] = (code)((char)compare[local_64 + 0x25] + cVar1);
+    }
+    else if (local_64 &lt; 0x10) {
+      compare[local_64 + 0x27] = (code)((char)compare[local_64 + 0x27] + cVar1);
+    }
+    else if (local_64 &lt; 0x18) {
+      compare[local_64 + 0x31] = (code)((char)compare[local_64 + 0x31] + cVar1);
+    }
+    else {
+      compare[local_64 + 0x39] = (code)((char)compare[local_64 + 0x39] + cVar1);
+    }
+  }
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+この部分に基づいて書いた以下のプログラムでflagが得られた。<br>
+なお、もとの部分で8バイトごとにオフセットがずれているのは、命令を避けてデータのみを書換えるためであるため、反映しなくて良い。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag from this program based on this part.<br>
+Note that the original fragment is moving the offset for each 8 bytes, but this is for avoiding instructions and modifying only data, so this isn't needed in my program.
+</p>
+<p><a href="solve.py" class="code-link">solve.py</a></p>
+
+<div class="flag">FLAG{vKCsq3jl4j_Y0uMade1t}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

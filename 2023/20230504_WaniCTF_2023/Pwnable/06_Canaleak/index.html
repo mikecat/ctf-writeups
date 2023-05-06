@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>06. Canaleak (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>06. Canaleak</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>chall</code> および <code>chall.c</code> が与えられた。
+</p>
+<p>
+<code>chall.c</code> は、入力文字列を <code>printf</code> の第1引数として渡した後、
+入力文字列を第1引数として <code>strcmp</code> 関数を呼び出し、返り値が非0ならばこれを繰り返す、という処理を含んでいた。
+</p>
+<p>
+<code>chall</code> に <code>file</code> コマンドを使うと、64ビットのELFファイルであることがわかったので、<common-tool data-lang="ja">TDM-GCC</common-tool> の objdump で逆アセンブルを行った。<br>
+すると、以下の部分があった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connecting to a TCP server, and files <code>chall</code> and <code>chall.c</code> were given.
+</p>
+<p>
+<code>chall.c</code> had a part that passes entered string as the first argument of <code>printf</code> function,
+and then call <code>strcmp</code> function with the entered string as the first argument, and repeat this if its return value is not zero.
+</p>
+<p>
+I used the <code>file</code> command to the file <code>chall</code>. It revealed that the file is a 64-bit ELF file. Seeing this, I disassembled that using objdump in <common-tool data-lang="en">TDM-GCC</common-tool>.<br>
+I found this part in the result.
+</p>
+</div>
+<code-block data-extension="txt">
+00000000004010d0 &lt;system@plt&gt;:
+  4010d0:	f3 0f 1e fa          	endbr64 
+  4010d4:	f2 ff 25 55 2f 00 00 	bnd jmpq *0x2f55(%rip)        # 404030 &lt;system@GLIBC_2.2.5&gt;
+  4010db:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+00000000004010e0 &lt;printf@plt&gt;:
+  4010e0:	f3 0f 1e fa          	endbr64 
+  4010e4:	f2 ff 25 4d 2f 00 00 	bnd jmpq *0x2f4d(%rip)        # 404038 &lt;printf@GLIBC_2.2.5&gt;
+  4010eb:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+00000000004010f0 &lt;strcmp@plt&gt;:
+  4010f0:	f3 0f 1e fa          	endbr64 
+  4010f4:	f2 ff 25 45 2f 00 00 	bnd jmpq *0x2f45(%rip)        # 404040 &lt;strcmp@GLIBC_2.2.5&gt;
+  4010fb:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+よって、アドレス 0x404040 に8バイトのデータ 0x00000000004010d0 を書き込めば、<code>strcmp</code> を <code>system</code> に置き換え、入力したコマンドを実行できるようになるはずである。
+</p>
+<p>
+これを行うため、そこまでに出力した文字数を指定の位置に書き込める <code>printf</code> の書式 <code>%n</code> を用いる。<br>
+さらに、以下の指定子も用いる。
+</p>
+<ul>
+<li><code>(数値)$</code> : 指定した位置のデータを用いる</li>
+<li><code>hh</code> : (<code>%n</code> では) 1バイトで書き込む</li>
+<li><code>h</code> : (<code>%n</code> では) 2バイトで書き込む</li>
+</ul>
+<p>
+まず、以下の文字列を送信した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+This is suggesting that we can replace <code>strcmp</code> with <code>system</code> and enable to execute entered command by writing 8-byte data 0x00000000004010d0 to the address 0x404040.
+</p>
+<p>
+To achieve this, I used the <code>%n</code> specifier for <code>printf</code>, which writes the number of characters printed so far to the specified address.<br>
+I also used these modifiers.
+</p>
+<ul>
+<li><code>(number)$</code> : use data at the specified position</li>
+<li><code>hh</code> : (when used with <code>%n</code>) write 1-byte data</li>
+<li><code>h</code> : (when used with <code>%n</code>) write 2-byte data</li>
+</ul>
+<p>
+To begin with, I sent this string.
+</p>
+</div>
+<code-block data-extension="txt">
+%6$p_%7$p_%8$p_%9$p_____0000000011111111222222223333333344444444
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+すると、以下の文字列が出力された。
+</p>
+<p class="language-selector-en" lang="en">
+Then, this string is printed.
+</p>
+<code-block data-extension="txt">
+0x2437255f70243625_0x255f702438255f70_0x5f5f5f5f5f702439_0x3030303030303030_____0000000011111111222222223333333344444444
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+このことから、位置 9 が入力文字列の24バイト目 (0-origin) に対応することがわかる。
+</p>
+<p>
+この性質を用い、以下の書き込みを行うデータ <code>payload.bin</code> を作成した。
+</p>
+<ul>
+<li>アドレス <code>0x404040 + 4</code> に、4バイトの 0x00000000 を書き込む</li>
+<li>アドレス <code>0x404040 + 1</code> に、1バイトの 0x10 を書き込む</li>
+<li>アドレス <code>0x404040 + 2</code> に、2バイトの 0x0040 を書き込む</li>
+<li>アドレス <code>0x404040 + 0</code> に、1バイトの 0xd0 を書き込む</li>
+</ul>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+This suggests that the position 9 corresponds to the 24th byte (0-origin) of the input string.
+</p>
+<p>
+Using this characteristics, I created data <code>payload.bin</code> to write in these way:
+</p>
+<ul>
+<li>Write 4-byte 0x00000000 to the address <code>0x404040 + 4</code></li>
+<li>Write 1-byte 0x10 to the address <code>0x404040 + 1</code></li>
+<li>Write 2-byte 0x0040 to the address <code>0x404040 + 2</code></li>
+<li>Write 1-byte 0xd0 to the address <code>0x404040 + 0</code></li>
+</ul>
+</div>
+<p><a href="payload.bin" class="code-link" data-binary="true">payload.bin</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このデータを<common-tool data-lang="ja">Tera Term</common-tool> の「ファイル送信」で送信すると、以下が出力された。
+</p>
+<p class="language-selector-en" lang="en">
+I sent this data via "Send File" on <common-tool data-lang="en">Tera Term</common-tool>. As a result, this string was printed:
+</p>
+<code-block data-extension="txt">
+sh: 1: %11%16d%12%48d%13%144d%14@@: not found
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+これは、<code>strcmp</code> が <code>system</code> に置き換わり、入力した文字列をコマンドとして実行しようとしたことを示している。<br>
+そして、実行に失敗し、非0が返るため、もう一度入力ができる。<br>
+そこで、<code>/bin/sh</code> を入力すると、シェルを起動できる。
+</p>
+<p>
+起動したシェルで <code>ls -al</code> コマンドを実行すると、ファイル <code>FLAG</code> があることがわかった。<br>
+<code>cat FLAG</code> コマンドを実行すると、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+This is because <code>strcmp</code> is replaced with <code>system</code> and it is trying to execute the string entered as a command.<br>
+The execution fails and a non-zero value is returned, so I have another chance to enter a string.<br>
+I succeeded to launch the shell by entering <code>/bin/sh</code>.
+</p>
+<p>
+On the shell, I executed a command <code>ls -al</code> and found a file <code>FLAG</code>.<br>
+I obtained the flag by executing a command <code>cat FLAG</code>.
+</p>
+</div>
+
+<div class="flag">FLAG{N0PE!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

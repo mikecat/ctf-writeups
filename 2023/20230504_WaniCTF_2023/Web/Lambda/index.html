@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lambda (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Lambda</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、ファイル <code>SecretUser_accessKeys.csv</code> が与えられた。<br>
+ファイルには、Access key ID、Secret access key、Region が書かれていた。
+</p>
+<p>
+<common-tool data-lang="ja">Perplexity AI</common-tool> に Access key ID と Secret access key の使い方を聞くと、Boto3 というものを使えばいいことがわかった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL of a web page and a file <code>SecretUser_accessKeys.csv</code> were given.<br>
+The file had Access key ID, Secret access key, and Region.
+</p>
+<p>
+I asked how to use Access key ID and Secret access key to <common-tool data-lang="en">Perplexity AI</common-tool>. As a result, it suggested that I can use Boto3.
+</p>
+</div>
+<p><a href="https://www.perplexity.ai/search/cdb294bd-3650-4508-8f0c-b75c0dd292ed?s=t">Perplexity AI: How to use Access key ID and Secret access key for AWS Lambda?</a></p>
+<p><a href="https://qiita.com/kimihiro_n/items/f3ce86472152b2676004">Python boto3 でAWSを自在に操ろう ~入門編~ - Qiita</a></p>
+
+<p class="language-selector-ja" lang="ja">
+Boto3 を使うため、virtualenv を有効化し、コマンド <code>pip install boto3</code> を実行した。<br>
+その後試行錯誤した結果、以下のプログラムで Location の URL が得られることがわかった。
+</p>
+<p class="language-selector-en" lang="en">
+To use Boto3, I activated virtualenv and executed a command <code>pip install boto3</code>.<br>
+Then, after some trial-and-error, I found that I can obtain a "Location" URL via this program.
+</p>
+<p><a href="get_location.py" class="code-link" data-collapse="true">get_location.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+この Location の URL にアクセスすると、zipファイルが得られた。<br>
+これを展開して得られた <code>WaniCTF_Lambda.dll</code> を<common-tool data-lang="ja">dnSpy</common-tool> で開くと、<code>WaniCTF_Lambda</code> 内の <code>Function</code> でflagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+Accessing the "Location" URL, I obtained a zip file.<br>
+I opened one of the extracted files <code>WaniCTF_Lambda.dll</code> with <common-tool data-lang="en">dnSpy</common-tool>. Then, I found the flag in <code>Function</code> in <code>WaniCTF_Lambda</code>.
+</p>
+
+<div class="flag">FLAG{l4mabd4_1s_s3rverl3ss_s3rv1c3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>javersing (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>javersing</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>javersing.jar</code> が与えられた。
+</p>
+<p>
+このファイルを <common-tool data-lang="ja">JD-GUI</common-tool> で開くと、以下のコードが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>javersing.jar</code> was given.
+</p>
+<p>
+Opening tha file in <common-tool data-lang="en">JD-GUI</common-tool>, it gave me this code:
+</p>
+</div>
+<p><a href="javersing_class.txt" class="code-link" data-extension="java">javersing.class</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このコードに基づき作成した以下のプログラムでflagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag via this program based on the code:
+</p>
+<p><a href="solve.py" class="code-link">solve.py</a></p>
+
+<div class="flag">FLAG{Decompiling_java_is_easy}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

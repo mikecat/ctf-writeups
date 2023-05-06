@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>64bps (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>64bps</h1>
+<p class="language-selector-ja" lang="ja">
+WebページのURLと、サーバー用のファイル一式、さらに以下の問題文が与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+An URL of a web page, files for the server, and following challenge description were given.
+</p>
+<code-block data-extension="txt">
+dd if=/dev/random of=2gb.txt bs=1M count=2048
+cat flag.txt &gt;&gt; 2gb.txt
+rm flag.txt
+</code-block>
+<div class="language-selector-ja" lang="ja">
+<p>
+以下の方法でflagが得られた。
+</p>
+<ol>
+<li><common-tool data-lang="ja">Firefox</common-tool> で指定のURLを開き、開発者ツールを開く。</li>
+<li>ネットワークタブを開き、ページをリロードする。</li>
+<li>ページの読み込みを中止する。</li>
+<li>名前 <code>Range</code>、値 <code>bytes=2147483648-</code> のヘッダを追加してリクエストを再送信する。(このリクエストは約41秒かかった)
+</ol>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+I obtained the flag in this way.
+</p>
+<ol>
+<li>Open the specified URL with <common-tool data-lang="en">Firefox</common-tool> and open the Developer Tools.</li>
+<li>Open the "Network" tab and reload the page.</li>
+<li>Abort loading the page.</li>
+<li>Resend arequest with adding a header with name <code>Range</code> and value <code>bytes=2147483648-</code>. (This request took about 41 seconds)
+</ol>
+</div>
+
+<div class="flag">FLAG{m@ke_use_0f_r@n0e_reques7s_f0r_l@r9e_f1les}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

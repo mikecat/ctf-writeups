@@ -268,7 +268,13 @@ const commonToolList = {
 	},
 	"豚辞書": {
 		"": "http://www.vector.co.jp/soft/dos/game/se018509.html"
-	}
+	},
+	"WABT": {
+		"": "https://github.com/WebAssembly/wabt"
+	},
+	"Perplexity AI": {
+		"": "https://www.perplexity.ai/"
+	},
 };
 
 function getLanguage(ext) {

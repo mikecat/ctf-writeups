@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Just_Passw0rd (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Just_Passw0rd</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>just_password</code> が与えられた。
+</p>
+<p>
+以下のコマンドにより、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>just_password</code> was given.
+</p>
+I obtained the flag via this command:
+</p>
+</div>
+
+<code-block data-extension="txt">
+strings just_password | grep FLAG
+</code-block>
+
+<div class="flag">FLAG{1234_P@ssw0rd_admin_toor_qwerty}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

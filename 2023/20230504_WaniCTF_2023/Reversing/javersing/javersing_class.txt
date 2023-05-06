@@ -1,0 +1,21 @@
+import java.util.Scanner;
+
+public class javersing {
+  public static void main(String[] paramArrayOfString) {
+    String str1 = "Fcn_yDlvaGpj_Logi}eias{iaeAm_s";
+    boolean bool = true;
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Input password: ");
+    String str2 = scanner.nextLine();
+    str2 = String.format("%30s", new Object[] { str2 }).replace(" ", "0");
+    for (byte b = 0; b < 30; b++) {
+      if (str2.charAt(b * 7 % 30) != str1.charAt(b))
+        bool = false; 
+    } 
+    if (bool) {
+      System.out.println("Correct!");
+    } else {
+      System.out.println("Incorrect...");
+    } 
+  }
+}

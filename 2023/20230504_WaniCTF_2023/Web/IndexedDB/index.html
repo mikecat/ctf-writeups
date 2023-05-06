@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>IndexedDB (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>IndexedDB</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+WebページのURLが与えられた。
+</p>
+<p>
+与えられたURLをコピーし、<common-tool data-lang="ja">Firefox</common-tool> の開発者ツールのネットワークタブを開いてからアクセスした。<br>
+すると、ファイル <code>/</code> へのリクエストの応答の生テキストにflagが書かれていた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL of a web page was given.
+</p>
+<p>
+I copied the given URL and accessed there after opening the Network tab in the Developer Tool on <common-tool data-lang="en">Firefox</common-tool>.<br>
+Then, I found the flag in the raw text of the response of the request to the file <code>/</code>.
+</p>
+</div>
+
+<div class="flag">Flag{Y0u_C4n_3x3cut3_Cpp_0n_Br0us3r!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

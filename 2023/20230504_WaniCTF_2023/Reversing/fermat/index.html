@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>fermat (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>fermat</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>fermat</code> が与えられた。
+</p>
+<p>
+<common-tool data-lang="ja">Ghidra</common-tool> で逆コンパイルすると、以下の <code>print_flag</code> 関数が見つかった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>fermat</code> was given.
+</p>
+<p>
+Decompiling via <common-tool data-lang="en">Ghidra</common-tool>, I found this function <code>print_flag</code>:
+</p>
+</div>
+
+<p><a href="print_flag.txt" class="code-link" data-extension="c" data-collapse="true">print_flag</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このコードに基づき、<common-tool data-lang="ja">CyberChef</common-tool> でデータを抽出してxor演算をすることで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+Based on this code, I obtained the flag by extracting data and performing xor operation via <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%5E.*0x'%7D,'',true,false,true,false)From_Hex('Auto')Swap_endianness('Raw',4,true)XOR(%7B'option':'Hex','string':'c0b0c0b0'%7D,'Standard',false)&amp;input=ICBsb2NhbF9iOFswXSA9IDB4Zjc4MWZjODY7CiAgbG9jYWxfYjhbMV0gPSAweGM1YWZjOWJiOwogIGxvY2FsX2I4WzJdID0gMHhkNWE1ZGU5ZjsKICBsb2NhbF9iOFszXSA9IDB4ZWZhMWVmYTQ7CiAgbG9jYWxfYjhbNF0gPSAweGVmYjRkZmFjOwogIGxvY2FsX2I4WzVdID0gMHhjNDlmZDZhZjsKICBsb2NhbF9iOFs2XSA9IDB4ZWZhNWRkYTk7CiAgbG9jYWxfYjhbN10gPSAweGVmYTRkZWExOwogIGxvY2FsX2I4WzhdID0gMHhkZmE2ZDZhNTsKICBsb2NhbF9iOFs5XSA9IDB4YzQ5ZmM0YjI7CiAgbG9jYWxfYjhbMTBdID0gMHhkZmIzZWZhZjsKICBsb2NhbF9iOFsxMV0gPSAweGVmYTVjNmFjOwogIGxvY2FsX2I4WzEyXSA9IDB4ZDViNmQ1YjI7CiAgbG9jYWxfYjhbMTNdID0gMHhkZWE5YzNiMjsKICBsb2NhbF9iOFsxNF0gPSAweDgwZjJlZmE3OwogIGxvY2FsX2I4WzE1XSA9IDB4ODdmNGQyZjg7CiAgbG9jYWxfYjhbMTZdID0gMHg4NmY2ZDRhMjsKICBsb2NhbF9iOFsxN10gPSAweGQ0YTM4MmEzOwogIGxvY2FsX2I4WzE4XSA9IDB4YjBjMGNkZjg7">Find / Replace, 3 more - CyberChef</a></p>
+
+<div class="flag">FLAG{you_need_a_lot_of_time_and_effort_to_solve_reversing_208b47bd66c2cd8}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

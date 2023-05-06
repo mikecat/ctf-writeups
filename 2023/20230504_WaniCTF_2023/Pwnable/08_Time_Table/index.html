@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>08. Time Table (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+<style>
+table.simple-table {
+	border: 1px solid black;
+}
+table.simple-table td, table.simple-table th  {
+	border: 1px solid black;
+	padding: 0.2em 0.4em;
+}
+</style>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>08. Time Table</h1>
+<p class="language-selector-ja" lang="ja">
+TCPサーバの接続情報と、以下のファイルが与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+Information for connecting to a TCP server and these files were given:
+</p>
+<ul>
+<li><code>chall</code></li>
+<li><code>chall.c</code></li>
+<li><code>const.h</code></li>
+<li><code>utils.h</code></li>
+</ul>
+
+<p class="language-selector-ja" lang="ja">
+サーバに接続すると、以下が出力された。
+</p>
+<p class="language-selector-en" lang="en">
+Connecting to the server, this text appeared:
+</p>
+<code-block data-extension="txt">
+WELCOME TO THE TIME TABLE PROGRAM
+Enter your name :
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+ここでは、1回入力すると改行などを待たずに先に進むため、注意が必要である。<br>
+入力すると、以下が出力された。
+</p>
+<p class="language-selector-en" lang="en">
+Here, you should be careful because it goes to next step after only single input (it doesn't wait for things like a newline character).<br>
+Entering something, this text appeared:
+</p>
+<code-block data-extension="txt">
+Enter your student id :
+</code-block>
+<p class="language-selector-ja" lang="ja">
+ここでは区切りの入力を待ってくれるが、数値以外を入力すると大量の出力が発生して操作不能になるので注意が必要である。<br>
+入力すると、以下が出力された。
+</p>
+<p class="language-selector-en" lang="en">
+Here it waits for a delimiter to be entered, but you should be careful entering something not an integer will lead to loss of control with a lot of output.<br>
+Entering something, this text appeared:
+</p>
+<code-block data-extension="txt">
+Enter your major :
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+出力されたメッセージに反して、ここも科目名ではなく数値を入力しないと操作不能になるトラップである。<br>
+入力すると、以下が出力された。
+</p>
+<p class="language-selector-en" lang="en">
+Despite the message, you should enter not a name of subject but an integer, or the control will be lost.<br>
+Entering something, this text appeared:
+</p>
+<code-block data-extension="txt">
+        MON             TUE             WED             THU             FRI
+1       (null)          (null)          (null)          (null)          (null)  
+2       (null)          (null)          (null)          (null)          (null)  
+3       (null)          (null)          (null)          (null)          (null)  
+4       (null)          (null)          (null)          (null)          (null)  
+5       (null)          (null)          (null)          (null)          (null)  
+
+1. Register Mandatory Class
+2. Register Elective Class
+3. See Class Detail
+4. Write Memo
+5. Exit
+&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+与えられた <code>chall.c</code> を読むと、選択肢1と2では配列の範囲外を含む任意の要素にアクセスできることがわかる。<br>
+1 を選択し、続いて 4 を入力すると、FRI 3 の場所の表示が「The World of Intellect」になった。<br>
+選択肢 1 では <code>mandatory_list</code> にアクセスするが、これは <code>const.h</code> で確認できる <code>elective_list</code> の要素である。<br>
+<code>mandatory_list</code> の要素 <code>mandatory_subject</code> と、<code>elective_list</code> の要素 <code>elective_subject</code> の構造は、それぞれ以下のようになっている。
+</p>
+<p class="language-selector-en" lang="en">
+Reading one of the given files <code>chall.c</code>, we can find that we can access arbitrary elements of arrays, including out-of-range ones, in the choice 1 and 2.<br>
+I selected 1, and then entered 4. Then, information for "FRI 3" turned to "The World of Intellect".<br>
+While the choice 1 uses <code>mandatory_list</code>, this is from one of the elements of <code>elective_list</code>, defined in <code>const.h</code>.<br>
+Here are the structures of <code>mandatory_subject</code> (elements of <code>mandatory_list</code>) and <code>elective_subject</code> (elements of <code>elective_list</code>).
+</p>
+<table class="simple-table">
+<tr><th>offset</th><th><code>mandatory_subject</code></th><th><code>elective_subject</code></th></tr>
+<tr><td>+0x00</td><td><code>char* name;</code></td><td><code>char* name;</code></td></tr>
+<tr><td>+0x08</td><td><code>int time[2];</code></td><td><code>int time[2];</code></td></tr>
+<tr><td>+0x10</td><td rowspan="4"><code>char *target[4];</code></td><td rowspan="4"><code>char memo[32];</code></td></tr>
+<tr><td>+0x18</td></tr>
+<tr><td>+0x20</td></tr>
+<tr><td>+0x28</td></tr>
+<tr><td>+0x30</td><td rowspan="4"><code>char memo[32];</code></td><td><code>char *professor;</code></td></tr>
+<tr><td>+0x38</td><td><code>int (*IsAvailable)(student *);</code></td></tr>
+<tr><td>+0x40</td><td>-</td></tr>
+<tr><td>+0x48</td><td>-</td></tr>
+<tr><td>+0x50</td><td><code>char *professor;</code><td>-</td></tr>
+</table>
+<div class="language-selector-ja" lang="ja">
+<p>
+さらに、以下の点に注目する。
+</p>
+<ul>
+<li><code>mandatory_subject</code> の <code>memo</code> には、選択肢 4 で呼び出される <code>write_memo</code> で任意の内容を書き込める。</li>
+<li><code>elective_subject</code> の <code>professor</code> が指すデータは、選択肢 2 の処理で用いられる <code>print_elective_list</code> (<code>utils.h</code> で定義) で出力される。</li>
+<li><code>elective_subject</code> の <code>IsAvailable</code> は、選択肢 2 で選んだ要素について <code>user</code> へのポインタを渡して呼び出される。</li>
+<li><code>user</code>は <code>chall.c</code> で宣言された、<code>const.h</code> で宣言された構造体 <code>student</code> のデータである。</li>
+<li><code>user</code> の先頭に最初に入力した名前が入る。
+</ul>
+<p>
+与えられたファイル <code>chall</code> を<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpで逆アセンブルした結果より、<code>printf</code> のアドレスが 0x405038 に、<code>read</code> のアドレスが 0x405048 に格納されることがわかる。<br>
+これに基づいて、<code>professor</code> をこれらの位置に設定するための以下のペイロードを用意した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Also note these points.
+</p>
+<ul>
+<li>We can write arbitrary data to <code>memo</code> in <code>mandatory_subject</code> using the function <code>write_memo</code>, called in the choice 4.</li>
+<li>Data pointed at by <code>professor</code> in <code>elective_subject</code> is printed in the function <code>print_elective_list</code>, defined in <code>utils.h</code> and used in the choice 2.</li>
+<li><code>IsAvailable</code> in <code>elective_subject</code> from the selected element is called in the choice 2 with a pointer to <code>user</code> as the argument.</li>
+<li><code>user</code> is declared in <code>chall.c</code>, and its type is <code>student</code>, declared in <code>const.h</code>.</li>
+<li>The name firstly entered is stored at the beginning of <code>user</code>.</li>
+</ul>
+<p>
+Disassembling one of the given files <code>chall</code> using objdump in <common-tool data-lang="en">TDM-GCC</common-tool>, I found that the address of <code>printf</code> is stored at 0x405038 and that one of <code>read</code> is stored at 0x405048.<br>
+Based on this, I created these payloads to set <code>professor</code> to these values.
+</p>
+</div>
+<p><a href="payload_printf.bin" class="code-link" data-binary="true">payload_printf.bin</a></p>
+<p><a href="payload_read.bin" class="code-link" data-binary="true">payload_read.bin</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+選択肢 4 (Write Memo) を選択し、<code>FRI 3</code> を入力する。<br>
+これもコピペなどで一気に入力しないと、1回 (1文字) 入力しただけで次の処理に進み、無効な入力とみなされてしまうので注意する。<br>
+そして、ペイロードを<common-tool data-lang="ja">Tera Term</common-tool> の「ファイル送信」で送信する。<br>
+その後、選択肢 2 を選び、通信内容を<common-tool data-lang="ja">Wireshark</common-tool>で確認すると、各関数のアドレスを読み取ることができる。<br>
+たとえば、<code>printf</code> 関数のアドレスは 0x7f3c58846770、<code>read</code>関数のアドレスは 0x7f3c588fa980 と読み取れた。
+</p>
+<p>
+これらの値を <common-tool data-lang="ja">libc-database</common-tool> に入力すると、3個の候補が出てきた。<br>
+候補によってアドレスは異なったが、<code>printf</code> と <code>system</code> のアドレスの差は全て同じであったので、十分絞れたといえる。<br>
+この情報を利用し、名前として <code>/bin/sh</code> を入れることで <code>system("/bin/sh")</code> を呼び出させる以下のプログラムを作成した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Select choice 4 (Write Memo) and enter <code>FRI 3</code>.<br>
+Note that you should enter at once (via copy-and-paste) here, or it will proceed to next step at entering only once (one character) and consider that as an invalid input.<br>
+Then, send the payload via "Send File" on <common-tool data-lang="en">Tera Term</common-tool>.<br>
+After that, select choice 2 and read the communication using <common-tool data-lang="en">Wireshark</common-tool> to see the address of the functions.<br>
+The address of <code>printf</code> function was 0x7f3c58846770 and one of the <code>read</code> function was 0x7f3c588fa980, for example.
+</p>
+<p>
+I put these values to <common-tool data-lang="en">libc-database</common-tool>. As a result, 3 candidates were found.<br>
+Some of the candidates had different addresses, but the difference of the addresses for <code>printf</code> and <code>system</code> were the same in the all candidates and it is useful.<br>
+Using this information, I created this program to enter <code>/bin/sh</code> as the name and have it call <code>system("/bin/sh")</code>.
+</p>
+</div>
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムにより、シェルを起動することができた。<br>
+起動したシェルで <code>ls -al</code> コマンドを実行すると、ファイル <code>FLAG</code> があることがわかった。<br>
+続いて <code>cat FLAG</code> コマンドを実行すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+This program succeeded to launch the shell.<br>
+In the shell, I executed a command <code>ls -al</code> and found a file <code>FLAG</code>.<br>
+Then, I obtained the flag by executing a command <code>cat FLAG</code>.
+</p>
+
+<div class="flag">FLAG{Do_n0t_confus3_mandatory_and_el3ctive}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

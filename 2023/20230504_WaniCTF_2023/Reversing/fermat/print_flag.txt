@@ -1,0 +1,64 @@
+void print_flag(void)
+
+{
+  long in_FS_OFFSET;
+  int local_bc;
+  undefined4 local_b8 [20];
+  undefined8 local_68;
+  undefined8 local_60;
+  undefined8 local_58;
+  undefined8 local_50;
+  undefined8 local_48;
+  undefined8 local_40;
+  undefined8 local_38;
+  undefined8 local_30;
+  undefined8 local_28;
+  undefined4 local_20;
+  long local_10;
+  
+  local_10 = *(long *)(in_FS_OFFSET + 0x28);
+  local_b8[0] = 0xf781fc86;
+  local_b8[1] = 0xc5afc9bb;
+  local_b8[2] = 0xd5a5de9f;
+  local_b8[3] = 0xefa1efa4;
+  local_b8[4] = 0xefb4dfac;
+  local_b8[5] = 0xc49fd6af;
+  local_b8[6] = 0xefa5dda9;
+  local_b8[7] = 0xefa4dea1;
+  local_b8[8] = 0xdfa6d6a5;
+  local_b8[9] = 0xc49fc4b2;
+  local_b8[10] = 0xdfb3efaf;
+  local_b8[11] = 0xefa5c6ac;
+  local_b8[12] = 0xd5b6d5b2;
+  local_b8[13] = 0xdea9c3b2;
+  local_b8[14] = 0x80f2efa7;
+  local_b8[15] = 0x87f4d2f8;
+  local_b8[16] = 0x86f6d4a2;
+  local_b8[17] = 0xd4a382a3;
+  local_b8[18] = 0xb0c0cdf8;
+  local_68 = 0;
+  local_60 = 0;
+  local_58 = 0;
+  local_50 = 0;
+  local_48 = 0;
+  local_40 = 0;
+  local_38 = 0;
+  local_30 = 0;
+  local_28 = 0;
+  local_20 = 0;
+  for (local_bc = 0; local_bc < 0x13; local_bc = local_bc + 1) {
+    *(byte *)((long)&local_68 + (long)(local_bc << 2)) = (byte)local_b8[local_bc] ^ 0xc0;
+    *(byte *)((long)&local_68 + (long)(local_bc * 4 + 1)) =
+         (byte)((uint)local_b8[local_bc] >> 8) ^ 0xb0;
+    *(byte *)((long)&local_68 + (long)(local_bc * 4 + 2)) =
+         (byte)((uint)local_b8[local_bc] >> 0x10) ^ 0xc0;
+    *(byte *)((long)&local_68 + (long)(local_bc * 4 + 3)) =
+         (byte)((uint)local_b8[local_bc] >> 0x18) ^ 0xb0;
+  }
+  puts((char *)&local_68);
+  if (local_10 != *(long *)(in_FS_OFFSET + 0x28)) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
