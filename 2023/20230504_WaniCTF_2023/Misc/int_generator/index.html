@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>int_generator (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>int_generator</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>chall.py</code> および <code>output.txt</code> が与えられ、flag1、flag2、flag3 を要求された。
+</p>
+<p>
+<code>chall.py</code> には整数を受け取って別の整数を返す関数が書かれており、<code>output.txt</code> にはこの関数に flag1、flag2、flag3 をそれぞれ渡した結果の整数が書かれているようだった。
+</p>
+<p>
+解の候補は35ビットと十分少なく、処理内容を見てオーバーフローする可能性は低いと判断したので、処理をC言語に移植して解を全探索することにした。<br>
+そして、以下のプログラムを書いた。<br>
+与えられた出力値に加え、確認のために既知の入力に対する出力も探索対象に加えた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Files <code>chall.py</code> and <code>output.txt</code> were given, and values for flag1, flag2, and flag3 were asked.
+</p>
+<p>
+The file <code>chall.py</code> had a function that takes an integer and returns another integer. <code>output.txt</code> looked having what the function returned when each of flag1, flag2, and flag3 are passed.
+</p>
+<p>
+The candidates of the answer is 35-bit long and the space should be small enough, and I thought risk of overflow is low enough reading the program, so I decided to rewrite the process in C and brute-force for the answer.<br>
+Then, I wrote this program.<br>
+In addition to the given output values, I added an output for a known input to the search targets for checking.
+</p>
+</div>
+
+<p><a href="solve.c" class="code-link" data-collapse="true">solve.c</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムを、<common-tool data-lang="ja">AWS</common-tool> EC2 の c6i.16xlarge インスタンス (AMI: Ubuntu Server 22.04 LTS (HVM), SSD Volume Type <code>ami-0fcf52bcf5db7b003</code>) で実行することにした。<br>
+<code>solve.c</code> をインスタンスにアップロードし、以下のコマンドで実行した。
+</p>
+<p class="language-selector-en" lang="en">
+I decided to run this program on an <common-tool data-lang="ja">AWS</common-tool> EC2 c6i.16xlarge instance (AMI: Ubuntu Server 22.04 LTS (HVM), SSD Volume Type <code>ami-0fcf52bcf5db7b003</code>).<br>
+I uploaded <code>solve.c</code> to the instance and ran with these commands:
+</p>
+<code-block data-extension="txt">
+sudo apt-get update
+sudo apt-get upgrade 
+sudo apt-get install gcc
+gcc -O3 -march=native -fopenmp -o solve solve.c
+time ./solve 35
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+すると、以下の結果が得られた。
+</p>
+<p class="language-selector-en" lang="en">
+This is the result:
+</p>
+<code-block data-extension="txt">
+int_generator(0) = 1008844668800884
+int_generator(26476544) = 2264663430088446
+int_generator(818143497) = 3438959214151555
+int_generator(34359738368) = 6772814078400884
+
+real    14m6.468s
+user    902m52.700s
+sys     0m0.052s
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+この結果に基づき、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag based on this result.
+</p>
+
+<div class="flag">FLAG{0_26476544_34359738368}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

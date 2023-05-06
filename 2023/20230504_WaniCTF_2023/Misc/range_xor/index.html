@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>range_xor (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>range_xor</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>case(N=1000).txt</code> が与えられ、数列の要素 <code>a_i</code> をいくつか <code>min(a_i, 1000 - a_i)</code> で置き換えて全要素のxorを最小にするとき、置き換えた結果の数列の種類数を <code>10^9+7</code> で割った余りを要求された。
+</p>
+<p>
+[今見ている要素][これまでのxorの結果] を状態としてメモ化探索を行い、まずxorの結果の最小値を求め、続いてその最小値になる数列の種類数を求めるプログラムを作成した。<br>
+このプログラムに <code>case(N=1000).txt</code> の内容を入力として与えることで、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>case(N=1000).txt</code> was given, and the number of sequence that can be obtained by replacing some elements <code>a_i</code> with <code>min(a_i, 1000 - a_i)</code> to minimize xor of all elements was asked. (The number  modulo <code>10^9+7</code> should be answered)
+</p>
+<p>
+I wrote a program to perform search with memoization using status [the position of the element looking at][result of xor so far] to firstly obtain the minimum value of xor, and then obtain the number of sequences to achieve the value.<br>
+I obtained the flag by feeding the content of the file  <code>case(N=1000).txt</code> as the input to this program.
+</p>
+</div>
+
+<p><a href="solve.c" class="code-link" data-collapse="true">solve.c</a></p>
+
+<div class="flag">FLAG{461905191}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Guess (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Guess</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>chall.py</code> が与えられた。
+</p>
+<p>
+<code>chall.py</code> には、以下の機能があった。
+</p>
+<ul>
+<li>添字のリストを受け取り、用意した数列の該当する位置の要素をランダムな順番で返す。</li>
+<li>数列を受け取り、それが用意した数列と一致すればflagを出力する。</li>
+</ul>
+<p>
+用意される数列の要素は全て異なるはずなので、渡すリストに含める同じ添字の数を変えていくことで、数からどの要素がどの添字に対応するかを知ることができる。<br>
+この性質を用い、以下のプログラムでflagを求めた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connectng to a TCP server and a file <code>chall.py</code> were given.
+</p>
+<p>
+<code>chall.py</code> had these functions:
+</p>
+<ul>
+<li>Accepts a list of indice. Returns elements of the prepared sequence for the indice in a ramdom order.</li>
+<li>Accepts a sequence. Outpht the flag if the sequence equals to the prepared sequence.</li>
+</ul>
+<p>
+The elements of the prepared sequence are all distinct, so we can know which indice corresponds to which element by changing the numbers of the same indices in the list and check the numbers of the elements.<br>
+Using this characteristics, I obtained the flag using this program.
+</p>
+</div>
+
+<p><a href="solve.pl" class="code-link" data-collapse="true">solve.pl</a></p>
+
+<div class="flag">FLAG{How_did_you_know?_10794fcf171f8b2}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>shuffle_base64 (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>shuffle_base64</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>chall.py</code> および <code>out.txt</code> が与えられた。
+</p>
+<p>
+<code>chall.py</code> は、以下の処理をするものだった。
+</p>
+<ol>
+<li>flagに2文字ごとにランダムな文字を挿入する。</li>
+<li>それにランダムな文字を加えて長さを3の倍数にする。</li>
+<li>その結果を3文字ごとに分割し、シャッフルする。</li>
+<li>その結果をBase64エンコードして出力する。</li>
+</ol>
+<p>
+<code>out.txt</code> のBase64エンコードされたデータの部分を <common-tool data-lang="ja">CyberChef</common-tool> の From Base64 でデコードし、3文字ずつに分割すると、以下のようになった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Files <code>chall.py</code> and <code>out.txt</code> were given.
+</p>
+<p>
+What <code>chall.py</code> does was:
+</p>
+<ol>
+<li>Insert random characters after each 2 characters of the flag.</li>
+<li>Add random characters to make the length multiple of 3.</li>
+<li>Split that in 3-character blocks and shuffle.</li>
+<li>Base64-encode the result and output.</li>
+</ol>
+<p>
+I decoded the Base64-encoded data in <code>out.txt</code> using "From Base64" on <common-tool data-lang="en">CyberChef</common-tool> and splitted to 3-character blocks. This is the result:
+</p>
+</div>
+<code-block data-extension="txt">
+}d(
+leq
+FLT
+ff|
+64,
+hu!
+{s@
+AG!
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+これをそれっぽく並べ替えて繋げると、以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+I reordered this to make that look proper and joined. This is the result:
+</p>
+<code-block data-extension="txt">
+FLTAG!{s@hu!ff|leq64,}d(
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+余計な文字を消すことで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by removing extra characters.
+</p>
+
+<div class="flag">FLAG{shuffle64}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>
