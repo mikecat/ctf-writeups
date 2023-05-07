@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>fusion (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>fusion</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>chall.py</code> および <code>output.txt</code> が与えられた。
+</p>
+<p>
+<code>output.txt</code> には、n, e, c, r の値が書かれていた。<br>
+<code>chall.py</code> より、r は p と q の値を1ビットごとに交互に組み合わせたものであることがわかった。
+</p>
+<p>
+以下のプログラムにより、枝刈りをしながら p と q のビットを下位から決定し、求めた値を用いた計算によりflagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Files <code>chall.py</code> and <code>output.txt</code> were given.
+</p>
+<p>
+<code>output.txt</code> had values of n, e, c, and r.<br>
+<code>chall.py</code> revealed that r is created by taking bits of p and q alternately.
+</p>
+<p>
+Using this program, I determined bits of p and q from lower bits with pruning, and then obtained the flag by some calculation using the values.
+</p>
+</div>
+
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<div class="flag">FLAG{sequ4ntia1_prim4_fact0rizati0n}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

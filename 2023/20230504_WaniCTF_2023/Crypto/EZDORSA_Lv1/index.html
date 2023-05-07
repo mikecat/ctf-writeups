@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>EZDORSA_Lv1 (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>EZDORSA_Lv1</h1>
+<p class="language-selector-en" lang="en">
+The minimum m that satisfies following conditions is asked.
+</p>
+<ul>
+<li>p = 3</li>
+<li>q = 5</li>
+<li>n = p*q</li>
+<li>e = 65535</li>
+<li>c ≡ m^e (mod n) ≡ 10 (mod n)</li>
+</ul>
+<p class="language-selector-ja" lang="ja">
+を満たす最小の m を要求された。
+</p>
+
+<p class="language-selector-ja" lang="ja">
+mod n での計算なので、1個条件を満たす m があればそこから n の倍数を引くことで無限に小さくでき、「最小の m」は存在しないはずである。<br>
+以下のプログラムにより求めた m (0 ～ n-1 しか探索しておらず、当然最小ではない) を用いてflagを構築し、送信すると、正解と判定された。
+</p>
+<p class="language-selector-en" lang="en">
+Since "mod n" calculation is performed, we can find arbitrary small satisfying m by finding one satisfying m and subtracting multiples of n. Therefore, "the smallest m" cannot exist.<br>
+I constructed a flag using a value of m found by this program (searching only 0 to n-1, so clearly not the minimum) and sent that. This was judged as correct.
+</p>
+
+<p><a href="solve.py" class="code-link">solve.py</a></p>
+
+<div class="flag">FLAG{THE_ANSWER_IS_10}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

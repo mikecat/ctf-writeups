@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>beg_for_a_peg (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>beg_for_a_peg</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>log.pcapng</code> が与えられた。
+</p>
+<p>
+このファイルを <common-tool data-lang="ja">Wireshark</common-tool> で開くと、HTTP通信が行われているようだった。<br>
+No. 31 のInfoが <code>GET /flag.jpg</code> となっていたので、これに対し「追跡 → HTTP ストリーム」を行った。<br>
+しかし、役に立つデータは得られなかった。
+</p>
+<p>
+さらに、Infoが <code>HTTP/1.0 200 OK</code> となっているパケットを調べた。<br>
+その結果、No. 10 の <code>server.html</code>、No. 42 の <code>dum.jpg</code>、No. 87 の <code>pug.jpg</code> はあったが、<code>flag.jpg</code> に対応するものは見つからなかった。
+</p>
+<p>
+そこで、パケットバイト列から文字列 <code>200 OK</code> を検索した。<br>
+すると、No. 44 がヒットした。<br>
+これに「追跡 → TCP ストリーム」を行うと、<code>flag.jpg</code> の情報が出てきた。<br>
+「としてデータを表示」を「Raw(無加工)形式」に切り替え、「…として保存」でデータを保存した。<br>
+保存したデータに <common-tool data-lang="ja">CyberChef</common-tool> で  Extract Files をかけると、flagが書かれた画像ファイル <code>extracted_at_0x1cf.jpg</code> が得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>log.pcapng</code> was given.
+</p>
+<p>
+Opening the file on <common-tool data-lang="en">Wireshark</common-tool>, I found some HTTP communications are performed.<br>
+No. 31 had Info <code>GET /flag.jpg</code>, so I used "Follow → HTTP Stream" on this packet.<br>
+However, I found nothing that look useful.
+</p>
+<p>
+Then, I checked packets with Info <code>HTTP/1.0 200 OK</code>.<br>
+As a result, I found <code>server.html</code> from No. 10, <code>dum.jpg</code> from No. 42, and <code>pug.jpg</code> from No.87. However, I didn't find <code>flag.jpg</code> here.
+</p>
+<p>
+After that, I searched for a String <code>200 OK</code> from Packet bytes.<br>
+No. 44 matched for this query.<br>
+I applied "Follow → TCP Stream" to this packet and found information about <code>flag.jpg</code>.<br>
+I set "Show data as" to "Raw" and usedd "Save as…" to save the data.<br>
+I applied "Extract Files" on <common-tool data-lang="en">CyberChef</common-tool> to the saved data. As a result, I obtained an image file <code>extracted_at_0x1cf.jpg</code>, which has the flag written.
+</p>
+</div>
+
+<div class="flag">FLAG{Hug_a_pug_less_than_three}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

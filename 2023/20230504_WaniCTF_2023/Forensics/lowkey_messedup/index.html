@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>lowkey_messedup (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>lowkey_messedup</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>chall.pcap</code> が与えられた。
+</p>
+<p>
+このファイルを <common-tool data-lang="ja">Wireshark</common-tool> で開くと、USBでホストが8バイトのデータを繰り返し受信していた。<br>
+そこで、USBキーボードのデータであると推測し、まず以下のプログラムでデータを抽出した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>chall.pcap</code> was given.
+</p>
+<p>
+I opened the file on <common-tool data-lang="en">Wireshark</common-tool>. There were USB communication data where the host is repeatedly receiving 8-byte data.<br>
+I guessed that this is data from an USB keyboard. Therefore, firstly I extracted the data using this program.
+</p>
+</div>
+<p><a href="extract.pl" class="code-link" data-collapse="true">extract.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+続いて、<a href="https://github.com/uchan-nos/mikanos/blob/b5f7740c04002e67a95af16a5c6e073b664bf3f5/kernel/keyboard.cpp">MikanOS の keyboard.cpp</a> を変換表として用い、以下のプログラムでデータを文字に変換した。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I converted the data to characters using <a href="https://github.com/uchan-nos/mikanos/blob/b5f7740c04002e67a95af16a5c6e073b664bf3f5/kernel/keyboard.cpp">keyboard.cpp from MikanOS</a> as a conversion table.
+</p>
+<p><a href="decode.pl" class="code-link" data-collapse="true">decode.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+変換結果を手動で加工することで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag manually from the conversion result.
+</p>
+
+<div class="flag">FLAG{Big_br0ther_is_watching_y0ur_keyb0ard}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

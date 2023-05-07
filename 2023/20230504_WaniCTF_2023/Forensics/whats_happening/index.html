@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>whats_happening (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>whats_happening</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>updog</code> が与えられた。
+</p>
+<p>
+このファイルの中身をバイナリエディタで眺めると、PNGデータっぽい部分が目に入った。<br>
+そこで、このファイルに <common-tool data-lang="ja">CyberChef</common-tool> の Extract Files をかけると、flagが書かれた画像ファイル <code>extracted_at_0x10800.png</code> が得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>updog</code> was given.
+</p>
+<p>
+Looking at the contents of the file using a binary editor, I found a part that looks like a PNG data.<br>
+I applied "Extract Files" on <common-tool data-lang="en">CyberChef</common-tool> to this file. As a result, I obtained an image file <code>extracted_at_0x10800.png</code>, in which the flag is written.
+</p>
+</div>
+
+<div class="flag">FLAG{n0th1ng_much}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

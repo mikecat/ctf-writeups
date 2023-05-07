@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Apocalypse (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Apocalypse</h1>
+<p class="language-selector-ja" lang="ja">
+ファイル <code>chall.png</code> が与えられた。<br>
+このファイルをWindowsの「フォト」で開くと、以下の表示となった。
+</p>
+<p class="language-selector-en" lang="en">
+A file <code>chall.png</code> was given.<br>
+This file looked in this way on Windows "Photos".
+</p>
+<p><img src="chall_rendered.png" alt="chall.png on Photos"></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+画像のデータの途中に何らかの異常があり、最後のほうにflagが書かれていそうなことが読み取れる。
+</p>
+<p>
+<common-tool data-lang="ja">TweakPNG</common-tool> でこの画像を開くと、以下のメッセージが表示された。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+This is suggesting that there are some problems in the middle of the image data, and that the flag should be the last part.
+</p>
+<p>
+I opened the image on <common-tool data-lang="en">TweakPNG</common-tool>. Then, it showed this message:
+</p>
+</div>
+<blockquote>
+Incorrect crc for IDAT chunk (is cda0e401, should be 0699358e)
+</blockquote>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+該当のチャンク (0x4075 から始まる) のデータをバイナリエディタで書き換えて実験すると、異常はこのチャンクの最後のあたりにありそうだった。<br>
+よく見ると、0x6000 からの4バイトが <code>00 00 00 00</code> となっており、ここのデータが消されていそうだと考えた。<br>
+そこで、ここに当てはめてCRC-32が合うようなデータを全探索することにした。
+</p>
+<p>
+全探索を行うため、以下のプログラムを作成した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Investigating the chunk (beginning from 0x4075) by modifying data with a binary editor, I guessed that the problem should be hear the end of this chunk.<br>
+Looking closely, I found a 4-byte sequence <code>00 00 00 00</code> from 0x6000, and it looked like data in the part are erased.<br>
+Therefore, I decided to perform a brute-force search for data to put here to give the recorded CRC-32 value.
+</p>
+<p>
+To perform a brute-force search, I created this program.
+</p>
+</div>
+<p><a href="search.c" class="code-link" data-collapse="true">search.c</a></p>
+
+<p class="language-selector-ja" lang="ja">
+<common-tool data-lang="ja">AWS</common-tool> EC2 で c6i.16xlarge インスタンス (AMI: Ubuntu Server 22.04 LTS (HVM), SSD Volume Type <code>ami-0fcf52bcf5db7b003</code>) を立て、<br>
+作成したファイル <code>solve.c</code> と与えられたファイル <code>chall.png</code> をアップロードし、以下のコマンドを実行した。
+</p>
+<p class="language-selector-en" lang="en">
+I launched an <common-tool data-lang="en">AWS</common-tool> EC2 c6i.16xlarge instance (AMI: Ubuntu Server 22.04 LTS (HVM), SSD Volume Type <code>ami-0fcf52bcf5db7b003</code>).<br>
+Then, I uploaded the created file <code>solve.c</code> and the given file <code>chall.png</code>, and executed these commands.
+</p>
+<code-block data-extension="txt">
+sudo apt-get update
+sudo apt-get upgrade 
+sudo apt-get install gcc
+gcc -O3 -march=native -fopenmp -o search search.c
+time ./search chall.png
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+すると、約15分で当てはまるデータ <code>AC ED 95 2E</code> が見つかった。<br>
+(探索は30分経っても終わらなかった)
+</p>
+<p>
+このデータを書き込むと、画像の表示は以下のようになった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+As a result, satisfying data <code>AC ED 95 2E</code> was found after about 15 minutes.<br>
+(searching continued over 30 minutes)
+</p>
+<p>
+Putting this data into the image, the image looked in this way.
+</p>
+</div>
+<p><img src="chall_filled_rendered.png" alt="chall.png with data filled on Photos"></p>
+
+<p class="language-selector-ja" lang="ja">
+まだおかしいようであるが、ここからflagを読み取ることができた。
+</p>
+<p class="language-selector-en" lang="en">
+There still looks some problems exists, but I succeeded to read the flag from this image.
+</p>
+
+<div class="flag">FLAG{Watch_out_4_2023_21036}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>

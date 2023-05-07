@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>EZDORSA_Lv2 (WaniCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>EZDORSA_Lv2</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>chall.py</code> および <code>out.txt</code> が与えられた。
+</p>
+<p>
+<code>out.txt</code> には n, e, c の値が書かれており、c の値は n の値より十進数で 100 桁以上小さかった。<br>
+c の値を <common-tool data-lang="ja">factordb.com</common-tool> で素因数分解すると、5 の 100 乗とその他いくつかの素数の7乗に分解できた。<br>
+出てきた 5 以外の素数を掛け合わせ、<common-tool data-lang="ja">CyberChef</common-tool> で文字列に変換すると、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Files <code>chall.py</code> and <code>out.txt</code> were given.
+</p>
+<p>
+<code>out.txt</code> had values of n, e, and c. The value of c was smaller than n by over 100 digits in decimal.<br>
+I factorized the value of c using <common-tool data-lang="en">factordb.com</common-tool>. The result of 5 to the 100th power and some other prime numbers to the 7th power.<br>
+I multiplied the prime numbers except for 5 and converted the product to a string using <common-tool data-lang="en">CyberChef</common-tool> to obtain the flag.
+</p>
+</div>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Multiply('Space')To_Base(16)From_Hex('Auto')&amp;input=MyA3OSAyMTQzOTEgNjExNTMwMzYzODkxIDE0MjAxMzEwMzYxNjYzOTMwODA0MDE1MzcxMTk2MTIyNjg1MTE1NjI5Cg">Multiply, To Base, From Hex - CyberChef</a></p>
+
+<div class="flag">FLAG{l0w_3xp0n3nt_4ttAck}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">WaniCTF 2023</a>
+</p>
+</body>
+</html>
