@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Six Bites (Crypto) (no points) (SDCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Six Bites (Crypto) (no points)</h1>
+<p class="language-selector-ja" lang="ja">
+以下の暗号文が与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+This ciphertext was given.
+</p>
+<code-block data-extension="txt">
+amqppip"qIt8|5ez:v[%s}{jq3t
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+<common-tool data-lang="ja">Perplexity AI</common-tool> に「six bites」について聞いてみた。
+</p>
+<p class="language-selector-en" lang="en">
+I tried asking about "six bites" to <common-tool data-lang="ja">Perplexity AI</common-tool>
+</p>
+<p><a href="https://www.perplexity.ai/search/6e12ae6d-d989-42bb-8ea8-37fe50cf0e45?s=t">Perplexity AI: What is "six bites" in crypto?</a></p>
+
+<p class="language-selector-ja" lang="ja">
+すると、以下のページが見つかった。
+</p>
+<p class="language-selector-en" lang="en">
+With some help of the AI, I found this page.
+</p>
+<p><a href="https://eandudley30.medium.com/six-bites-9db96d17f34b">San Diego CTF 2022 — Six-Bites. Category: Cryptography Difficulty: Easy… | by Ean Dudley | Medium</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このページによると、平文の最初が <code>sdctf{</code> だと仮定して6バイトのxorのキーを求めればいいらしい。<br>
+そこで、<common-tool data-lang="ja">CyberChef</common-tool> でこれを行ってみた。
+</p>
+<p class="language-selector-en" lang="en">
+This page suggests that we should obtain a 6-byte xor key, assuming the first part of the plaintext is <code>sdctf{</code>.<br>
+I tried this on <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+<p>
+<span class="language-selector-ja" lang="ja">キーを求める</span>
+<span class="language-selector-en" lang="en">Retrieve the key</span>
+: <a href="https://gchq.github.io/CyberChef/#recipe=XOR(%7B'option':'UTF8','string':'sdctf%7B'%7D,'Standard',false)To_Hex('Space',0)&amp;input=YW1xcHBpcCJxSXQ4fDVlejp2WyVzfXtqcTN0">XOR, To Hex - CyberChef</a>
+</p>
+<p>
+<span class="language-selector-ja" lang="ja">求めたキーで復号を試みる</span>
+<span class="language-selector-en" lang="en">Try decoding using the key</span>
+: <a href="https://gchq.github.io/CyberChef/#recipe=XOR(%7B'option':'Hex','string':'12%2009%2012%2004%2016%2012'%7D,'Standard',false)&amp;input=YW1xcHBpcCJxSXQ4fDVlejp2WyVzfXtqcTN0">XOR - CyberChef</a>
+</p>
+
+<p class="language-selector-ja" lang="ja">
+すると、以下の結果が得られ、うまくいっていないようだった。
+</p>
+<p class="language-selector-en" lang="en">
+This is the result and it didn't look worked well.
+</p>
+<code-block data-extension="txt">
+sdctf{b+cMb*n&lt;w~,dI,aymxc:f
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+ここで、暗号文の最後の文字 <code>t</code> を <code>}</code> にするには、0x12 をxorすればよく、この 0x12 という値は求めたキーに含まれていることに注目した。<br>
+そして、暗号文を1文字ずつずらしてみると、それぞれでflagの一部が得られ、それらを組み合わせることでflagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I noted that the last character of the ciphertext <code>t</code> can be turned into <code>}</code> by applying xor with 0x12, and that this value 0x12 is in the obtained key.<br>
+I tried shifting the ciphertext. Then, each shift yielded some fragments of the flag, and I obtained the flag by assembling these fragments.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=Fork('%5C%5Cn','%5C%5Cn',false)XOR(%7B'option':'Hex','string':'12%2009%2012%2004%2016%2012'%7D,'Standard',false)&amp;input=YW1xcHBpcCJxSXQ4fDVlejp2WyVzfXtqcTN0Ci1hbXFwcGlwInFJdDh8NWV6OnZbJXN9e2pxM3QKLS1hbXFwcGlwInFJdDh8NWV6OnZbJXN9e2pxM3QKLS0tYW1xcHBpcCJxSXQ4fDVlejp2WyVzfXtqcTN0Ci0tLS1hbXFwcGlwInFJdDh8NWV6OnZbJXN9e2pxM3QKLS0tLS1hbXFwcGlwInFJdDh8NWV6OnZbJXN9e2pxM3QK">Fork, XOR - CyberChef</a></p>
+
+<p class="language-selector-ja" lang="ja">
+また、キーの最後の1バイトを削除してから復号することでも、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+Removing tha last byte of the key before decoding also worked.
+</p>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=XOR(%7B'option':'Hex','string':'12%2009%2012%2004%2016%20'%7D,'Standard',false)&amp;input=YW1xcHBpcCJxSXQ4fDVlejp2WyVzfXtqcTN0">XOR - CyberChef</a></p>
+
+<div class="flag">sdctf{y0u_f1n1sh3d_3ating!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SDCTF 2023</a>
+</p>
+</body>
+</html>

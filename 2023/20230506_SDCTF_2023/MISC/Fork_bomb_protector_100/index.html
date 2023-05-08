@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Fork bomb protector (100) (SDCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Fork bomb protector (100)</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>nofork.py</code> が与えられた。
+</p>
+<p>
+指定のサーバに <common-tool data-lang="ja">Tera Term</common-tool> で接続し、いくつかのコマンドを試すと、bashに組み込まれた機能は使えるようだった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connection to a TCP server, and a file <code>nofork.py</code> were given.
+</p>
+<p>
+I connected the server using <common-tool data-lang="en">Tera Term</common-tool> and tried several commands. It looked like bash built-in features are available.
+</p>
+</div>
+<code-block data-extension="txt">
+== proof-of-work: disabled ==
+bash: fork: Operation not permitted
+user@NSJAIL:/home/user$ ls
+bash: fork: Operation not permitted
+user@NSJAIL:/home/user$ cat /etc/passwd
+bash: fork: Operation not permitted
+user@NSJAIL:/home/user$ echo hello
+hello
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+<code>ls</code> に続いて空白を入力し、Tab を2回押すと、ファイルリストが表示され、<code>flag.txt</code> があることがわかった。
+</p>
+<p class="language-selector-en" lang="en">
+I entered <code>ls</code>, and then entered a space, and pressed the Tab key twice. As a result, a file list appeared and I found there is an entry <code>flag.txt</code>.
+</p>
+<code-block data-extension="txt">
+user@NSJAIL:/home/user$ ls
+flag.txt       nofork.py      run-nsjail.sh
+user@NSJAIL:/home/user$ ls
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+「bash read file」でググると、以下の記事が見つかった。
+</p>
+<p class="language-selector-en" lang="en">
+I googled "bash read file" and found this article.
+</p>
+<p><a href="https://qiita.com/r18j21/items/70018b98509309a0d2c5">ShellScript 【 while read 】 ファイルを１行ずつ読み込む - Qiita</a></p>
+
+<p class="language-selector-ja" lang="ja">
+この記事を参考にコマンドを打ち込むと、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by entering some commands, referring to this article.
+</p>
+<code-block data-extension="txt">
+user@NSJAIL:/home/user$ while read line; do
+&gt; echo "${line}"
+&gt; done &lt; flag.txt
+sdctf{ju5T_3xEc_UR_w4y_0ut!}
+user@NSJAIL:/home/user$ exit
+exit
+</code-block>
+
+<div class="flag">sdctf{ju5T_3xEc_UR_w4y_0ut!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SDCTF 2023</a>
+</p>
+</body>
+</html>

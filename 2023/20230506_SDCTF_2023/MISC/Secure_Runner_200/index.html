@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Secure Runner (200) (SDCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Secure Runner (200)</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>in.c</code> が与えられた。
+</p>
+<p>
+<common-tool data-lang="ja">Tera Term</common-tool> で指定のサーバに接続し、「ファイル送信」で <code>in.c</code> を送信すると、以下のメッセージが出力されて接続が切れた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connecting to a TCP server, and a file <code>in.c</code> were given.
+</p>
+<p>
+I connected the server using <common-tool data-lang="en">Tera Term</common-tool> and sent the file <code>in.c</code> via "Send File". As a result, this message appeared and the connection was closed.
+</p>
+</div>
+<code-block data-extension="txt">
+ERROR: Refusing to run file, invalid checksum (7a10d0ba)!
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+接続し直し、<code>a</code> を送信すると、以下のメッセージが出力されて接続が切れた。
+</p>
+<p class="language-selector-en" lang="en">
+Connecting again and sending <code>a</code>, this message appeared and the connection was closed.
+</p>
+<code-block data-extension="txt">
+ERROR: Refusing to run file, invalid checksum (e8b7be43)!
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+ここで出てきた <code>e8b7be43</code> は、<code>a</code> のCRC-32値である。
+</p>
+<p>
+さらに、<common-tool data-lang="ja">Wireshark</common-tool> を用いて <code>in.c</code> を送信したときの通信を確認すると、最初の100バイトが最初のパケットで、残りの部分が次のパケットで送信されていた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The value in the message <code>e8b7be43</code> is the CRC-32 value of <code>a</code>.
+</p>
+<p>
+I checked the communication while sending <code>in.c</code> using <common-tool data-lang="en">Wireshark</common-tool>. I found that the first 100 bytes are sent in one packet, and that the remaining part is sent in another packet.
+</p>
+</div>
+<p><a href="packet_capture.png"><img src="packet_capture.png" alt="in.c on Wireshark" style="max-width: 100%; max-height: 50vh;"></a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+最初のメッセージで出てきた <code>7a10d0ba</code> は、この <code>in.c</code> の最初の100バイトのCRC-32値であった。
+</p>
+<p>
+よって、1パケットで送られる程度に短く、かつCRC-32値が <code>in.c</code> 全体のCRC-32値の <code>38df65f2</code> であるようなC言語のソースコードを送信すると、それを実行してくれると推測した。<br>
+そして、そのようなソースコードを以下のプログラムで求めた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The value <code>7a10d0ba</code>, which was in the first message, is the CRC-32 value of this first 100 bytes of <code>in.c</code>.
+</p>
+<p>
+From these findings, I guessed that sending a C source code which is short enough to be sent in a single packet and its CRC-32 value is <code>38df65f2</code>, which is the CRC-32 value of the entire <code>in.c</code>, will make the source code be executed.<br>
+Therefore, I searched for such source code using this program.
+</p>
+</div>
+<p><a href="solve.py" class="code-link" data-collapse="true">solve.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+以下のソースコードが求まった。
+</p>
+<p class="language-selector-en" lang="en">
+As a result, this source code was found:
+</p>
+<code-block data-extension="c">
+int system(char*);int main(){system("/bin/sh");}//c+}z8D)6
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+Tera Term でサーバに接続し、このソースコードを貼り付けすると、シェルを起動できた。<br>
+シェルで <code>ls -al</code> コマンドを実行すると、ファイル <code>flag.txt</code> があることがわかった。<br>
+コマンド <code>cat flag.txt</code> を実行すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I succeeded to launch the shell by connecting to the server using Tera Term and pasting this source code.<br>
+I executed a command <code>ls -al</code> on the server, and found a file <code>flag.txt</code>.<br>
+I obtained the flag by executing a command <code>cat flag.txt</code>.
+</p>
+
+<div class="flag">sdctf{n0w_th4t5_wh4t_i_ca1l_crcecurity!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SDCTF 2023</a>
+</p>
+</body>
+</html>
