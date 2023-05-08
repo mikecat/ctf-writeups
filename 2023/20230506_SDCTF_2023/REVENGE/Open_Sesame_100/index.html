@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Open Sesame (100) (SDCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Open Sesame (100)</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>sesame.pyc</code> が与えられた。
+</p>
+<p>
+まず、<code>.pyc</code> ファイルの逆アセンブル方法を <common-tool data-lang="ja">Perplexity AI</common-tool> に聞いてみた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+A file <code>sesame.pyc</code> was given.
+</p>
+<p>
+Firstly I asked how to disassemble <code>.pyc</code> files to <common-tool data-lang="ja">Perplexity AI</common-tool>.
+</p>
+</div>
+<p><a href="https://www.perplexity.ai/search/7963b765-6b95-450a-8791-b2e98bac11ef?s=t">Perplexity AI: How to disassemble .pyc files?</a></p>
+
+<p class="language-selector-ja" lang="ja">
+その結果を参考に、以下のコマンドで解析を行った。
+</p>
+<p class="language-selector-en" lang="en">
+According to the result, I performed an analysis using these commands.
+</p>
+<code-block data-extension="txt">
+virtualenv ve
+ve\Scripts\activate.bat
+pip install uncompyle6
+uncompyle6 data\sesame.pyc &gt; sesame-uncompyle6.txt
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+以下の結果が得られた。
+</p>
+<p class="language-selector-en" lang="en">
+Ths is the result.
+</p>
+<p><a href="sesame-uncompyle6.txt" data-extension="py" data-collapse="true" class="code-link">sesame-uncompyle6.txt</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+入力した文字列の文字コードを縦ベクトルとして <code>gencave</code> 関数が返す行列とかけ合わせ、結果が <code>DOOR_SHAPE</code> と一致するかをチェックしているようである。<br>
+しかし、この <code>gencave</code> 関数は、ループの条件である <code>cave</code> を書き換えるコードが <code>for p in ps:</code> の中にしか無く、<br>
+<code>ps</code> が空であるためこの中は実行されないので、無限ループとなっている。
+</p>
+<p>
+<code>gencave</code> 関数の処理は素数を列挙する処理に似ているようだったので、素数を列挙するように修正し、掛けた結果が <code>DOOR_SHAPE</code> になるベクトルをガウスの消去法で求める以下のプログラムを作成した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+This code multiplies the character codes of the entered string as a column vector with a matrix returned from the <code>gencave</code> function, and checks if the product equals to <code>DOOR_SHAPE</code>.<br>
+However, the <code>gencave</code> function performs an infinite loop because <code>cave</code>, used in the loop condition, is modified only inside <code>for p in ps:</code>,<br>
+and the inner part won't be executed because the list <code>ps</code> is empty.
+</p>
+<p>
+The function looked similar to a program that enumerates prime numbers, so I adjusted that to enumerate prime numbers, and wrote this program to calculate a vector multiplying that yields <code>DOOR_SHAPE</code> using Gaussian elimination.
+</p>
+</div>
+<p><a href="gauss.py" data-collapse="true" class="code-link">gauss.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムによりflagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag from this program.
+</p>
+
+<div class="flag">sdctf{0p3n_s3sAm3_bUt_1n_l337Sp3aK!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SDCTF 2023</a>
+</p>
+</body>
+</html>
