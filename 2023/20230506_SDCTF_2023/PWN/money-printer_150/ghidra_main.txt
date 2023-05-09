@@ -1,0 +1,33 @@
+/* WARNING: Removing unreachable block (ram,0x00400996) */
+/* WARNING: Removing unreachable block (ram,0x004009a4) */
+/* WARNING: Removing unreachable block (ram,0x00400a32) */
+/* WARNING: Removing unreachable block (ram,0x00400a46) */
+/* WARNING: Removing unreachable block (ram,0x00400a4b) */
+/* WARNING: Removing unreachable block (ram,0x004009bc) */
+
+void main(void)
+
+{
+  FILE *__stream;
+  long in_FS_OFFSET;
+  char local_a8 [152];
+  undefined8 local_10;
+  
+  local_10 = *(undefined8 *)(in_FS_OFFSET + 0x28);
+  setbuf(stdin,(char *)0x0);
+  setbuf(stdout,(char *)0x0);
+  setbuf(stderr,(char *)0x0);
+  __stream = fopen("flag.txt","r");
+  if (__stream == (FILE *)0x0) {
+    printf("%s","no flag file found!");
+                    /* WARNING: Subroutine does not return */
+    exit(0);
+  }
+  fgets(local_a8,0x2d,__stream);
+  do {
+    printf("I have %d dollars, how many of them do you want?\n",100);
+    __isoc99_scanf(&DAT_00400b32);
+    getchar();
+    printf("you can have %d dollars!\n",0);
+  } while( true );
+}

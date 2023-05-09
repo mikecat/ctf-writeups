@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Turtle Shell (100) (SDCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Turtle Shell (100)</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>Dockerfile</code> および <code>turtle-shell</code> が与えられた。
+</p>
+<p>
+ファイル <code>turtle-shell</code> に <code>file</code> コマンドを用いた所、64bitのELFファイルだとわかったので、<common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpで逆アセンブルを行った。<br>
+以下はその結果の一部である。<code>fgets</code> でデータを読み込んだ後、<code>strstr</code> で何かを検索し、見つからなければ読み込んだデータを実行することが読み取れる。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connection to a TCP server, and files <code>Dockerfile</code> and <code>turtle-shell</code> were given.
+</p>
+<p>
+I used the <code>file</code> command to the file <code>turtle-shell</code>. It revealed that the file is a 64-bit ELF file, so I disassembled that using objdump from <common-tool data-lang="en">TDM-GCC</common-tool>.<br>
+This is a part of the result. In this part, it reads data using <code>fgets</code>, searches for something from the data using <code>strstr</code>, and executes the data if it finds nothing.
+</p>
+</div>
+<code-block data-extension="txt">
+  40069e:	48 8d 45 c0          	lea    -0x40(%rbp),%rax
+  4006a2:	be 32 00 00 00       	mov    $0x32,%esi
+  4006a7:	48 89 c7             	mov    %rax,%rdi
+  4006aa:	e8 91 fe ff ff       	callq  400540 &lt;fgets@plt&gt;
+  4006af:	48 8b 15 7a 04 20 00 	mov    0x20047a(%rip),%rdx        # 600b30 &lt;bad&gt;
+  4006b6:	48 8d 45 c0          	lea    -0x40(%rbp),%rax
+  4006ba:	48 89 d6             	mov    %rdx,%rsi
+  4006bd:	48 89 c7             	mov    %rax,%rdi
+  4006c0:	e8 8b fe ff ff       	callq  400550 &lt;strstr@plt&gt;
+  4006c5:	48 85 c0             	test   %rax,%rax
+  4006c8:	75 13                	jne    4006dd &lt;main+0x96&gt;
+  4006ca:	48 8d 45 c0          	lea    -0x40(%rbp),%rax
+  4006ce:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+  4006d2:	48 8b 55 f8          	mov    -0x8(%rbp),%rdx
+  4006d6:	b8 00 00 00 00       	mov    $0x0,%eax
+  4006db:	ff d2                	callq  *%rdx
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+そこで、まずシェルを起動するプログラムを書いた。
+</p>
+<p class="language-selector-en" lang="en">
+Seeing this, I firstly wrote a program to launch the shell.
+</p>
+<p><a href="payload.asm" class="code-link">payload.asm</a></p>
+
+<p class="language-selector-ja" lang="ja">
+<common-tool data-lang="ja">NASM</common-tool> でアセンブルすると、以下の結果が得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I assembled this using <common-tool data-lang="en">NASM</common-tool>. This is the result.
+</p>
+<p><a href="payload.bin" data-binary="true" class="code-link">payload.bin</a></p>
+
+<p class="language-selector-ja" lang="ja">
+また、<code>turtle-shell</code> を <common-tool data-lang="ja">CS50 Sandbox</common-tool> 上のgdbで実行し、<code>strstr</code> で何を検索しているのかを調べると、検索対象は <code>b0 3b</code> というバイト列であった。
+</p>
+<p class="language-selector-en" lang="en">
+Also I executed <code>turtle-shell</code> on <common-tool data-lang="en">CS50 Sandbox</common-tool> with gdb to found what is searched for using <code>strstr</code>. I found that a sequence of bytes <code>b0 3b</code> is searched for.
+</p>
+<code-block data-extension="txt">
+$ gdb ./turtle-shell
+Reading symbols from ./turtle-shell...(no debugging symbols found)...done.
+(gdb) break *0x4006c0
+Breakpoint 1 at 0x4006c0
+(gdb) r
+Starting program: /root/sandbox/turtle-shell 
+Say something to make the turtle come out of its shell
+aaa
+
+Breakpoint 1, 0x00000000004006c0 in main ()
+(gdb) p/x $rdx
+$1 = 0x400778
+(gdb) x/s $rdx
+0x400778:       "\260;"
+(gdb) x/32x $rdx
+0x400778:       0xb0    0x3b    0x00    0x00    0x00    0x00    0x00    0x00
+0x400780:       0x53    0x61    0x79    0x20    0x73    0x6f    0x6d    0x65
+0x400788:       0x74    0x68    0x69    0x6e    0x67    0x20    0x74    0x6f
+0x400790:       0x20    0x6d    0x61    0x6b    0x65    0x20    0x74    0x68
+(gdb)
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+今回のアセンブル結果にこのバイト列は存在しなかったため、アセンブル結果を <common-tool data-lang="ja">Tera Term</common-tool> の「ファイル送信」で送信すると、シェルを起動できた。
+</p>
+<p>
+起動したシェルで <code >ls -al</code> コマンドを実行すると、ファイル <code>flag.txt</code> があることがわかった。<br>
+<code>cat flag.txt</code> コマンドを実行すると、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Since the assembled data doesn't have this sequence, sending this data via "Send File" on <common-tool data-lang="en">Tera Term</common-tool> launched the shell.
+</p>
+<p>
+I executed a command <code>ls -al</code> in the shell, and I found a file <code>flag.txt</code>.<br>
+I obtained the flag via a command <code>cat flag.txt</code>.
+</p>
+</div>
+
+<div class="flag">sdctf{w0w_y0u_m4d3_7h3_7urT13_c0m3_0u7_0f_1t5_5h3l1}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SDCTF 2023</a>
+</p>
+</body>
+</html>

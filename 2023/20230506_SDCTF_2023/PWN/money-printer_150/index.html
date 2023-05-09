@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>money-printer (150) (SDCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>money-printer (150)</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>Dockerfile</code> および <code>money-printer</code> が与えられた。
+</p>
+<p>
+<code>file</code> コマンドを使うと、ファイル <code>money-printer</code> は64bitのELFファイルらしいことわかった。<br>
+<common-tool data-lang="ja">Ghidra</common-tool> で逆コンパイルすると、以下の <code>main</code> 関数が得られたが、役立ちそうな処理は見当たらなかった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connecting to a TCP server, and files <code>Dockerfile</code> and <code>money-printer</code> were given.
+</p>
+<p>
+Using <code>file</code> command, I found that the file <code>money-printer</code> should be a 64-bit ELF file.<br>
+I decompiled the file using <common-tool data-lang="en">Ghidra</common-tool>. It emitted this function <code>main</code>, but I found nothing look useful from here.
+</p>
+</div>
+<p><a href="ghidra_main.txt" data-collapse="true" data-extension="c" class="code-link">ghidra_main.txt</a></p>
+
+<p class="language-selector-ja" lang="ja">
+ファイル <code>money-printer</code> を <common-tool data-lang="ja">TDM-GCC</common-tool>のobjdumpで逆アセンブルすると、<br>
+<code>fgets</code> で読み込んだ内容を <code>printf</code> の第一引数に渡し、その後 <code>puts</code> および <code>exit</code> を呼び出している以下の部分が見つかった。
+</p>
+<p class="language-selector-en" lang="en">
+I disassembled the file <code>money-printer</code> using objdump from <common-tool data-lang="en">TDM-GCC</common-tool>.<br>
+Then, I found this part that passes what is read via <code>fgets</code> to the 1st argument of <code>printf</code>, and calls functions <code>puts</code> and <code>exit</code>.
+</p>
+<code-block data-extension="txt">
+  4009dc:	48 8d 45 90          	lea    -0x70(%rbp),%rax
+  4009e0:	be 64 00 00 00       	mov    $0x64,%esi
+  4009e5:	48 89 c7             	mov    %rax,%rdi
+  4009e8:	e8 13 fd ff ff       	callq  400700 &lt;fgets@plt&gt;
+  4009ed:	48 8d 3d 0f 02 00 00 	lea    0x20f(%rip),%rdi        # 400c03 &lt;_IO_stdin_used+0x133&gt;
+  4009f4:	b8 00 00 00 00       	mov    $0x0,%eax
+  4009f9:	e8 f2 fc ff ff       	callq  4006f0 &lt;printf@plt&gt;
+  4009fe:	48 8d 45 90          	lea    -0x70(%rbp),%rax
+  400a02:	48 89 c7             	mov    %rax,%rdi
+  400a05:	b8 00 00 00 00       	mov    $0x0,%eax
+  400a0a:	e8 e1 fc ff ff       	callq  4006f0 &lt;printf@plt&gt;
+  400a0f:	48 8d 3d fc 01 00 00 	lea    0x1fc(%rip),%rdi        # 400c12 &lt;_IO_stdin_used+0x142&gt;
+  400a16:	e8 a5 fc ff ff       	callq  4006c0 &lt;puts@plt&gt;
+  400a1b:	bf 00 00 00 00       	mov    $0x0,%edi
+  400a20:	e8 1b fd ff ff       	callq  400740 &lt;exit@plt&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+<code>main</code> 関数の冒頭は、以下のようになっていた。
+</p>
+<p class="language-selector-en" lang="en">
+Also this is the first part of the function <code>main</code>.
+</p>
+<code-block data-extension="txt">
+0000000000400837 &lt;main&gt;:
+  400837:	55                   	push   %rbp
+  400838:	48 89 e5             	mov    %rsp,%rbp
+  40083b:	48 81 ec c0 00 00 00 	sub    $0xc0,%rsp
+  400842:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+  400849:	00 00 
+  40084b:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+  40084f:	31 c0                	xor    %eax,%eax
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+<code>%rsp</code> は <code>%rbp - 0xc0</code>、<code>fgets</code> で文字列を読み込む位置は <code>%rbp - 0x70</code> であり、その差は 80 バイトである。<br>
+レジスタに置かれる引数6個と合わせて、読み込まれる文字列の前には8バイトの引数が16個あるとみなせる。
+</p>
+<p>
+さらに、逆アセンブル結果の以下の部分は、読み込んだ数値がある値以下かをチェックしているようである。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The value of <code>%rsp</code> is <code>%rbp - 0xc0</code>, and where to read a string using <code>fgets</code> is <code>%rbp - 0x70</code>. Their difference is 80 bytes.<br>
+Therefore, adding 6 arguments on the registers, it can be seen as there are 16 8-byte arguments before the string to be read.
+</p>
+<p>
+Also, this part of the disassembled program looked like checking if the number read is not greater than some value.
+</p>
+</div>
+<code-block data-extension="txt">
+  40092a:	48 8d 85 4c ff ff ff 	lea    -0xb4(%rbp),%rax
+  400931:	48 89 c6             	mov    %rax,%rsi
+  400934:	48 8d 3d f7 01 00 00 	lea    0x1f7(%rip),%rdi        # 400b32 &lt;_IO_stdin_used+0x62&gt;
+  40093b:	b8 00 00 00 00       	mov    $0x0,%eax
+  400940:	e8 eb fd ff ff       	callq  400730 &lt;__isoc99_scanf@plt&gt;
+  400945:	e8 c6 fd ff ff       	callq  400710 &lt;getchar@plt&gt;
+  40094a:	8b 85 4c ff ff ff    	mov    -0xb4(%rbp),%eax
+  400950:	83 f8 63             	cmp    $0x63,%eax
+  400953:	7f 4f                	jg     4009a4 &lt;main+0x16d&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+指定のサーバに <common-tool data-lang="ja">Tera Term</common-tool> で接続すると、以下のメッセージが出力された。
+</p>
+<p class="language-selector-en" lang="en">
+I tried connecting to the server with <common-tool data-lang="en">Tera Term</common-tool>. Then, this message appeared.
+</p>
+<code-block data-extension="txt">
+I have 100 dollars, how many of them do you want?
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+<code>-1</code> を入力すると、以下のメッセージが出力された。
+</p>
+<p class="language-selector-en" lang="en">
+Entering <code>-1</code>, this message appeared.
+</p>
+<code-block data-extension="txt">
+you can have -1 dollars!
+wow you've printed money out of thin air, you have 4294967295!!! Is there anything you would like to say to the audience?
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+そこで、以下の文字列を入力してみた。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I entered this string.
+</p>
+<code-block data-extension="txt">
+0000_%15$p_%16$p_%17$p_%18$p
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+すると、以下のメッセージが出力され、入力した文字列の最初が <code>printf</code> 関数で16番目のデータとして用いられるらしいことがわかった。
+</p>
+<p class="language-selector-en" lang="en">
+As a result, this message appeared. This is suggesting that the first part of the string entered is used as the 16th data in the function <code>printf</code>.
+</p>
+<code-block data-extension="txt">
+wow you said: 0000_0x79336e30_0x3531255f30303030_0x70243631255f7024_0x255f70243731255f
+
+that's truly fascinating!
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+これを利用して、まずはいくつかの標準ライブラリ関数のアドレスを調べることにした。
+</p>
+<p>
+<code>.plt</code> セクションの逆アセンブル結果より、<code>printf</code> 関数のアドレスが <code>0x601030</code> に、<code>fopen</code> 関数のアドレスが <code>0x601048</code> に格納されることがわかる。<br>
+これらのアドレスを利用した以下のデータを Tera Term の「ファイル送信」で送信し、通信内容を <common-tool data-lang="ja">Wireshark</common-tool> で調べた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Using this, I firstly obtained the addresses of some standard library functions.
+</p>
+<p>
+According to the disassembled code of the <code>.plt</code> section, the address of the function <code>printf</code> will be stored at <code>0x601030</code> and one of the function <code>fopen</code> will be stored at <code>0x601048</code>.<br>
+I sent this data, using these addresses, via "Send File" on Tera Term, and watched the communication using <common-tool data-lang="en">Wireshark</common-tool>.
+</p>
+</div>
+<p><a href="payload1.bin" data-binary="true" class="code-link">payload1.bin</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+その結果、(例えば) <code>printf</code> 関数のアドレスは <code>0x7f2aa39ace40</code>、<code>fopen</code> 関数のアドレスは <code>0x7f2aa39c6de0</code> であった。<br>
+これらのアドレスを <common-tool data-lang="ja">libc-database</common-tool> に入力して検索すると、2件ヒットし、用いる関数のアドレスは同じだった。
+</p>
+<p>
+これにより <code>printf</code> 関数と <code>system</code> 関数のアドレスの差が求まるので、以下の手順によりシェルを起動することができる。
+</p>
+<ol>
+<li><code>printf</code> のアドレスを取得しつつ、繰り返し入力できるように <code>exit</code> として実行する関数のアドレスを <code>main</code> 関数のアドレスにする。</li>
+<li><code>printf</code> として実行する関数のアドレスを <code>system</code> 関数のアドレスにする。</li>
+<li><code>/bin/sh</code> を入力し、<code>system("/bin/sh");</code> を実行させる。</li>
+</ol>
+<p>
+これを行う以下のプログラムを作成した。<br>
+<code>printf</code> のアドレス全部を書き換えようとすると入力文字数制限に引っかかったので、下位3バイトだけを書き換えるようにした。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+As a result, I found that (for example) the address of the function <code>printf</code> is <code>0x7f2aa39ace40</code> and one of the function <code>fopen</code> is <code>0x7f2aa39c6de0</code>.<br>
+I queried <common-tool data-lang="en">libc-database</common-tool> with these addresses. There were two results, and their addresses of functons to use were the same.
+</p>
+<p>
+We can use this to calculate the difference between the address of the functions <code>printf</code> and <code>system</code>, so the shell can be launched by these steps.
+</p>
+<ol>
+<li>Obtain the address of <code>printf</code>, and at the same time set the address to be executed as <code>exit</code> to the address of the function <code>main</code> to have it accept inputs repeatedly.</li>
+<li>Set the address to be executed as <code>printf</code> to the address of the function <code>system</code>.</li>
+<li>Enter <code>/bin/sh</code> to have it execute <code>system("/bin/sh");</code>.</li>
+</ol>
+<p>
+I wrote this program to perform these steps.<br>
+I failed to have it rewrite the whole address for <code>printf</code> due to the length limit for inputs, so I had it rewrite only the lower 3 bytes.
+</p>
+</div>
+<p><a href="solve.pl" data-collapse="true" class="code-link">solve.pl</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムを実行すると、シェルを起動できた。<br>
+シェルで <code>ls -al</code> コマンドを実行すると、ファイル <code>flag.txt</code> があることがわかった。<br>
+コマンド <code>cat flag.txt</code> を実行すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I succeeded to launch the shell by running this program.<br>
+Executing a command <code>ls -al</code> on the shell revealed that a file <code>flag.txt</code> exists.<br>
+I obtained the flag by executing a command <code>cat flag.txt</code>.
+</p>
+
+<div class="flag">sdctf{d4mn_y0u_f0unD_4_Cr4zY_4M0uN7_0f_M0n3y}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SDCTF 2023</a>
+</p>
+</body>
+</html>
