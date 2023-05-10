@@ -1,0 +1,18 @@
+void setup_seccomp(void)
+
+{
+  uint uVar1;
+  uint uVar2;
+  uint uVar3;
+  undefined8 uVar4;
+  
+  uVar4 = seccomp_init(0x7fff0000);
+  uVar1 = seccomp_rule_add(uVar4,0,0x3b,0);
+  uVar2 = seccomp_rule_add(uVar4,0,0x142,0);
+  uVar3 = seccomp_load(uVar4);
+  if ((uVar1 | uVar2 | uVar3) != 0) {
+                    /* WARNING: Subroutine does not return */
+    exit(1);
+  }
+  return;
+}

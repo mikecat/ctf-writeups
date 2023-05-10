@@ -1,0 +1,13 @@
+undefined8 main(void)
+
+{
+  char local_78 [112];
+  
+  setbuf((FILE *)stdin,(char *)0x0);
+  setbuf((FILE *)stdout,(char *)0x0);
+  setbuf((FILE *)stderr,(char *)0x0);
+  setup_seccomp();
+  puts("you\'ll really be in the jungle with this one!");
+  fgets(local_78,0x200,(FILE *)stdin);
+  return 0;
+}
