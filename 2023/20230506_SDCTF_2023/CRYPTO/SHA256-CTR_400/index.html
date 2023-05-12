@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SHA256-CTR (400) (SDCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>SHA256-CTR (400)</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>sha256ctr.py</code> が与えられた。
+</p>
+<p>
+<code>sha256ctr.py</code> は、ブロックごとに、カウンタの値のバイト列表現のSHA-256ハッシュ値をメッセージとxorし、カウンタに1を足す、という方法で暗号化するプログラムであり、以下の機能がある。
+</p>
+<ul>
+<li>flagを暗号化する</li>
+<li>入力したメッセージを暗号化する</li>
+<li>カウンタに指定した非負整数を足す</li>
+</ul>
+<p>
+まず、SHA-256の仕様を確認する。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connecting to a TCP server, and a file <code>sha256ctr.py</code> were given.
+</p>
+<p>
+<code>sha256ctr.py</code> is a program that encrypts messages by, for each blocks, performing XOR of the message and SHA-256 hash value of the counter value represented as bytes, and then adding 1 to the counter value.<br>
+It has these functions:
+</p>
+<ul>
+<li>Encrypt the flag.</li>
+<li>Encrypt entered messages.</li>
+<li>Add specified non-negative number to the counter value.</li>
+</ul>
+<p>
+To begin with, let's check the specification of SHA-256.
+</p>
+</div>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc6234">RFC 6234 - US Secure Hash Algorithms (SHA and SHA-based HMAC and HKDF)</a></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+SHA-256の計算は、メッセージにその長さを用いた指定の形式のパディングを加えた後、ブロックごとに計算を行って状態を更新することで行う。<br>
+そして、最終ブロックを処理した後の状態が、そのままハッシュ値として出力される。
+</p>
+<p>
+このため、ハッシュ値がわかっているメッセージにパディングに相当するデータを加えて新しいメッセージを作成すると、<br>
+もとのメッセージそのものはわからなくても、もとのメッセージのハッシュ値を用いて新しいメッセージのハッシュ値を求めることができる。
+</p>
+<p>
+具体的には、以下の手順でflagの暗号化に用いられるハッシュ値を求めることができる。
+</p>
+<p>
+まず、カウンタの初期値は高々256ビットなので、それより大きめの値を送ることでメッセージの長さを固定できる。<br>
+今回は、
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Calculation of SHA-256 is performed by adding padding in specified format using the message length to the message and updating the status via calculation for each blocks.<br>
+The status after processing the last block is outputted as the hash value without modification.
+</p>
+<p>
+Because of this characteristics, when data that matches with the padding is added to a message with known hash value to create a new message,<br>
+we can calculate the hash value for the new message from the  hash value of the original message without knowing the original message itself.
+</p>
+<p>
+In this case, we can obtain the hash value used for encrypting the flag in these steps.
+</p>
+<p>
+Firstly, since the initial value of the counter is at most 256-bit long, we can fix the length of the message by sending a value larger than the size.<br>
+I decided to send this value:
+</p>
+</div>
+<code-block data-extension="txt">
+1 &lt;&lt; 300 = 2037035976334486086268445688409378161051468393665936250636140449354381299763336706183397376
+</code-block> 
+
+<div class="language-selector-ja" lang="ja">
+<p>
+を送ることにした。<br>
+これを送ると、メッセージは38バイトになり、このときのパディングは <code>80 ... 00 00 00 00 00 00 01 30</code> である。
+</p>
+<p>
+次に、メッセージとして32バイトのゼロ、すなわち
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Sending this, the message becomes 38-byte long and the padding for this message will be <code>80 ... 00 00 00 00 00 00 01 30</code>.
+</p>
+<p>
+Then, send a 32-byte sequence of zero as a message for encryption:
+</p>
+</div>
+<code-block data-extension="txt">
+0000000000000000000000000000000000000000000000000000000000000000
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+を送って暗号化させる。<br>
+すると、暗号文としてカウンタの値のSHA-256ハッシュ値が得られる。
+</p>
+<p>
+そして、メッセージとしてパディングのデータを追加するような値をカウンタに加える。<br>
+すなわち、今回は
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Doing this, we can obtain the SHA-256 hash value of the counter value as the ciphertext.
+</p>
+<p>
+Then, add a value to the counter to add a padding data as the message.<br>
+Specifically, send this value in this case:
+</p>
+</div>
+<code-block data-extension="txt">
+(0x3001 &lt;&lt; (8 * 62)) + (0x80 &lt;&lt; (8 * 38)) - 1
+= 2514168573777230465037005511519647873849394631488951449872514648258016297028570028086801497693538595108973131665165409855157206878676015015596405819441151
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+を加える。このとき、1回暗号化したことによりカウンタに1が加算されたのを打ち消すため、1を引いた値を加えるのがポイントである。
+</p>
+<p>
+この状態でflagを暗号化する。<br>
+このとき、ハッシュ値を求めるメッセージは64バイトである。<br>
+最初のブロックの暗号化に用いられるハッシュ値は、先ほど求めたハッシュ値の状態から、ブロック <code>80 00 00 00 ... 00 00 02 00</code> に対する計算により状態を進めることで得られる。
+</p>
+<p>
+ハッシュ値を入力とし、このブロックに対する計算をして新しいハッシュ値を求める以下のプログラムを作成した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Note that we should subtract 1 from the value to add to cancel the addition of 1 caused by doing the encryption once.
+</p>
+<p>
+Then, encrypt the flag.<br>
+Here, the message for which a hash value will be calculated is 64-byte long.<br>
+The hash value used for encrypting the first block can be obtained by advancing the status from the hash value obtained before using a block <code>80 00 00 00 ... 00 00 02 00</code>.
+</p>
+<p>
+I created this program to take a hash value and calculate new hash value using this block.
+</p>
+</div>
+<p><a href="calc.py" class="code-link" data-collapse="true">calc.py</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このプログラムで求めた新しいハッシュ値と、flagを暗号化した暗号文をxorすると、flagの前半部分が得られる。<br>
+ただし、今回のflagを暗号化した暗号文は、2ブロック分の長さがある。<br>
+この手順において、<code>(0x3001 &lt;&lt; (8 * 62)) + (0x80 &lt;&lt; (8 * 38)) - 1</code> を加えるかわりに、1ではなく2を引いた値
+</p>
+<p class="language-selector-en" lang="en">
+We can obtaine the former part of the flag by performing XOR of the new hash value calculated using this program and the ciphertext of the flag.<br>
+Note that the ciphertext for the flag is 2-block long here.<br>
+In these steps, instead of adding <code>(0x3001 &lt;&lt; (8 * 62)) + (0x80 &lt;&lt; (8 * 38)) - 1</code>, adding this value with 2 subtracted instead of 1:
+</p>
+<code-block data-extension="txt">
+2514168573777230465037005511519647873849394631488951449872514648258016297028570028086801497693538595108973131665165409855157206878676015015596405819441150
+</code-block>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+を加えると、2を引いたのがハッシュ値を求めるための暗号化およびflagの前半の暗号化と相殺して、flagの後半の暗号化に <code>calc.py</code> で計算できるハッシュ値が用いられる。<br>
+よって、新しいハッシュ値とxorすることで、flagの後半部分が得られる。
+</p>
+<p>
+これらを組み合わせることで、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Will make the hash value that can be calculated using <code>calc.py</code> used for encrypting the latter part of the flag because the 2 subtracted will be canceled with encryptions for obtaining the hash value and for the former part of the flag.<br>
+We can obtain the latter part of the flag by performing XOR of the new hash value and the ciphertext.
+</p>
+<p>
+I obtained the flag by combining these results.
+</p>
+</div>
+
+<div class="flag">sdctf{l3ngth-ext3nsion-@tt4ck-br3aks-ps3ud0R4nd0mn3ss-of-SHA2}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SDCTF 2023</a>
+</p>
+</body>
+</html>

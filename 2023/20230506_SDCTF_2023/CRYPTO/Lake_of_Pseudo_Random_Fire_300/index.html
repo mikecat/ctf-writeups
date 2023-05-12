@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lake of Pseudo Random Fire (300) (SDCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Lake of Pseudo Random Fire (300)</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>game.py</code> が与えられた。
+</p>
+<p>
+<code>game.py</code> の内容は、データを入力するとそれに基づくデータを出力するドアとランダムなデータを出力するドアがあるので、ランダムなデータを出力するドアを選ぶことを要求するというものであった。<br>
+ランダムでない方は、入力したデータをAESで暗号化した結果と、入力したデータをビット反転したものをAESで復号した結果を繋げたデータを出力する。
+</p>
+<p>
+この仕様により、最初に適当なデータを入力し、次に得られたデータの後半を入力すると、ランダムでなければAESの復号と暗号化が相殺され、前半が最初に入力したデータをビット反転したものになる。<br>
+一方、ランダムであれば高確率で最初に入力したデータとは関係ないデータとなるため、高確率で識別が可能である。
+</p>
+<p>
+この性質を利用した以下のプログラムにより、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connecting to a TCP server, and a file <code>game.py</code> were given.
+</p>
+<p>
+The contents of <code>game.py</code> is a program where there are a door that emits data corresponding to an input data and a door that emits random data on input, and asks to choose a door that emits ramdom data.<br>
+The non-random data is created by concatenating input data encrypted via AES and bitwise-NOT of input data decrypted via AES. 
+</p>
+<p>
+With this spcificaton, we can get a bitwise-NOT of the input data by firstly entering some data and then entering the latter part of the first output because the decryption and encryption will be canceled.<br>
+On the other hand, the random data won't be related to the input data in the most case, so using this we can distinguish them at high probability.
+</p>
+<p>
+Using this characteristics, I wrote this program to obtain the flag.
+</p>
+</div>
+<p><a href="solve.pl" data-collapse="true" class="code-link">solve.pl</a></p>
+
+<div class="flag">sdctf{n07_V3rY_pS3uD0R4nD0m_a6d137}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SDCTF 2023</a>
+</p>
+</body>
+</html>

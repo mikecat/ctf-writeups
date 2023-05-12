@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Jumbled snake (150) (SDCTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Jumbled snake (150)</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+ファイル <code>print_flag.py.enc</code> および <code>jumble.py</code> が与えられた。
+</p>
+<p>
+<code>jumble.py</code> には、ランダムな対応関係を生成し、入力の文字をそれぞれ対応する文字に置換して出力する処理が書かれていた。<br>
+<code>print_flag.py.enc</code> には、1行目に平文の一部、2行目以降に暗号文が書かれているようだった。
+</p>
+<p>
+まず、平文の <code>_quick_brown_fox_jumps_</code> の部分に対応する暗号文を探すため、<common-tool data-lang="ja">サクラエディタ</common-tool>で正規表現 <code>(.).....\1.....\1...\1.....\1</code> を検索した。<br>
+その結果に基づき、<common-tool data-lan="ja">CyberChef</common-tool> の Substitute で用いる以下の対応関係が得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Files <code>print_flag.py.enc</code> and <code>jumble.py</code> were given.
+</p>
+<p>
+<code>jumble.py</code> had a program to generate a random set of substitution rules and output the input with each characters replaced according to the rules.<br>
+In <code>print_flag.py.enc</code>, the first line looked like some part of the plaintext and the other lines looked like a ciphertext.
+</p>
+<p>
+To begin with, I searched for a regular expression <code>(.).....\1.....\1...\1.....\1</code> using <common-tool data-lang="en">Sakura Editor</common-tool> to find a part of the ciphertext corresponding to the part <code>_quick_brown_fox_jumps_</code> in the plaintext.<br>
+Using the result, I created this rule for "Substitute" in <common-tool data-lang="en">CyberChef</common-tool>.
+</p>
+</div>
+<p>
+Plaintext: <code>y8Pp X\t%DSlXGEU\x0beX@U$Xz%Mo\XUa EXPp XWtk\x0cXYU{</code><br>
+Ciphertext: <code>{'the_quick_brown_fox_jumps_over_the_lazy_dog</code>
+</p>
+
+<p class="language-selector-ja" lang="ja">
+さらに、復号結果がPythonのプログラムとして成り立つように対応関係を加えていくと、以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+Then, I added rules to make the decryption result be a valid Python program. This is the result.
+</p>
+<p>
+Plaintext: <code>y8Pp X\t%DSlXGEU\x0beX@U$Xz%Mo\XUa EXPp XWtk\x0cXYU{4bZ.=Aw^g/J]&gt;Rm:h~_63j?V,</code><br>
+Ciphertext: <code>{'the_quick_brown_fox_jumps_over_the_lazy_dog/\n #!64():=".12357809[]}N</code>
+</p>
+
+<p class="language-selector-ja" lang="ja">
+この時点で、復号結果は以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+This is the result of decryption using this rule.
+</p>
+<code-block data-extension="py">
+#! /usr/bin/env python3
+import base64
+
+coded_flag = "c21jdF57ss91blKhdjNs5O1fd7gzn3NuN2shf`=="
+
+def reverse(s):
+    return "".join(reversed(s))
+
+def check():
+    """F+
+_f5}I_7|0_17s+_B&N)K_n+(_NO+1q_CQ*)`_7|0"""
+    assert decode_flag.__doc__ is not None and decode_flag.__doc__.upper()[2:45] == reverse(check.__doc__)
+
+def decode_flag(code):
+    """{'the_quick_brown_fox_jumps_over_the_lazy_dog': 123456789.0' 'items':[]}"""
+    return base64.b64decode(code).decode()
+
+if __name__ == "__main__":
+    check()
+    print(decode_flag(coded_flag))
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+この復号結果から、関数 <code>check</code> の冒頭部分に <code>the_quick_brown_fox_jumps_over_the_lazy_dog</code> を反転させて大文字にしたものが入るはずであることが読み取れる。<br>
+これを用いて対応関係を加えると、以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+This result is suggesting that the first part of the function <code>check</code> should contain what can be obtained by reversing <code>the_quick_brown_fox_jumps_over_the_lazy_dog</code> and converting to upper-case letters.<br>
+I added rules based on this. This is the result.
+</p>
+<p>
+Plaintext: <code>y8Pp X\t%DSlXGEU\x0beX@U$Xz%Mo\XUa EXPp XWtk\x0cXYU{4bZ.=Aw^g/J]&gt;Rm:h~_63j?V,F+\nf5}I7|01sOB&N)Kn(OqCQ*`</code><br>
+Ciphertext: <code>{'the_quick_brown_fox_jumps_over_the_lazy_dog/\n #!64():=".12357809[]}NGODYZALEHTRVOSPMUJXFWBKCIQ</code>
+</p>
+
+<p class="language-selector-ja" lang="ja">
+復号結果は以下のようになった。
+</p>
+<p class="language-selector-en" lang="en">
+This is the result of decryption.
+</p>
+<code-block data-extension="py">
+#! /usr/bin/env python3
+import base64
+
+coded_flag = "c2RjdGZ7VV91blJhdjNsZWRfdEgzX3NuM2shfQ=="
+
+def reverse(s):
+    return "".join(reversed(s))
+
+def check():
+    """GOD_YZAL_EHT_REVO_SPMUJ_XOF_NWORB_KCIUQ_EHT"""
+    assert decode_flag.__doc__ is not None and decode_flag.__doc__.upper()[2:45] == reverse(check.__doc__)
+
+def decode_flag(code):
+    """{'the_quick_brown_fox_jumps_over_the_lazy_dog': 123456789.0' 'items':[]}"""
+    return base64.b64decode(code).decode()
+
+if __name__ == "__main__":
+    check()
+    print(decode_flag(coded_flag))
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+ここに現れた文字列 <code>c2RjdGZ7VV91blJhdjNsZWRfdEgzX3NuM2shfQ==</code> をBase64デコードすることで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by Base64-decoding the string appeared here: <code>c2RjdGZ7VV91blJhdjNsZWRfdEgzX3NuM2shfQ==</code>.
+</p>
+
+<div class="flag">sdctf{U_unRav3led_tH3_sn3k!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SDCTF 2023</a>
+</p>
+</body>
+</html>
