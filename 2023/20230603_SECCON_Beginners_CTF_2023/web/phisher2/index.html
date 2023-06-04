@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>phisher2 (SECCON Beginners CTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>phisher2</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、サーバのファイル一式が与えられた。
+</p>
+<p>
+与えられたファイル中の <code>phisher2/phisher2/admin.py</code> および <code>phisher2/phisher2/app.py</code> は、以下の動作をするものだった。
+</p>
+<ol>
+<li>JSONでテキストを受け取る。</li>
+<li>受け取ったテキストを <code>p</code> タグで囲み、HTMLファイルを作成する。</li>
+<li>作成したHTMLファイルをレンダリングし、スクリーンショットを撮る。</li>
+<li>撮ったスクリーンショットに対しOCRを行う。</li>
+<li>OCRの結果から許可されるURLが得られた場合、受け取ったテキストから得られるURLにflagのパラメータを足してアクセスする。</li>
+</ol>
+<p>
+アクセスさせたいURLをテキストで書いた後、その上にOCRに読ませるURLを画像で配置するとよい。<br>
+具体的には、<common-tool data-lang="ja">RequestBin.com</common-tool> のURLの後に以下のテキストを繋げたものを送信した。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL of a web page and files for the server were given.
+</p>
+<p>
+What the files <code>phisher2/phisher2/admin.py</code> and <code>phisher2/phisher2/app.py</code> in the given files do is:
+</p>
+<ol>
+<li>Receive a text in JSON format.</li>
+<li>Create a HTML file by surrounding the received text with a <code>p</code> tag.</li>
+<li>Render the HTML file and take a screenshot.</li>
+<li>Perform OCR on the screenshot.</li>
+<li>If an allowed URL is found from the result of OCR, access a URL found from the received text with a parameter containing the flag added.</li>
+</ol>
+<p>
+We should firstly put an URL to have it to access as text, and then place an URL to have the OCR to read as an image over the text.<br>
+Specifically, I sent an <common-tool data-lang="en">RequestBin.com</common-tool> URL with this text added after the URL.
+</p>
+</div>
+<code-block data-extension="html">
+#&lt;img style='position: absolute; left: 0; top: 0;' src='https://placehold.jp/30/ffffff/000000/700x100.png?text=https%3A%2F%2Fphisher2.beginners.seccon.games%2F'&gt;
+</code-block>
+
+<p class="language-selector-ja" lang="ja">
+これにより、アクセスさせるURLが以下の画像で隠される。
+</p>
+<p class="language-selector-en" lang="en">
+This will have the URL to be accessed be hidden behind this image.
+</p>
+<p><img src="700x100.png" width="700" height="100"></p>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+以下の手順でテキストの送信を行うと、RequestBin.com にflagが送られてきた。
+</p>
+<ol>
+<li>指定のページを <common-tool data-lang="ja">Firefox</common-tool> で開く。</li>
+<li>開発者ツールのネットワークタブを開き、リロードする。</li>
+<li><code>/</code> へのリクエストを右クリックし、「編集して再送信」を選択する。</li>
+<li>メソッドを <code>POST</code> にする。</li>
+<li>名前 <code>Content-Type</code>、値 <code>application/json</code> のヘッダーを追加する。</li>
+<li>ボディを、送信するテキストを <code>{"text":"</code> と <code>"}</code> で囲んだものにする。</li>
+<li>編集したリクエストを送信する。</li>
+</ol>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+I sent the text in this way. As a result, the flag was sent to RequestBin.com.
+</p>
+<ol>
+<li>Open the specified page with <common-tool data-lang="en">Firefox</common-tool>.</li>
+<li>Open the Network tab on the Developer Tools, and reload the page.</li>
+<li>Right-click the request to <code>/</code> and select "edit and resend".</li>
+<li>Set the method to <code>POST</code>.</li>
+<li>Add a header with a name <code>Content-Type</code> and a value <code>application/json</code>.</li>
+<li>Set the body to the text to send surrounded by <code>{"text":"</code> and <code>"}</code>.</li>
+<li>Send the modified request.</li>
+</ol>
+</div>
+
+<div class="flag">ctf4b{w451t4c4t154w?}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SECCON Beginners CTF 2023</a>
+</p>
+</body>
+</html>

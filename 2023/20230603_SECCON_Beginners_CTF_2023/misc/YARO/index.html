@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>YARO (SECCON Beginners CTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>YARO</h1>
+<p class="language-selector-ja" lang="ja">
+TCPサーバの接続情報と、以下のファイルが与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+Information for connecting to a TCP server, and these files were given.
+</p>
+<ul>
+<li><code>requestments.txt</code></li>
+<li><code>rule_example.yar</code></li>
+<li><code>server.py</code></li>
+</ul>
+
+<p class="language-selector-ja" lang="ja">
+観察した結果、指定の書式の文字列を送ることで、指定の正規表現にマッチするファイルがあるかを調べることができることがわかった。<br>
+以下のプログラムにより1文字ずつ二分探索を行うことで、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+After some investigation, I found that we can check if there are files that matches with specified regular expression by sending some text in the specified format.<br>
+I obtained the flag by performing binary search for each characters using this program.
+</p>
+<p><a href="solve.pl" data-collapse="true" class="code-link">solve.pl</a></p>
+
+<div class="flag">ctf4b{Y3t_An0th3r_R34d_Opp0rtun1ty}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SECCON Beginners CTF 2023</a>
+</p>
+</body>
+</html>

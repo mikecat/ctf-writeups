@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>polyglot4b (SECCON Beginners CTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>polyglot4b</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+TCPサーバの接続情報と、ファイル <code>polyglot4b/polyglot4b.py</code> およびその他のファイル群が与えられた。
+</p>
+<p>
+<code>polyglot4b/polyglot4b.py</code> は、入力されたデータに対し <code>file</code> コマンドを実行し、その出力に以下の文字列がすべて含まれればflagを出力するというものだった。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+Information for connecting to a TCP server, a file <code>polyglot4b/polyglot4b.py</code>, and some other files were given.
+</p>
+<p>
+<code>polyglot4b/polyglot4b.py</code> executes the <code>file</code> command on the input data, and prints the flag if the output of the command contains all of these strings:
+</p>
+</div>
+<ul>
+<li><code>JPEG</code></li>
+<li><code>PNG</code></li>
+<li><code>GIF</code></li>
+<li><code>ASCII</code></li>
+</ul>
+<p class="language-selector-ja" lang="ja">
+まず、manの情報から <code>file</code> コマンドは <code>/ust/share/file/magic.mgc</code> を参照することがわかったので、<common-tool data-lang="ja">CS50 Sandbox</common-tool> からこのファイルを抜き出した。<br>
+<code>file</code> コマンドは入力によっては中身の情報を出力することもあるので、これに関わるであろう <code>%s</code> を検索していくと、「Vim swap file」が見つかった。<br>
+そこで、CS50 Sandbox 上で適当なファイルを Vim で編集し、作成された <code>.swp</code> ファイルをダウンロードした。<br>
+そして、このファイルのバージョン情報の部分を <code>JPEGPNGGIFASCII</code> に書き換えた以下のファイルを用意した。
+</p>
+<p class="language-selector-en" lang="en">
+From the "man" information, I found that the <code>file</code> command refers to <code>/ust/share/file/magic.mgc</code>. Then, I obtained this file from <common-tool data-lang="en">CS50 Sandbox</common-tool>.<br>
+The <code>file</code> commands emits information about file contents for some input, so I searched for <code>%s</code>, which should be related with this function, from the file, and found "Vim swap file".<br>
+Then, I started editing some file with Vim on CS50 Sandbox, and downloaded the appeared <code>.swp</code> file.<br>
+After that, I created this file by changing the version information to <code>JPEGPNGGIFASCII</code>.
+</p>
+<p><a href="zzzzz.swp" data-collapse="true" data-binary="true" class="code-link">zzzzz.swp</a></p>
+
+<p class="language-selector-ja" lang="ja">
+このファイルを <common-tool data-lang="ja">Tera Term</common-tool> で「ファイル送信」した後、改行 (LF) を送信し、続けて <code>QUIT</code> と改行を送信すると、flagが得られた。
+</p>
+<p class="language-selector-en" lang="en">
+I obtained the flag by sending this file via "Send File" on <common-tool data-lang="en">Tera Term</common-tool>, and then sending a newline character (LF), <code>QUIT</code>, and another newline character.
+</p>
+
+<div class="flag">ctf4b{y0u_h4v3_fully_und3r5700d_7h15_p0ly6l07}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SECCON Beginners CTF 2023</a>
+</p>
+</body>
+</html>

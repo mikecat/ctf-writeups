@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>shaXXX (SECCON Beginners CTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>shaXXX</h1>
+<p class="language-selector-ja" lang="ja">
+TCPサーバの接続情報と、以下のファイルが与えられた。
+</p>
+<p class="language-selector-en" lang="en">
+Information for connecting to a TCP server, and these files were given.
+</p>
+<ul>
+<li><code>docker-compose.yml</code></li>
+<li><code>Dockerfile</code></li>
+<li><code>flag.py</code></li>
+<li><code>main.py</code></li>
+</ul>
+
+<div class="language-selector-ja" lang="ja">
+<p>
+<code>main.py</code> は、指定したファイルの内容を出力するが、以下の条件のいずれかに当てはまる場合は出力しない、というものだった。
+</p>
+<ul>
+<li>フルパスが、カレントディレクトリで始まらない。</li>
+<li>ファイル名が <code>flag.py</code> である。</li>
+</ul>
+<p>
+さらに、<code>main.py</code> は <code>flag</code> を import している。<br>
+このようにファイルを import すると、<code>__pycache__</code> が作成される。<br>
+そこで、出力するファイルとして <code>./__pycache__/flag.cpython-311.pyc</code> を指定すると、flagを含む出力が得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+<code>main.py</code> outputs contents of the specified file unless it satisfies any of these conditions:
+</p>
+<ul>
+<li>Its full path doesn't start with the working directory.</li>
+<li>Its file name is <code>flag.py</code>.</li>
+</ul>
+<p>
+Note that <code>main.py</code> imports <code>flag</code>.<br>
+Importing a file like this will result in creating <code>__pycache__</code>.<br>
+I specified <code>./__pycache__/flag.cpython-311.pyc</code> as the file to output. The result contained the flag.
+</p>
+</div>
+
+<div class="flag">ctf4b{c4ch3_15_0ur_fr13nd!}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SECCON Beginners CTF 2023</a>
+</p>
+</body>
+</html>

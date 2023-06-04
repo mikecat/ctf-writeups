@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Forbidden (SECCON Beginners CTF 2023) Writeup</title>
+<script src="../../../../common/common.js"></script>
+</head>
+<body>
+<language-selector data-langlist="日本語,ja,English,en"></language-selector>
+<h1>Forbidden</h1>
+<div class="language-selector-ja" lang="ja">
+<p>
+WebページのURLと、サーバのファイル一式が与えられた。
+</p>
+<p>
+与えられたファイル中の <code>Forbidden/app/index.js</code> を読むと、<code>/flag</code> へのリクエストに対しflagを返すが、パスが <code>/flag</code> を含む場合はかわりに403を返すようだった。
+</p>
+<p>
+<code>g</code> を大文字にしたURL <code>https://forbidden.beginners.seccon.games/flaG</code> にアクセスすると、flagが得られた。
+</p>
+</div>
+<div class="language-selector-en" lang="en">
+<p>
+An URL of a web page and files for the server were given.
+</p>
+<p>
+Reading <code>Forbidden/app/index.js</code> in the given files, I found that it will return the flag for request for <code>/flag</code>, but it will return 403 instead when the path contains <code>/flag</code>.
+</p>
+<p>
+I obtained the flag by accessing the URL <code>https://forbidden.beginners.seccon.games/flaG</code> (with <code>g</code> being made uppercase).
+</p>
+</div>
+
+<div class="flag">ctf4b{403_forbidden_403_forbidden_403}</div>
+<hr>
+<writeup-by></writeup-by>
+<p>
+<a href="../../" class="language-aware-link">SECCON Beginners CTF 2023</a>
+</p>
+</body>
+</html>
